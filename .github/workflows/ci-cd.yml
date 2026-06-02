@@ -61,10 +61,8 @@ jobs:
       - name: Type check
         run: pnpm run typecheck
 
-      # format:check 暂时改为警告模式（353 个历史文件未格式化，逐步修复）
-      - name: Run Prettier check (warning only)
-        run: pnpm run format:check || echo "::warning::Code style issues found. Run 'pnpm run format' locally to fix."
-        continue-on-error: true
+      - name: Run Prettier check
+        run: pnpm run format:check
 
   test:
     name: Test Suite
