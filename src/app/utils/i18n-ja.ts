@@ -1,0 +1,134 @@
+/**
+ * @file i18n-ja.ts
+ * @description YYC³便携式智能AI系统 - 日语国际化文件
+ * Japanese (日本語) locale overrides
+ * Partial overrides merged onto `en` base in i18n-data.ts getI18n()
+ * @author YanYuCloudCube Team <admin@0379.email>
+ * @version v1.0.0
+ * @created 2026-03-19
+ * @updated 2026-03-19
+ * @status stable
+ * @license MIT
+ * @copyright Copyright (c) 2026 YanYuCloudCube Team
+ * @tags i18n,japanese,localization
+ */
+
+import type { I18nStrings } from './i18n-types'
+
+/** Japanese overrides – keys not listed here fall back to English */
+export const jaOverrides: Partial<I18nStrings> = {
+  // Brand
+  brandName: 'YanYu Cloud', brandSlogan: '言葉が千行のコードを伝え | 言語が万物の知能を紡ぐ',
+  // Header
+  home: 'ホーム', projects: 'プロジェクト', notifications: '通知', settings: '設定', github: 'GitHub', share: '共有', deploy: 'デプロイ', quickActions: 'クイックアクション', language: '言語', user: 'ユーザー', themeSwitch: 'テーマ切替', themeCustomize: 'テーマカスタマイズ',
+  // View
+  back: '戻る', preview: 'プレビュー', code: 'コード', fullscreenPreview: '全画面プレビュー', search: '検索', more: 'その他',
+  // AI
+  aiModel: 'AIモデル', aiChat: 'AIチャット', aiSettings: 'AI設定', configModel: 'モデル設定', selectModel: 'モデル選択',
+  // Chat
+  chatPlaceholder: 'メッセージを入力...', chatStreamingPlaceholder: 'AI応答中...', send: '送信', slashCommands: 'スラッシュコマンド', addAttachment: '添付追加', uploadImage: '画像アップロード', insertCode: 'コード挿入', enterToSend: 'Enter で送信', shiftEnterNewline: 'Shift+Enter で改行', slashShortcut: '/ でコマンド',
+  // File
+  explorer: 'エクスプローラー', searchFiles: 'ファイル検索', newFile: '新規ファイル', newFolder: '新規フォルダ', rename: '名前変更', copy: 'コピー', copyPath: 'パスをコピー', delete: '削除', selectedFile: '選択中のファイル', noFileSelected: 'ファイル未選択', totalFiles: '合計ファイル数',
+  // Editor
+  copyCode: 'コードをコピー', systemReport: 'システムレポート', backToCode: 'コードに戻る', aiCodeInjection: 'AIコード注入', diffPreview: '差分プレビュー', acceptChanges: '変更を適用', reject: '拒否', collaboratorsOnFile: 'ファイル上の共同編集者',
+  // Terminal
+  terminal: 'ターミナル', newTerminal: '新規ターミナル', tmRename: '名前変更', tmBash: 'Bash', tmZsh: 'Zsh', tmNode: 'Node', tmPython: 'Python', tmSplit: '分割', tmSearch: '検索', tmSearchPlaceholder: '検索...', tmProcessRunning: 'プロセス実行中', tmKillProcess: 'プロセス終了', tmClearAll: 'すべてクリア', tmSelectShell: 'シェル選択', tmCloseConfirm: '閉じますか？', tmMaximize: '最大化', tmRestore: '復元',
+  // Preview
+  livePreview: 'ライブプレビュー', componentPreview: 'コンポーネントプレビュー', componentGallery: 'コンポーネントギャラリー', refresh: '更新', openInNewWindow: '新しいウィンドウで開く', ready: '準備完了', loading: '読み込み中',
+  // Projects
+  recentProjects: '最近のプロジェクト', viewAll: 'すべて表示', active: 'アクティブ', draft: '下書き', archived: 'アーカイブ', minutesAgo: '{n}分前', hoursAgo: '{n}時間前', daysAgo: '{n}日前',
+  // User
+  online: 'オンライン', preferences: '環境設定', shortcuts: 'ショートカット', profile: 'プロフィール', openWorkspace: 'ワークスペースを開く',
+  // More
+  toggleTerminal: 'ターミナル切替', exportProject: 'プロジェクトをエクスポート', documentation: 'ドキュメント',
+  // Toolbar
+  pluginExtensions: 'プラグイン/拡張', modelManagement: 'モデル管理', helpGuide: 'ヘルプガイド', fileManager: 'ファイルマネージャー', integratedTerminal: '統合ターミナル', componentLayers: 'コンポーネントレイヤー',
+  // Code tools
+  formatCode: 'コード整形', aiAutocomplete: 'AI自動補完', filterFiles: 'ファイルフィルター',
+  // Footer
+  footerText: 'YYC³ AI Code — 万象は雲の枢に帰一し、深層スタックが新時代の知能を拓く',
+  // Swap
+  releaseToSwap: '離してスワップ', dragToSwap: 'ドラッグしてスワップ',
+  // Actions
+  projectsPanel: 'プロジェクトパネル', createProject: 'プロジェクト作成', projectSettings: 'プロジェクト設定', openProject: 'プロジェクトを開く', deleteProject: 'プロジェクト削除', renameProject: 'プロジェクト名変更',
+  githubConnect: 'GitHub接続', githubPush: 'Gitプッシュ', githubPull: 'Gitプル', githubClone: 'Gitクローン', githubRepo: 'GitHubリポジトリ',
+  shareProject: 'プロジェクト共有', shareCopyLink: 'リンクをコピー', shareInvite: '招待', shareExport: 'エクスポート', shareEmbedCode: '埋め込みコード',
+  deployProject: 'デプロイ', deployPreview: 'プレビューデプロイ', deployProduction: '本番デプロイ', deployStatus: 'デプロイ状況',
+  quickActionsMenu: 'クイックアクションメニュー', newProject: '新規プロジェクト', openTerminal: 'ターミナルを開く', runBuild: 'ビルド実行', runTests: 'テスト実行', gitCommit: 'Gitコミット', openDocs: 'ドキュメントを開く',
+  shortcutsDialog: 'ショートカット一覧', pluginMarket: 'プラグインマーケット', pluginInstalled: 'インストール済み', pluginAvailable: '利用可能',
+  helpCenter: 'ヘルプセンター', helpDocs: 'ドキュメント', helpFeedback: 'フィードバック', helpAbout: 'バージョン情報',
+  formatSuccess: '整形完了', codeCopied: 'コードをコピーしました', aiSuggesting: 'AI提案中',
+  gitStatus: 'Git状態', gitBranch: 'ブランチ', gitCommitMsg: 'コミットメッセージ', gitPushRemote: 'リモートへプッシュ', gitPush: 'プッシュ', gitPull: 'プル', gitSync: '同期',
+  attachFile: 'ファイル添付', attachImage: '画像添付', attachCode: 'コード添付', attachGithub: 'GitHubリンク', attachFigma: 'Figmaファイル', attachClipboard: 'クリップボード',
+  featureComingSoon: '機能追加予定', version: 'バージョン', expandMenu: 'メニュー展開', importFile: 'ファイルインポート', codeSnippet: 'コードスニペット', clipboard: 'クリップボード', duplicate: '複製', archive: 'アーカイブ', create: '作成', searchEllipsis: '検索...',
+  // Toast
+  toastImageUpload: '画像をアップロードしました', toastFileImport: 'ファイルをインポートしました', toastGithubLinkOpened: 'GitHubリンクを開きました', toastFigmaImport: 'Figmaファイルをインポートしました', toastCodeTemplateInserted: 'コードテンプレートを挿入しました', toastClipboardPasted: 'クリップボードから貼り付けました', toastClipboardError: 'クリップボードエラー', toastProjectCreated: 'プロジェクトを作成しました', toastProjectDeleted: 'プロジェクトを削除しました', toastProjectArchived: 'プロジェクトをアーカイブしました', toastProjectDuplicated: 'プロジェクトを複製しました', toastAllRead: 'すべて既読', toastMarkAllRead: 'すべて既読にする', toastGithubConnected: 'GitHub接続完了', toastCloneDialogOpened: 'クローンダイアログを開きました', toastCodePushed: 'コードをプッシュしました', toastCodePulled: 'コードをプルしました', toastRepoOpened: 'リポジトリを開きました', toastLinkCopied: 'リンクをコピーしました', toastInviteSent: '招待を送信しました', toastExportedZip: 'ZIPをエクスポートしました', toastEmbedCopied: '埋め込みコードをコピーしました', toastPreviewDeploy: 'プレビューデプロイ中', toastProductionDeploy: '本番デプロイ中', toastDeployReady: 'デプロイ準備完了', toastBuildStarted: 'ビルド開始', toastTestsRunning: 'テスト実行中', toastAllCommitted: 'すべてコミット済み', toastNotificationsRead: '通知を既読にしました', toastSwitchedTo: '切り替え: ', toastRenameTriggered: '名前変更トリガー', toastDocsOpened: 'ドキュメントを開きました', toastFeedbackSent: 'フィードバックを送信しました', toastPluginInstalled: 'プラグインをインストールしました', toastFileCreated: 'ファイルを作成しました', toastFolderCreated: 'フォルダを作成しました', toastSearchResults: '検索結果', toastSwitchedMode: 'モード切替', toastProjectRefreshed: 'プロジェクトを更新しました', toastComponentLayersOpened: 'コンポーネントレイヤーを開きました', toastFormatted: '整形完了', toastAiAnalyzing: 'AI分析中', toastAiSuggestions: 'AI提案', toastGitStatusInfo: 'Git状態情報', toastGitCommitted: 'コミット完了', toastPushedToOrigin: 'originにプッシュ完了', toastAlreadyUpToDate: '最新の状態です', toastSyncing: '同期中', toastLanguageSwitched: '言語を切り替えました', toastModelCallFailed: 'モデル呼び出し失敗', toastFallbackResponse: 'フォールバック応答', toastUnknownError: '不明なエラー', toastConnected: '接続完了', toastConnectionFailed: '接続失敗', toastNotTested: '未テスト',
+  // Notifications
+  notifAutoSaved: '自動保存しました', notifAiConnected: 'AI接続完了', notifBuildComplete: 'ビルド完了', notifUpdateAvailable: 'アップデートあり', notifSystemReady: 'システム準備完了', notifDashboardBuild: 'ダッシュボードビルド', notifSyncComplete: '同期完了',
+  // Commands
+  cmdCodeDesc: 'コードスニペットを生成', cmdArchDesc: 'アーキテクチャの提案を表示', cmdHelpDesc: 'ヘルプコンテンツを表示',
+  // Header collab
+  selectTheme: 'テーマ選択', editing: '編集中', lineNumber: '行', idle: 'アイドル', offlineCount: 'オフライン {count}',
+  // System Report
+  reportLayoutReady: 'レイアウト準備完了', reportSyncLatency: '同期レイテンシ', reportDesignParsing: 'デザイン解析',
+  // Theme Presets
+  themeLight: 'ライト', themeDark: 'ダーク', themeMidnight: 'ミッドナイト', themeForest: 'フォレスト', themeSunset: 'サンセット',
+  // Projects desc
+  projDescDashboard: 'ダッシュボード', projDescDesignSystem: 'デザインシステム', projDescAiChat: 'AIチャットインターフェース', projDescCodeGen: 'コード生成エンジン',
+  // Store defaults
+  defaultThemeName: 'デフォルトテーマ', initialAiMessage: 'こんにちは！YYC³ AIアシスタントです。何かお手伝いしましょうか？',
+  // Simulator
+  simDefault: 'AIアシスタントが考え中...', simCode: 'コード生成中...', simArchitecture: 'アーキテクチャ分析中...', simHelp: 'ヘルプ情報を取得中...',
+  // Command Palette
+  cpPlaceholder: 'コマンドを検索...', cpNoResults: '結果なし', cpNavigation: 'ナビゲーション', cpActions: 'アクション', cpThemes: 'テーマ', cpTools: 'ツール',
+  // Shortcut
+  scViewSwitch: 'ビュー切替', scTerminalPanel: 'ターミナル/パネル', scProjectOps: 'プロジェクト操作', scEditor: 'エディタ', scChat: 'チャット', scBackToCode: 'コードに戻る', scSwitchPreview: 'プレビュー切替', scSwitchCode: 'コード切替', scToggleTerminal: 'ターミナル切替', scGlobalSearch: 'グローバル検索', scOpenSettings: '設定を開く', scProjectMgmt: 'プロジェクト管理', scNotifications: '通知', scGithub: 'GitHub', scShareProject: 'プロジェクト共有', scDeploy: 'デプロイ', scQuickActions: 'クイックアクション', scSwitchLang: '言語切替', scMoreMenu: 'その他メニュー', scSendMessage: 'メッセージ送信', scNewline: '改行', scSlashCommands: 'スラッシュコマンド', scCommandPalette: 'コマンドパレット',
+  // Plugins
+  pluginCodeAnalyzer: 'コード分析', pluginDesignSync: 'デザイン同期', pluginTestGenerator: 'テスト生成', pluginDocWriter: 'ドキュメント生成',
+  // New feature panels
+  plTitle: 'プラグインシステム', plSubtitle: 'registerPlugin拡張登録とサンドボックス管理', plInstalled: 'インストール済み', plAvailable: '利用可能', plSearch: 'プラグイン検索', plInstall: 'インストール', plUninstall: 'アンインストール', plEnable: '有効化', plDisable: '無効化', plName: '名前', plVersion: 'バージョン', plAuthor: '作者', plDescription: '説明', plStatus: '状態', plActive: 'アクティブ', plInactive: '非アクティブ', plLoading: '読み込み中', plError: 'エラー', plRegister: '登録', plSandbox: 'サンドボックス', plPermissions: '権限', plApi: 'API', plHooks: 'フック', plSettings: '設定', plNoPlugins: 'プラグインなし', plConfirmUninstall: 'このプラグインをアンインストールしますか？', plInstallSuccess: 'インストール成功', plUninstallSuccess: 'アンインストール成功',
+  swTitle: 'オフラインキャッシュ', swSubtitle: 'Service Worker戦略とアセットプリキャッシュ', swOnline: 'オンライン', swOffline: 'オフライン', swStatus: '状態', swCached: 'キャッシュ済み', swCacheSize: 'キャッシュサイズ', swPrecache: 'プリキャッシュ', swPrecaching: 'プリキャッシュ中...', swClearCache: 'キャッシュクリア', swCacheCleared: 'キャッシュをクリアしました', swAssets: '静的アセット', swApi: 'APIデータ', swFonts: 'フォント', swImages: '画像', swStrategy: '戦略', swCacheFirst: 'キャッシュ優先', swNetworkFirst: 'ネットワーク優先', swStaleRevalidate: 'Stale While Revalidate', swLastSync: '最終同期', swSyncNow: '今すぐ同期', swSyncing: '同期中...', swEnabled: '有効', swDisabled: '無効',
+  sdTitle: 'システムダッシュボード', sdSubtitle: 'パネル使用状況・AIコスト・パフォーマンス・エラー傾向', sdOverview: '概要', sdPanelUsage: 'パネル使用', sdAiCost: 'AIコスト', sdPerformance: 'パフォーマンス', sdErrors: 'エラー', sdTotalPanels: 'パネル総数', sdOpenedToday: '本日のオープン', sdMostUsed: '最も使用', sdLeastUsed: '最も少ない', sdTotalCost: '総コスト', sdTokensUsed: 'トークン使用量', sdRequestCount: 'リクエスト数', sdAvgLatency: '平均遅延', sdCpuUsage: 'CPU使用率', sdMemoryUsage: 'メモリ使用率', sdFps: 'FPS', sdLoadTime: '読み込み時間', sdErrorRate: 'エラー率', sdErrorTrend: 'エラー傾向', sdRecentErrors: '最近のエラー', sdLast24h: '過去24時間', sdLast7d: '過去7日', sdLast30d: '過去30日', sdRefresh: '更新', sdExport: 'エクスポート', sdNoData: 'データなし',
+  tmTitle: 'テーママネージャー', tmSubtitle: 'テーマ設定のエクスポート/インポートと共有リンク', tmExportJson: 'JSONエクスポート', tmImportJson: 'JSONインポート', tmShareLink: '共有リンク', tmCopyLink: 'リンクをコピー', tmLinkCopied: 'リンクをコピーしました', tmCustomThemes: 'カスタムテーマ', tmPresetThemes: 'プリセットテーマ', tmSaveTheme: 'テーマを保存', tmDeleteTheme: 'テーマを削除', tmDeleteConfirm: 'このテーマを削除しますか？', tmApply: '適用', tmPreview: 'プレビュー', tmNoCustom: 'カスタムテーマなし', tmExportSuccess: 'エクスポート成功', tmImportSuccess: 'インポート成功', tmImportError: 'インポート失敗、JSONが無効です', tmThemeName: 'テーマ名', tmCreated: '作成日', tmColors: 'カラー', tmCurrentConfig: '現在の設定',
+  mwTitle: 'ウィンドウマネージャー', mwSubtitle: 'フローティングパネルウィンドウとレイアウト同期', mwNewWindow: '新規ウィンドウ', mwCloseWindow: 'ウィンドウを閉じる', mwSyncWindows: 'ウィンドウ同期', mwDragOut: 'ドラッグして分離', mwMergeBack: 'マージして戻す', mwTiled: 'タイル', mwStacked: 'スタック', mwGrid: 'グリッド', mwCustom: 'カスタム', mwPosition: '位置', mwSize: 'サイズ', mwMaximize: '最大化', mwMinimize: '最小化', mwRestore: '復元', mwMemory: 'レイアウト記憶', mwRecovery: 'レイアウト復元', mwNoWindows: 'フローティングウィンドウなし', mwActiveWindows: 'アクティブウィンドウ', mwFocused: 'フォーカス', mwLayout: 'レイアウト',
+  rcTitle: 'リアルタイム共同編集', rcSubtitle: 'yjs CRDT深度統合 · 競合解決 · カーソル追跡 · 操作リプレイ', rcPresence: 'プレゼンス', rcConflicts: '競合', rcOpHistory: '操作履歴', rcCursors: 'カーソル追跡', rcOnline: 'オンライン', rcOfflinePeers: 'オフライン', rcEditing: '編集中', rcIdle: 'アイドル', rcLastSeen: '最終確認', rcFileLocks: 'ファイルロック', rcNoConflicts: '競合なし', rcActive: 'アクティブ', rcResolved: '解決済み', rcAutoResolved: '自動解決', rcLocalChanges: 'ローカル変更', rcRemoteChanges: 'リモート変更', rcMergedResult: 'マージ結果', rcAcceptLocal: 'ローカルを適用', rcAcceptRemote: 'リモートを適用', rcAcceptBoth: '両方を適用', rcSpeed: '速度', rcNoOps: '操作記録なし', rcCursorDesc: '全コラボレーターのカーソル位置をリアルタイム追跡', rcFollowing: 'フォロー中', rcStopFollowing: 'フォロー停止', rcProvider: 'プロバイダー', rcProtocol: 'プロトコル', rcQueueSize: 'キュー', rcPeerCount: 'ピア数', rcServerUrl: 'サーバーURL', rcConnectReal: '実サーバーに接続', rcSimulated: 'シミュレーション', rcRealMode: '実接続', rcServerPlaceholder: 'ws://localhost:1234', rcConnectingServer: 'サーバーに接続中...', rcFailedConnect: '接続失敗', rcDisconnectServer: '切断', rcConnectionMode: '接続モード',
+  sbTitle: 'コードサンドボックス', sbSubtitle: 'iframe隔離実行 · HMRホットリロード · エラーバウンダリ · リソース制限', sbEditor: 'エディタ', sbConsole: 'コンソール', sbResources: 'リソース', sbDeps: '依存関係', sbRun: '実行', sbRunning: '実行中...', sbReady: '準備完了', sbMemLimit: 'メモリ制限', sbTimeout: 'タイムアウト', sbHmr: 'HMRホットリロード', sbNetwork: 'ネットワークアクセス', sbFileAccess: 'ファイルアクセス', sbDomAccess: 'DOMアクセス', sbAutoRestart: '自動再起動', sbConsoleOutput: 'コンソール出力', sbNoOutput: '出力なし', sbMemory: 'メモリ', sbExecHistory: '実行履歴', sbSecurity: 'セキュリティ制限', sbPreview: 'プレビュー', sbClickRun: '実行をクリックまたはコード入力', sbIsolation: '隔離モード', sbExecCount: '実行回数', sbDepsDesc: 'サンドボックス環境にロードされた依存パッケージ', sbLoaded: 'ロード済み', sbNotLoaded: '未ロード', sbSyncToPreview: 'プレビューに同期', sbSyncedToPreview: 'プレビューパネルに同期済み', sbLinkedToPreview: 'プレビューにリンク済み',
+  vqTitle: 'ビジュアルクエリビルダー', vqSubtitle: 'ドラッグ＆ドロップSQL · JOIN可視化 · クエリプラン分析', vqBuilder: 'ビルダー', vqSqlPreview: 'SQLプレビュー', vqQueryPlan: 'クエリプラン', vqResults: '結果', vqTables: 'テーブル', vqColumns: 'カラム', vqJoins: 'JOIN', vqWhere: 'WHERE条件', vqAddJoin: 'JOIN追加', vqAddFilter: 'フィルター追加', vqNoColumns: '左パネルからカラムを選択', vqSelectAll: '全選択', vqCopySQL: 'SQLコピー', vqExecute: '実行', vqExecuted: 'クエリ実行完了', vqCopied: 'SQLをコピーしました', vqCost: 'コスト', vqRows: '行', vqPlanDesc: 'EXPLAIN ANALYZEシミュレーションに基づくクエリ実行プラン分析', vqTotalCost: '総コスト', vqEstRows: '推定行数', vqEstTime: '推定時間', vqResultsCount: 'クエリ結果', vqRunFirst: '先にクエリを実行してください',
+  // DB Index Manager & Performance
+  dbIndexManager: 'インデックスマネージャー', dbIndexes: 'インデックス', dbIndexName: 'インデックス名', dbIndexColumns: 'カラム', dbIndexSize: 'サイズ', dbIndexScans: 'スキャン回数', dbIndexReads: '読取回数', dbIndexRecommend: '推奨', dbIndexCreate: 'インデックス作成', dbIndexDrop: 'インデックス削除', dbIndexRebuild: '再構築', dbNoIndexes: 'インデックスなし', dbIndexCreated: 'インデックス作成完了', dbIndexDropped: 'インデックス削除完了', dbIndexRebuilt: 'インデックス再構築完了', dbIndexRecommendations: 'インデックス推奨',
+  dbQueryAnalyzer: 'クエリアナライザー', dbAnalyzeSql: 'SQL分析', dbAnalyzingQuery: '分析中...', dbExecTime: '実行時間', dbRowsScanned: 'スキャン行数', dbRowsReturned: '返却行数', dbIndexUsed: '使用インデックス', dbQueryPlan: 'クエリプラン', dbQueryRecommendations: '最適化提案', dbQueryCache: 'クエリキャッシュ', dbCacheEntries: 'エントリ', dbCacheHitRate: 'ヒット率', dbCacheHits: 'ヒット数', dbCacheMisses: 'ミス数', dbSlowQueries: 'スロークエリ', dbSlowThreshold: '閾値', dbSlowTotal: '合計', dbSlowAvg: '平均時間', dbSlowMax: '最大時間', dbSlowClear: 'クリア', dbNoSlowQueries: 'スロークエリなし',
+  // AI Code Generation
+  acgGenerate: 'コード生成', acgGenerating: '生成中...', acgOptimize: 'コード最適化', acgOptimizing: '最適化中...', acgExplain: 'コード解説', acgExplaining: '分析中...', acgReview: 'コードレビュー', acgReviewing: 'レビュー中...', acgScore: 'スコア', acgIssues: '問題', acgSuggestions: '提案', acgNoIssues: '問題なし', acgRunReview: 'レビュー実行', acgAutoReview: '自動レビュー', acgImprovements: '改善項目', acgApplyFix: '修正を適用', acgOptimized: '最適化完了', acgReviewComplete: 'レビュー完了',
+  // Brand tagline
+  brandTagline: 'YYC³ AI Code — 深層スタックが新時代の知能を拓く',
+  // ── Settings Page ──
+  stTitle: '設定', stSubtitle: 'アプリ設定と環境設定の管理', stSearch: '設定を検索', stSearchPlaceholder: '設定項目を検索...', stAccount: 'アカウント', stAccountDesc: 'プロフィールとアカウント管理', stGeneral: '一般', stGeneralDesc: 'テーマ、言語、エディタ、ショートカット', stAgents: 'エージェント', stAgentsDesc: 'カスタムおよび内蔵エージェント管理', stMcp: 'MCP', stMcpDesc: 'モデルコンテキストプロトコル接続', stModels: 'モデル', stModelsDesc: 'AIプロバイダーとモデル設定', stContext: 'コンテキスト', stContextDesc: 'コードインデックス、除外ファイル、ドキュメントセット', stChatFlow: 'チャットフロー', stChatFlowDesc: 'タスク追跡、コードレビュー、自動実行', stRules: 'ルールとスキル', stRulesDesc: '個人ルール、プロジェクトルール、スキル管理',
+  stAvatar: 'アバター', stUsername: 'ユーザー名', stEmail: 'メールアドレス', stEditProfile: 'プロフィール編集', stSaveProfile: 'プロフィール保存',
+  stBasicSettings: '基本設定', stTheme: 'テーマ', stThemeSystem: 'システム', stLanguageSetting: '言語', stEditorSettings: 'エディタ設定', stFontFamily: 'フォント', stFontSize: 'フォントサイズ', stWordWrap: '折り返し', stTabSize: 'タブサイズ', stMinimap: 'ミニマップ', stLineNumbers: '行番号', stShortcutSettings: 'ショートカット設定', stShortcutScheme: 'ショートカットスキーム', stVscodeScheme: 'VS Code', stCursorScheme: 'Cursor', stCustomScheme: 'カスタム', stCustomShortcutEditor: 'カスタムショートカットエディタ', stCustomShortcutDesc: 'ショートカットセルをクリックして新しいキーの組み合わせを記録', stShortcutAction: 'アクション', stShortcutBinding: 'ショートカット', stShortcutConflict: 'ショートカットの競合', stShortcutConflictDesc: 'これらのショートカットは複数のアクションにマッピングされています', stShortcutReset: 'すべてリセット', stShortcutRecording: '記録中…', stShortcutPressKeys: 'キーの組み合わせを押してください', stImportConfig: '設定インポート', stImportConfigDesc: '他エディタから設定をインポート', stImportVscode: 'VS Codeからインポート', stImportCursor: 'Cursorからインポート', stImportWarning: '現在の設定が上書きされます', stLinkOpenMethod: 'リンクの開き方', stSystemBrowser: 'システムブラウザ', stBuiltinBrowser: '内蔵ブラウザ', stMarkdownOpenMethod: 'Markdownの開き方', stCodeEditorOpen: 'コードエディタ', stMarkdownPreview: 'Markdownプレビュー', stNodeVersion: 'Node.js バージョン', stAddNodeVersion: 'バージョン追加', stCurrentNode: '現在',
+  stCustomAgents: 'カスタムエージェント', stBuiltinAgents: '内蔵エージェント', stAddAgent: 'エージェント追加', stAgentName: 'エージェント名', stAgentDesc: '説明', stAgentPrompt: 'システムプロンプト', stNoAgents: 'エージェントなし',
+  stMcpList: 'MCPリスト', stAddMcp: 'MCP追加', stAddFromMarket: 'マーケットから追加', stAddManually: '手動追加', stProjectMcp: 'プロジェクトMCP', stProjectMcpDesc: 'プロジェクト .ai/mcp.json を自動読込', stMcpName: 'MCP名', stMcpEndpoint: 'エンドポイント', stMcpType: 'タイプ', stNoMcp: 'MCP設定なし',
+  stProvider: 'プロバイダー', stModel: 'モデル', stApiKey: 'APIキー', stGetApiKey: 'APIキー取得', stAddModel: 'モデル追加', stTestModel: '接続テスト', stModelActive: '使用中',
+  stCodeIndex: 'コードインデックス管理', stCodeIndexDesc: 'AI理解向上のためのコードインデックス構築', stIndexProgress: 'インデックス進捗', stRefreshIndex: 'インデックス更新', stDeleteIndex: 'インデックス削除', stIgnoreFiles: '除外ファイル', stIgnoreFilesDesc: '追加の除外ルール（.gitignore補完）', stDocSets: 'ドキュメントセット', stDocSetsDesc: 'AI質問応答のコンテキスト用ドキュメント追加', stAddDocSet: 'ドキュメントセット追加', stDocUrl: 'ドキュメントURL', stDocUpload: 'ドキュメントアップロード', stNoDocSets: 'ドキュメントセットなし',
+  stTodoList: 'ToDoリスト', stTodoListDesc: 'エージェントがタスク進捗を追跡', stAutoCollapse: '��ャットフロー自動折りたたみ', stAutoCollapseDesc: '完了タスクのノードを自動折りたたみ・要約', stAutoFixCode: 'コード規約自動修正', stAutoFixCodeDesc: 'チャットで検出されたコード問題を自動修正', stAgentAsk: 'エージェント主体的質問', stAgentAskDesc: 'タスクが不明確な場合にエージェントが質問', stCodeReview: 'コードレビュー', stReviewScope: 'レビュー範囲', stReviewNone: 'レビューなし', stReviewAll: 'すべてレビュー', stReviewChanged: '変更のみレビュー', stReviewAfterJump: 'レビュー後に次の変更へジャンプ', stAutoRun: '自動実行', stAutoRunMcp: 'MCP自動実行', stAutoRunMcpDesc: 'エージェント使用時にMCPツールを自動実行', stCommandRunMode: 'コマンド実行モード', stSandboxRun: 'サンドボックス実行', stDirectRun: '直接実行', stWhitelistCommands: 'ホワイトリストコマンド', stTaskNotification: 'タスク通知', stNotifyBanner: 'バナー通知', stNotifySound: 'サウンド通知', stNotifyMenuBar: 'メニューバー通知', stVolume: '音量', stSoundComplete: 'タスク完了音', stSoundWaiting: '待機音', stSoundError: 'エラー音', stPlaySound: '試聴',
+  stImportSettings: '設定インポート', stIncludeAgentsMd: 'AGENTS.mdをコンテキストに含める', stIncludeClaudeMd: 'CLAUDE.md/CLAUDE.local.mdをコンテキストに含める', stPersonalRules: '個人ルール', stPersonalRulesDesc: 'AIが会話中に従うカスタムルール', stProjectRules: 'プロジェクトルール', stProjectRulesDesc: '現在のプロジェクトにのみ適用されるルール', stSkills: 'スキル', stGlobalSkills: 'グローバルスキル', stProjectSkills: 'プロジェクトスキル', stAddRule: 'ルール作成', stAddSkill: 'スキル作成', stNoRules: 'ルールなし', stNoSkills: 'スキルなし', stRuleName: 'ルール名', stRuleContent: 'ルール内容', stSkillName: 'スキル名', stSkillContent: 'スキル内容', stSaved: '保存しました', stReset: 'リセット', stBackToIde: 'IDEに戻る',
+  // Task Board P5
+  tbTitle: 'AIタスクボード', tbSubtitle: 'インテリジェントタスク管理とカンバン', tbSearch: 'タスク検索...', tbAddTask: 'タスク追加',
+  tbAiInfer: 'AI推論', tbNoChat: '分析可能なチャットメッセージがありません', tbNoInferred: '最近の会話からタスクを推論できませんでした', tbInferred: 'AI推論', tbInferError: 'AI推論に失敗しました', tbTasks: '件のタスク',
+  tbTimeline: 'タイムライン', tbDay: '日', tbWeek: '週', tbMonth: '月', tbDragResize: 'バーの端をドラッグして日付を調整', tbDueDateUpdated: '期限を更新しました', tbStartDateUpdated: '開始日を更新しました',
+  wbUndo: '元に戻す', wbRedo: 'やり直す', wbUndone: '日付変更を元に戻しました', wbRedone: '日付変更をやり直しました', dependency: '依存関係',
+  criticalPath: 'クリティカルパス', tbCriticalPathLabel: 'クリティカル', minimap: 'ミニマップ',
+  depEdit: '依存編集', tbDepRemoved: '依存を削除しました', tbDepAdded: '依存を追加しました',
+  aiOptimize: 'AI最適化', tbAiOptTitle: 'AIクリティカルパス最適化提案',
+  tbAiBottleneck: 'ボトルネック検出', tbAiParallel: '並列化の機会', tbAiOverdue: '期限超過の重要タスク', tbAiBlocked: 'ブロックされた重要タスク',
+  miTitle: 'マルチインスタンス管理', miWindows: 'ウィンドウ', miWorkspaces: 'ワークスペース', miSessions: 'セッション', miIpcLog: 'IPCログ',
+  tbCycleDetected: '循環依存が検出されました！このリンクは追加できません。', tbCycleDesc: 'この依存関係を追加するとサイクルが生成されます。依存グラフはDAGである必要があります。',
+  tbExport: 'エクスポート', tbExported: 'タイムラインをSVGとしてエクスポートしました', tbExportedSvg: 'タイムラインをSVGとしてエクスポートしました', tbExportedPng: 'タイムラインをPNGとしてエクスポートしました',
+  tbCriticalPath: 'クリティカルパス', tbDepEdit: '依存編集', tbDepGraph: '依存グラフ',
+  tbAiOptimize: 'AI最適化', tbUndone: '日付変更を取り消し', tbRedone: '日付変更をやり直し',
+  tbUndo: '取り消し', tbRedo: 'やり直し', tbMinimap: 'ミニマップ', tbVector: '(ベクター)', tbRaster: '(ラスター 2x)',
+  tbTodo: '未着手', tbInProgress: '進行中', tbReview: 'レビュー', tbDone: '完了', tbBlocked: 'ブロック',
+  tbCritical: '緊急', tbHigh: '高', tbMedium: '中', tbLow: '低',
+  tbFeature: '機能', tbBug: 'バグ', tbRefactor: 'リファクタ', tbTest: 'テスト', tbDocumentation: 'ドキュメント', tbOther: 'その他',
+  tbEditTask: 'タスク編集', tbSave: '保存', tbSaved: '保存済み', tbEstimated: '見積もり(時間)',
+  tbCreate: '作成', tbCancel: 'キャンセル', tbDelete: '削除', tbArchive: 'アーカイブ',
+}

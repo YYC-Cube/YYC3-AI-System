@@ -1,0 +1,99 @@
+---
+file: ai-terminal-logic.md
+description: YYC³便携式智能AI系统 - 智能终端切换功能核心逻辑
+author: YanYuCloudCube Team <admin@0379.email>
+version: v1.0.0
+created: 2026-03-20
+updated: 2026-03-20
+status: stable
+tags: terminal,layout,logic,zh-CN
+category: design
+language: zh-CN
+design_type: logic
+review_status: approved
+audience: developers
+complexity: intermediate
+---
+
+> ***YanYuCloudCube***
+> *言启象限 | 语枢未来*
+> ***Words Initiate Quadrants, Language Serves as Core for Future***
+> *万象归元于云枢 | 深栈智启新纪元*
+> ***All things converge in cloud pivot; Deep stacks ignite a new era of intelligence***
+
+---
+
+**YYC³ Portable Intelligent AI System guidelines**
+
+智能终端切换功能，核心逻辑如下：
+
+## 功能需求
+1. 支持两种布局模式：编辑模式和预览模式
+2. 根据布局模式智能调整终端显示范围
+3. 终端显示/隐藏状态在模式切换时保持不变
+
+## 逻辑规则
+
+### 编辑模式
+- 终端只在右栏显示
+- 终端宽度：右栏宽度（30%）
+- 终端位置：右栏底部
+- 左边距：70%（左栏25% + 中栏45%）
+
+### 预览模式
+- 终端跨越中栏+右栏显示
+- 终端宽度：合并区域宽度（75%）
+- 终端位置：合并区域底部
+- 左边距：25%（左栏宽度）
+
+## 核心函数
+
+### 终端宽度计算
+function calculateTerminalWidth(layoutMode, windowWidth) {
+  if (layoutMode === 'edit') {
+    return windowWidth * 0.3;
+  } else {
+    return windowWidth * 0.75;
+  }
+}
+
+### 终端位置计算
+function calculateTerminalLeft(layoutMode, windowWidth) {
+  if (layoutMode === 'edit') {
+    return windowWidth * 0.7;
+  } else {
+    return windowWidth * 0.25;
+  }
+}
+
+### 模式切换
+function switchLayoutMode(currentMode) {
+  return currentMode === 'edit' ? 'preview' : 'edit';
+}
+
+### 终端切换
+function toggleTerminal(terminalVisible) {
+  return !terminalVisible;
+}
+
+### 高度调整
+function adjustHeight(newHeight) {
+  return Math.max(100, Math.min(400, newHeight));
+}
+
+## 状态管理
+- layoutMode: 当前布局模式（'edit' | 'preview'）
+- terminalVisible: 终端是否可见（boolean）
+- terminalHeight: 终端高度（number，范围100-400）
+
+## 交互逻辑
+1. 点击终端切换按钮：切换终端显示/隐藏
+2. 模式切换：终端宽度自动调整，显示状态保持不变
+3. 拖拽调整：终端高度在100-400px范围内调整
+4. 窗口调整：终端宽度自动重新计算
+
+## 布局结构
+- 左栏：固定25%（AI对话面板 + 用户输入）
+- 中栏：编辑模式45%，预览模式合并到右栏
+- 右栏：编辑模式30%，预览模式合并到中栏
+- 终端：根据模式自动调整宽度和位置

@@ -1,0 +1,115 @@
+---
+file: YYC3-变量-技术栈版本.md
+description: YYC³ AI 提示词系统 - 技术栈版本变量词库
+author: YanYuCloudCube Team <admin@0379.email>
+version: v1.0.0
+created: 2026-03-14
+updated: 2026-03-14
+status: stable
+---
+
+# YYC³ 变量词库 - 技术栈版本
+
+> **注意**: 以下版本号已于 2026-03-15 与项目 `package.json` 实际依赖对齐。
+> 开发环境为 Figma Make 浏览器沙箱，非 Tauri 桌面环境。
+
+## 1. 前端框架
+
+| 变量名 | 默认值 | 用途 |
+|--------|--------|------|
+| `{{REACT_VERSION}}` | 18.3.1 | UI 框架 |
+| `{{REACT_DOM_VERSION}}` | 18.3.1 | DOM 渲染 |
+| `{{TYPESCRIPT_VERSION}}` | 5.3.3 | 类型系统 |
+
+## 2. 构建工具
+
+| 变量名 | 默认值 | 用途 |
+|--------|--------|------|
+| `{{VITE_VERSION}}` | 6.3.5 | 构建工具 |
+| `{{TAURI_CLI_VERSION}}` | 1.5.0 | 桌面应用 (仅生产部署) |
+| `{{TAURI_API_VERSION}}` | 1.5.0 | 原生桥接 (仅生产部署) |
+
+## 3. 状态管理
+
+| 变量名 | 默认值 | 用途 |
+|--------|--------|------|
+| `{{ZUSTAND_VERSION}}` | 4.4.7 | 全局状态 |
+| `{{IMMER_VERSION}}` | 10.0.3 | 不可变数据 |
+| `{{REACT_QUERY_VERSION}}` | 5.17.19 | 服务端状态 |
+
+## 4. 布局引擎
+
+| 变量名 | 默认值 | 用途 |
+|--------|--------|------|
+| `{{REACT_GRID_LAYOUT_VERSION}}` | 1.4.4 | 网格布局 |
+| `{{REACT_DND_VERSION}}` | 16.0.1 | 拖拽功能 |
+| `{{REACT_RESIZABLE_VERSION}}` | 3.0.5 | 可调整大小 |
+| `{{REACT_SPLIT_PANE_VERSION}}` | 0.1.92 | 分割面板 |
+| `{{REACT_TABS_VERSION}}` | 6.0.2 | 标签页系统 |
+
+## 5. AI 集成
+
+| 变量名 | 默认值 | 用途 |
+|--------|--------|------|
+| `{{AI_SDK_VERSION}}` | 4.0.0 | AI 集成 |
+| `{{OPENAI_SDK_VERSION}}` | 4.20.1 | OpenAI API |
+| `{{ANTHROPIC_SDK_VERSION}}` | 0.14.0 | Claude API |
+
+## 6. 实时协作
+
+| 变量名 | 默认值 | 用途 |
+|--------|--------|------|
+| `{{YJS_VERSION}}` | 13.6.10 | CRDT 协作 |
+| `{{Y_WEBSOCKET_VERSION}}` | 2.0.4 | WebSocket 传输 |
+
+## 7. 数据库
+
+| 变量名 | 默认值 | 用途 |
+|--------|--------|------|
+| `{{POSTGRES_VERSION}}` | 16.1 | 关系型数据库 |
+| `{{MYSQL_VERSION}}` | 8.0 | 关系型数据库 |
+| `{{REDIS_VERSION}}` | 7.2.4 | 缓存数据库 |
+
+## 8. 代码编辑
+
+| 变量名 | 默认值 | 用途 |
+|--------|--------|------|
+| `{{MONACO_EDITOR_VERSION}}` | 0.45.0 | 代码编辑器 |
+| `{{XTERM_VERSION}}` | 5.3.0 | 终端模拟 |
+
+## 9. 样式系统
+
+| 变量名 | 默认值 | 用途 |
+|--------|--------|------|
+| `{{TAILWIND_CSS_VERSION}}` | 4.1.12 | 样式框架 |
+| `{{FRAMER_MOTION_VERSION}}` | 12.23.24 | 动画库 (motion 包) |
+
+## 10. 表单验证
+
+| 变量名 | 默认值 | 用途 |
+|--------|--------|------|
+| `{{REACT_HOOK_FORM_VERSION}}` | 7.50.1 | 表单管理 |
+| `{{ZOD_VERSION}}` | 3.22.4 | 模式验证 |
+
+## 11. 测试框架
+
+| 变量名 | 默认值 | 用途 |
+|--------|--------|------|
+| `{{VITEST_VERSION}}` | 1.2.2 | 单元测试 |
+| `{{PLAYWRIGHT_VERSION}}` | 1.41.1 | E2E 测试 |
+| `{{TESTING_LIBRARY_VERSION}}` | 14.1.2 | 组件测试 |
+
+## 12. 图标库
+
+| 变量名 | 默认值 | 用途 |
+|--------|--------|------|
+| `{{LUCIDE_REACT_VERSION}}` | 0.312.0 | 图标系统 |
+
+## 13. 开发工具
+
+| 变量名 | 默认值 | 用途 |
+|--------|--------|------|
+| `{{ESLINT_VERSION}}` | 8.56.0 | 代码检查 |
+| `{{PRETTIER_VERSION}}` | 3.2.4 | 代码格式化 |
+| `{{BABEL_VERSION}}` | 7.23.9 | 代码转译 |
+| `{{POSTCSS_VERSION}}` | 8.4.35 | CSS 处理 |

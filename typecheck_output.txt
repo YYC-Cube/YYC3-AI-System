@@ -1,0 +1,39 @@
+
+> @yyc3/ai-system@1.0.0 typecheck
+> tsc --noEmit
+
+src/app/services/ai-code-gen.ts(139,5): error TS1005: ',' expected.
+src/app/services/ai-code-gen.ts(139,11): error TS1005: ',' expected.
+src/app/services/ai-code-gen.ts(140,5): error TS1005: ',' expected.
+src/app/services/ai-code-gen.ts(140,9): error TS1005: ',' expected.
+src/app/services/ai-code-gen.ts(141,5): error TS1005: ',' expected.
+src/app/services/ai-code-gen.ts(141,19): error TS1144: '{' or ';' expected.
+src/app/services/ai-code-gen.ts(141,24): error TS1068: Unexpected token. A constructor, method, accessor, or property was expected.
+src/app/services/ai-code-gen.ts(141,27): error TS1068: Unexpected token. A constructor, method, accessor, or property was expected.
+src/app/services/ai-code-gen.ts(176,3): error TS1128: Declaration or statement expected.
+src/app/services/ai-code-gen.ts(178,3): error TS1128: Declaration or statement expected.
+src/app/services/ai-code-gen.ts(178,34): error TS1005: ',' expected.
+src/app/services/ai-code-gen.ts(178,52): error TS1005: ',' expected.
+src/app/services/ai-code-gen.ts(179,5): error TS1005: ',' expected.
+src/app/services/ai-code-gen.ts(214,3): error TS1128: Declaration or statement expected.
+src/app/services/ai-code-gen.ts(216,3): error TS1128: Declaration or statement expected.
+src/app/services/ai-code-gen.ts(216,34): error TS1005: ',' expected.
+src/app/services/ai-code-gen.ts(216,52): error TS1005: ',' expected.
+src/app/services/ai-code-gen.ts(216,62): error TS1005: ';' expected.
+src/app/services/ai-code-gen.ts(216,64): error TS1434: Unexpected keyword or identifier.
+src/app/services/ai-code-gen.ts(245,3): error TS1128: Declaration or statement expected.
+src/app/services/ai-code-gen.ts(245,29): error TS1005: ',' expected.
+src/app/services/ai-code-gen.ts(245,47): error TS1005: ',' expected.
+src/app/services/ai-code-gen.ts(246,5): error TS1005: ',' expected.
+src/app/services/ai-code-gen.ts(265,3): error TS1128: Declaration or statement expected.
+src/app/services/ai-code-gen.ts(267,3): error TS1128: Declaration or statement expected.
+src/app/services/ai-code-gen.ts(267,32): error TS1005: ',' expected.
+src/app/services/ai-code-gen.ts(267,50): error TS1005: ',' expected.
+src/app/services/ai-code-gen.ts(268,5): error TS1005: ',' expected.
+src/app/services/ai-code-gen.ts(287,3): error TS1128: Declaration or statement expected.
+src/app/services/ai-code-gen.ts(289,3): error TS1128: Declaration or statement expected.
+src/app/services/ai-code-gen.ts(289,27): error TS1005: ',' expected.
+src/app/services/ai-code-gen.ts(289,36): error TS1005: ';' expected.
+src/app/services/ai-code-gen.ts(289,38): error TS1434: Unexpected keyword or identifier.
+src/app/services/ai-code-gen.ts(296,1): error TS1128: Declaration or statement expected.
+src/app/services/storage-service.ts(86,1): error TS1128: Declaration or statement expected.
