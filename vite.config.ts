@@ -11,10 +11,10 @@
  * @tags config,vite,build,dev-server
  */
 
-import { defineConfig } from 'vite'
-import path from 'path'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
+import path from 'path'
+import { defineConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
@@ -269,6 +269,9 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+
+  // GitHub Pages部署配置 - 使用自定义域名时base为'/'
+  base: '/',
 
   // File types to support raw imports. Never add .css, .tsx, or .ts files to this.
   assetsInclude: ['**/*.svg', '**/*.csv'],

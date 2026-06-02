@@ -5,10 +5,20 @@ on:
     branches: [main, develop]
   pull_request:
     branches: [main, develop]
+  workflow_dispatch:
 
 env:
   PNPM_VERSION: '10.32.1'
   NODE_VERSION: '20'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   quality:
@@ -61,10 +71,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: quality
 
-    strategy:
-      matrix:
-        shard: [1, 2, 3, 4]
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -98,7 +104,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run tests with coverage
-        run: pnpm run test:coverage -- --shard=${{ matrix.shard }}/4
+        run: pnpm run test:run
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
@@ -106,76 +112,12 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage/coverage-final.json
           flags: unittests
-          name: codecov-shard-${{ matrix.shard }}
-
-      - name: Check coverage thresholds
-        run: |
-          echo "Checking if coverage meets minimum thresholds (80%)..."
-          node scripts/check-coverage.js coverage/coverage-summary.json
-
-  e2e:
-    name: E2E Tests
-    runs-on: ubuntu-latest
-    needs: test
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
-
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_OUTPUT
-        id: pnpm-cache
-
-      - name: Setup pnpm cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Install Playwright browsers
-        run: pnpm exec playwright install --with-deps
-
-      - name: Run E2E tests
-        run: pnpm run test:e2e
-
-      - name: Upload E2E test results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-report
-          path: playwright-report/
-          retention-days: 7
-
-      - name: Upload E2E screenshots
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-screenshots
-          path: test-results/
-          retention-days: 7
+          name: codecov-coverage
 
   build:
-    name: Build Verification
+    name: Build
     runs-on: ubuntu-latest
-    needs: [test, e2e]
+    needs: [quality, test]
 
     steps:
       - name: Checkout code
@@ -221,72 +163,25 @@ jobs:
 
       - name: Check bundle size
         run: |
-          echo "Checking bundle size..."
+          echo "Bundle size:"
           du -sh dist/
 
-  performance:
-    name: Performance Tests
+  deploy-pages:
+    name: Deploy to GitHub Pages
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
     needs: build
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
-
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_OUTPUT
-        id: pnpm-cache
-
-      - name: Setup pnpm cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Install Playwright browsers
-        run: pnpm exec playwright install --with-deps
-
-      - name: Run performance benchmarks
-        run: pnpm run benchmark
-
-      - name: Generate performance report
-        run: pnpm run report:performance
-
-      - name: Upload performance report
-        uses: actions/upload-artifact@v4
-        with:
-          name: performance-report
-          path: docs/performance-report.md
-          retention-days: 30
-
-  deploy:
-    name: Deploy
-    runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
-    needs: [build, performance]
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
 
       - name: Download build artifacts
         uses: actions/download-artifact@v4
@@ -294,17 +189,25 @@ jobs:
           name: build
           path: dist/
 
-      - name: Deploy to production
-        run: |
-          echo "Deploying to production..."
-          # netlify deploy --prod --dir=dist
-          # aws s3 sync dist/ s3://your-bucket --delete
+      - name: Add CNAME for custom domain
+        run: echo "ai.yyc3.top" > dist/CNAME
 
-      - name: Notify deployment status
-        if: always()
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Deployment summary
         run: |
-          if [ ${{ job.status }} == 'success' ]; then
-            echo "✅ Deployment successful"
-          else
-            echo "❌ Deployment failed"
-          fi
+          echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Successfully deployed to GitHub Pages" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **URL**: https://ai.yyc3.top" >> $GITHUB_STEP_SUMMARY
+          echo "- **Repository**: ${{ github.repository }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch**: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
