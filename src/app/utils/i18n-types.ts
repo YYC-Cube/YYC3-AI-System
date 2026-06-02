@@ -226,6 +226,11 @@ export interface I18nStrings {
   toastCodeTemplateInserted: string
   toastClipboardPasted: string
   toastClipboardError: string
+  toastInvalidImage: string
+  toastImageUploaded: string
+  toastImageUploadFailed: string
+  toastFileImported: string
+  toastFileImportFailed: string
   toastProjectCreated: string
   toastProjectDeleted: string
   toastProjectArchived: string

@@ -112,6 +112,59 @@ export function HomePage() {
   const [showCommands, setShowCommands] = useState(false)
   const [showTools, setShowTools] = useState(false)
   const inputRef = useRef<HTMLTextAreaElement>(null)
+  const imageInputRef = useRef<HTMLInputElement>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // Handle image upload
+  const handleImageUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    if (!file.type.startsWith('image/')) {
+      toast.error(i.toastInvalidImage)
+      return
+    }
+
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      const dataUrl = event.target?.result as string
+      const imageMarkdown = `![${file.name}](${dataUrl})\n`
+      setInput(prev => prev + imageMarkdown)
+      toast.success(i.toastImageUploaded)
+      inputRef.current?.focus()
+    }
+    reader.onerror = () => toast.error(i.toastImageUploadFailed)
+    reader.readAsDataURL(file)
+
+    e.target.value = ''
+  }, [i])
+
+  // Handle file import
+  const handleFileImport = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      const content = event.target?.result as string
+      const ext = file.name.split('.').pop()?.toLowerCase() || 'txt'
+
+      let formattedContent = ''
+      if (['js', 'jsx', 'ts', 'tsx', 'json', 'css', 'html', 'py', 'java', 'go', 'rs', 'c', 'cpp', 'h'].includes(ext)) {
+        formattedContent = `\`\`\`${ext}\n${content}\n\`\`\`\n`
+      } else {
+        formattedContent = `\`\`\`\n${content}\n\`\`\`\n`
+      }
+
+      setInput(prev => prev + formattedContent)
+      toast.success(i.toastFileImported)
+      inputRef.current?.focus()
+    }
+    reader.onerror = () => toast.error(i.toastFileImportFailed)
+    reader.readAsText(file)
+
+    e.target.value = ''
+  }, [i])
 
   // ── Header popover states ──
   const [showProjects, setShowProjects] = useState(false)
@@ -307,8 +360,8 @@ export function HomePage() {
   // ── Tool icon action handlers ──
   const toolIconActions: Record<string, () => void> = {
     plus: () => { /* 展开/收起工具栏，实际功能在showTools状态控制 */ },
-    image: () => toast.info(i.toastImageUpload),
-    file: () => toast.info(i.toastFileImport),
+    image: () => imageInputRef.current?.click(),
+    file: () => fileInputRef.current?.click(),
     github: () => toast.info(i.toastGithubLinkOpened),
     figma: () => toast.info(i.toastFigmaImport),
     code: () => { setInput(input + '```tsx\n// code here\n```'); inputRef.current?.focus(); toast.info(i.toastCodeTemplateInserted) },
@@ -319,6 +372,9 @@ export function HomePage() {
 
   return (
     <div className={`min-h-screen w-screen flex flex-col font-sans overflow-hidden ${t.transition} ${t.surface.app} ${t.surface.appGradient}`}>
+      {/* Hidden file inputs */}
+      <input ref={imageInputRef} type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+      <input ref={fileInputRef} type="file" accept=".txt,.md,.json,.js,.jsx,.ts,.tsx,.css,.html,.py,.java,.go,.rs,.c,.cpp,.h" onChange={handleFileImport} className="hidden" />
       {/* Ambient background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className={`absolute top-[-20%] left-[30%] w-[600px] h-[600px] rounded-full blur-[120px] ${t.palette.ambientBlob}`} />
@@ -824,8 +880,8 @@ export function HomePage() {
                 <div className="flex items-center justify-between">
                   <span className={`text-[10px] ${t.text.dimmed}`}>{formatTime(project.updatedAt)}</span>
                   <span className={`text-[10px] px-2 py-0.5 rounded-full ${project.status === 'active' ? 'bg-emerald-500/15 text-emerald-500'
-                      : project.status === 'draft' ? 'bg-amber-500/15 text-amber-500'
-                        : 'bg-slate-500/15 text-slate-500'
+                    : project.status === 'draft' ? 'bg-amber-500/15 text-amber-500'
+                      : 'bg-slate-500/15 text-slate-500'
                     }`} style={{ fontWeight: 500 }}>
                     {project.status === 'active' ? i.active : project.status === 'draft' ? i.draft : i.archived}
                   </span>

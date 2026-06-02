@@ -276,6 +276,59 @@ export function ChatInterface() {
   const scrollRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const abortRef = useRef<AbortController | null>(null)
+  const imageInputRef = useRef<HTMLInputElement>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // Handle image upload
+  const handleImageUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    
+    if (!file.type.startsWith('image/')) {
+      toast.error(i.toastInvalidImage)
+      return
+    }
+    
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      const dataUrl = event.target?.result as string
+      const imageMarkdown = `![${file.name}](${dataUrl})\n`
+      setInput(prev => prev + imageMarkdown)
+      toast.success(i.toastImageUploaded)
+      inputRef.current?.focus()
+    }
+    reader.onerror = () => toast.error(i.toastImageUploadFailed)
+    reader.readAsDataURL(file)
+    
+    e.target.value = ''
+  }, [i])
+
+  // Handle file import
+  const handleFileImport = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      const content = event.target?.result as string
+      const ext = file.name.split('.').pop()?.toLowerCase() || 'txt'
+      
+      let formattedContent = ''
+      if (['js', 'jsx', 'ts', 'tsx', 'json', 'css', 'html', 'py', 'java', 'go', 'rs', 'c', 'cpp', 'h'].includes(ext)) {
+        formattedContent = `\`\`\`${ext}\n${content}\n\`\`\`\n`
+      } else {
+        formattedContent = `\`\`\`\n${content}\n\`\`\`\n`
+      }
+      
+      setInput(prev => prev + formattedContent)
+      toast.success(i.toastFileImported)
+      inputRef.current?.focus()
+    }
+    reader.onerror = () => toast.error(i.toastFileImportFailed)
+    reader.readAsText(file)
+    
+    e.target.value = ''
+  }, [i])
 
   // Get active model info
   const activeModel = aiModels.find(m => m.id === activeModelId)
@@ -567,12 +620,26 @@ export function ChatInterface() {
                       exit={{ opacity: 0, y: 6, scale: 0.95 }}
                       className={`absolute bottom-full left-0 mb-2 w-48 rounded-xl overflow-hidden p-1 z-50 ${t.surface.popover} ${t.border.popover} ${t.shadow.popover}`}
                     >
+                      <input
+                        ref={imageInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        className="hidden"
+                      />
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept=".txt,.md,.json,.js,.jsx,.ts,.tsx,.css,.html,.py,.java,.go,.rs,.c,.cpp,.h"
+                        onChange={handleFileImport}
+                        className="hidden"
+                      />
                       {[
-                        { label: i.attachImage, icon: ImageIcon, action: () => toast.info(i.toastImageUpload) },
-                        { label: i.attachFile, icon: FileUp, action: () => toast.info(i.toastFileImport) },
+                        { label: i.attachImage, icon: ImageIcon, action: () => imageInputRef.current?.click() },
+                        { label: i.attachFile, icon: FileUp, action: () => fileInputRef.current?.click() },
                         { label: i.attachGithub, icon: Github, action: () => toast.info(i.toastGithubLinkOpened) },
                         { label: i.attachFigma, icon: Palette, action: () => toast.info(i.toastFigmaImport) },
-                        { label: i.attachCode, icon: Code, action: () => { setInput(input + '```tsx\n\n```'); setShowAttachMenu(false); inputRef.current?.focus() } },
+                        { label: i.attachCode, icon: Code, action: () => { setInput(input + '```tsx\n\n```'); inputRef.current?.focus() } },
                         { label: i.attachClipboard, icon: Clipboard, action: () => { navigator.clipboard.readText().then(text => { if (text) { setInput(input + text); toast.success(i.toastClipboardPasted) } }).catch(() => toast.error(i.toastClipboardError)) } },
                       ].map(({ label, icon: Icon, action }) => (
                         <button
