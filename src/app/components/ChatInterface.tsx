@@ -16,12 +16,23 @@
 
 import { clsx, type ClassValue } from 'clsx'
 import {
-  Send, Plus, Image as ImageIcon, Code, Sparkles,
-  Terminal, Bot, User, ArrowUpRight, Github,
-  Palette, Clipboard, FileUp, AlertCircle
+  AlertCircle,
+  ArrowUpRight,
+  Bot,
+  Clipboard,
+  Code,
+  FileUp,
+  Github,
+  Image as ImageIcon,
+  Palette,
+  Plus,
+  Send,
+  Sparkles,
+  Terminal,
+  User
 } from 'lucide-react'
-import { motion, AnimatePresence } from 'motion/react'
-import React, { useState, useRef, useEffect, KeyboardEvent, useCallback } from 'react'
+import { AnimatePresence, motion } from 'motion/react'
+import React, { KeyboardEvent, useCallback, useEffect, useRef, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { toast } from 'sonner'
@@ -29,8 +40,8 @@ import { twMerge } from 'tailwind-merge'
 
 import { aiProviderService } from '../services/ai-provider'
 import { buildSystemPromptWithRules } from '../services/settings-integration'
-import { useAppStore } from '../store'
 import type { Message } from '../store'
+import { useAppStore } from '../store'
 import { getI18n } from '../utils/i18n'
 import { getThemeTokens, type ThemeMode } from '../utils/theme'
 
@@ -265,7 +276,7 @@ export function ChatInterface() {
   const scrollRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const abortRef = useRef<AbortController | null>(null)
-  
+
   // Get active model info
   const activeModel = aiModels.find(m => m.id === activeModelId)
 
@@ -454,7 +465,7 @@ export function ChatInterface() {
                 </div>
               ) : (
                 <div className="flex space-x-1">
-                  {[0,1,2].map(dotIdx => (
+                  {[0, 1, 2].map(dotIdx => (
                     <motion.div
                       key={dotIdx}
                       className={`w-1.5 h-1.5 rounded-full ${t.isDark ? 'bg-slate-400' : 'bg-slate-500'}`}
@@ -471,7 +482,7 @@ export function ChatInterface() {
 
       {/* Input Area */}
       <div className={`p-3 border-t relative ${t.border.subtle} ${t.isDark ? 'bg-slate-900/50' : 'bg-white/30'} backdrop-blur-md z-10`}>
-        
+
         {/* Model Status Indicator */}
         <div className="flex items-center justify-between mb-2 px-1">
           <div className="flex items-center gap-2">
@@ -536,12 +547,13 @@ export function ChatInterface() {
             className={`w-full h-20 resize-none py-2.5 px-3 rounded-xl outline-none text-[13px] ${t.transition} ${t.input.chat} disabled:opacity-50`}
             style={{ fontWeight: 400 }}
           />
-          <div className="absolute bottom-2 left-2 flex items-center space-x-0.5">
+          <div className="absolute bottom-2 left-2 flex items-center space-x-0.5 z-10">
             <div className="relative">
               <button
                 onClick={() => setShowAttachMenu(!showAttachMenu)}
                 className={`p-1 rounded ${t.transition} ${showAttachMenu ? t.interactive.iconActive : t.interactive.iconBtn}`}
                 aria-label={i.addAttachment}
+                type="button"
               >
                 <Plus className="w-3.5 h-3.5" />
               </button>
@@ -568,6 +580,7 @@ export function ChatInterface() {
                           onClick={() => { action(); setShowAttachMenu(false) }}
                           className={`w-full flex items-center space-x-2.5 px-3 py-1.5 text-[12px] rounded-lg ${t.transition} ${t.interactive.menuItem}`}
                           style={{ fontWeight: 400 }}
+                          type="button"
                         >
                           <Icon className="w-3.5 h-3.5" />
                           <span>{label}</span>
@@ -582,6 +595,7 @@ export function ChatInterface() {
               onClick={() => toast.info(i.toastImageUpload)}
               className={`p-1 rounded ${t.transition} ${t.interactive.iconBtn}`}
               aria-label={i.uploadImage}
+              type="button"
             >
               <ImageIcon className="w-3.5 h-3.5" />
             </button>
@@ -594,6 +608,7 @@ export function ChatInterface() {
               }}
               className={`p-1 rounded ${t.transition} ${t.interactive.iconBtn}`}
               aria-label={i.insertCode}
+              type="button"
             >
               <Code className="w-3.5 h-3.5" />
             </button>
@@ -601,8 +616,9 @@ export function ChatInterface() {
           <button
             onClick={handleSend}
             disabled={!input.trim() || isStreaming}
-            className={`absolute bottom-2 right-2 p-2 ${t.accent.solidBtn} disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-lg shadow-lg ${t.transition} flex items-center justify-center`}
+            className={`absolute bottom-2 right-2 p-2 ${t.accent.solidBtn} disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-lg shadow-lg ${t.transition} flex items-center justify-center z-10`}
             aria-label={i.ciSendLabel}
+            type="button"
           >
             <Send className="w-3.5 h-3.5" />
           </button>
@@ -654,11 +670,10 @@ function MessageBubble({ msg, theme }: { msg: Message, theme: string }) {
     >
       <div className="flex items-start space-x-2 max-w-[90%]">
         {!isUser && (
-          <div className={`w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 ${
-            isSystem
+          <div className={`w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 ${isSystem
               ? t.isDark ? 'bg-cyan-500/20' : 'bg-cyan-500/10'
               : t.accent.primaryBg
-          }`}>
+            }`}>
             {isSystem
               ? <Terminal className="w-3.5 h-3.5 text-cyan-500" />
               : <Bot className={`w-3.5 h-3.5 ${t.accent.primary}`} />
@@ -710,11 +725,10 @@ function MessageBubble({ msg, theme }: { msg: Message, theme: string }) {
                         </SynHL>
                         <button
                           onClick={() => handleApplyCode(codeStr, match[1])}
-                          className={`absolute top-2 right-2 flex items-center gap-1 px-2 py-1 rounded-lg text-[9px] opacity-0 group-hover/code:opacity-100 transition-all ${
-                            t.isDark
+                          className={`absolute top-2 right-2 flex items-center gap-1 px-2 py-1 rounded-lg text-[9px] opacity-0 group-hover/code:opacity-100 transition-all ${t.isDark
                               ? 'bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30 border border-indigo-500/20'
                               : 'bg-indigo-50 text-indigo-600 hover:bg-indigo-100 border border-indigo-200'
-                          }`}
+                            }`}
                           title={i.ciApplyToEditor}
                         >
                           <ArrowUpRight className="w-3 h-3" /> {i.ciApplyToEditor}
@@ -734,11 +748,10 @@ function MessageBubble({ msg, theme }: { msg: Message, theme: string }) {
                         </pre>
                         <button
                           onClick={() => handleApplyCode(codeStr, match[1])}
-                          className={`absolute top-2 right-2 flex items-center gap-1 px-2 py-1 rounded-lg text-[9px] opacity-0 group-hover/code:opacity-100 transition-all ${
-                            t.isDark
+                          className={`absolute top-2 right-2 flex items-center gap-1 px-2 py-1 rounded-lg text-[9px] opacity-0 group-hover/code:opacity-100 transition-all ${t.isDark
                               ? 'bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30 border border-indigo-500/20'
                               : 'bg-indigo-50 text-indigo-600 hover:bg-indigo-100 border border-indigo-200'
-                          }`}
+                            }`}
                           title={i.ciApplyToEditor}
                         >
                           <ArrowUpRight className="w-3 h-3" /> {i.ciApplyToEditor}
