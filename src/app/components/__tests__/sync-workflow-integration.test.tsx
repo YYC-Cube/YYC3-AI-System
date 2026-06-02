@@ -9,14 +9,14 @@
  * @tags integration,test,sync,workflow
  */
 
-import { render, screen, waitFor } from '@testing-library/react'
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
+import { render, screen, waitFor } from '@testing-library/react';
+import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 
-import '@testing-library/jest-dom'
-import { syncManagerService } from '../../../services/sync-manager-service'
-import { ConflictType } from '../../../types/sync'
-import { ConflictResolutionDialog } from '../ConflictResolutionDialog'
-import { SyncStatusPanel } from '../SyncStatusPanel'
+import '@testing-library/jest-dom';
+import { syncManagerService } from '../../../services/sync-manager-service';
+import { ConflictType } from '../../../types/sync';
+import { ConflictResolutionDialog } from '../ConflictResolutionDialog';
+import { SyncStatusPanel } from '../SyncStatusPanel';
 
 // Mock sync service
 vi.mock('../../../services/sync-manager-service', () => ({
@@ -24,27 +24,27 @@ vi.mock('../../../services/sync-manager-service', () => ({
     syncNow: vi.fn(),
     getSyncStatus: vi.fn(),
   },
-}))
+}));
 
 // Mock store
 vi.mock('../store', () => ({
   useAppStore: vi.fn(() => ({
     theme: 'dark',
   })),
-}))
+}));
 
 describe('Sync Workflow Integration', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
-  })
+    vi.clearAllMocks();
+  });
 
   afterEach(() => {
-    vi.clearAllTimers()
-  })
+    vi.clearAllTimers();
+  });
 
   describe('1. Sync Status Display', () => {
     it('should display current sync status', async () => {
-      const mockGetSyncStatus = vi.mocked(syncManagerService.getSyncStatus)
+      const mockGetSyncStatus = vi.mocked(syncManagerService.getSyncStatus);
       mockGetSyncStatus.mockResolvedValue({
         isOnline: true,
         isSyncing: true,
@@ -53,17 +53,17 @@ describe('Sync Workflow Integration', () => {
         conflictCount: 0,
         lastSyncTime: Date.now(),
         nextSyncTime: Date.now() + 300000,
-      })
+      });
 
-      render(<SyncStatusPanel />)
+      render(<SyncStatusPanel />);
 
       await waitFor(() => {
-        expect(mockGetSyncStatus).toHaveBeenCalled()
-      })
-    })
+        expect(mockGetSyncStatus).toHaveBeenCalled();
+      });
+    });
 
     it('should show sync progress updates', async () => {
-      const mockGetSyncStatus = vi.mocked(syncManagerService.getSyncStatus)
+      const mockGetSyncStatus = vi.mocked(syncManagerService.getSyncStatus);
       mockGetSyncStatus.mockResolvedValue({
         isOnline: true,
         isSyncing: true,
@@ -72,17 +72,17 @@ describe('Sync Workflow Integration', () => {
         conflictCount: 0,
         lastSyncTime: Date.now(),
         nextSyncTime: Date.now() + 300000,
-      })
+      });
 
-      render(<SyncStatusPanel />)
+      render(<SyncStatusPanel />);
 
       await waitFor(() => {
-        expect(mockGetSyncStatus).toHaveBeenCalled()
-      })
-    })
+        expect(mockGetSyncStatus).toHaveBeenCalled();
+      });
+    });
 
     it('should display sync errors', async () => {
-      const mockGetSyncStatus = vi.mocked(syncManagerService.getSyncStatus)
+      const mockGetSyncStatus = vi.mocked(syncManagerService.getSyncStatus);
       mockGetSyncStatus.mockResolvedValue({
         isOnline: false,
         isSyncing: false,
@@ -91,15 +91,15 @@ describe('Sync Workflow Integration', () => {
         conflictCount: 0,
         lastSyncTime: Date.now(),
         nextSyncTime: Date.now() + 300000,
-      })
+      });
 
-      render(<SyncStatusPanel />)
+      render(<SyncStatusPanel />);
 
       await waitFor(() => {
-        expect(mockGetSyncStatus).toHaveBeenCalled()
-      })
-    })
-  })
+        expect(mockGetSyncStatus).toHaveBeenCalled();
+      });
+    });
+  });
 
   describe('2. Conflict Resolution UI', () => {
     it('should display conflict resolution dialog', async () => {
@@ -130,16 +130,16 @@ describe('Sync Workflow Integration', () => {
           onResolved={vi.fn()}
           onCancelled={vi.fn()}
         />
-      )
+      );
 
       await waitFor(() => {
-        expect(screen.getByText(/conflict/i)).toBeInTheDocument()
-      })
-    })
+        expect(screen.getByText(/conflict/i)).toBeInTheDocument();
+      });
+    });
 
     it('should allow user to choose resolution strategy', async () => {
-      const onResolved = vi.fn()
-      const onCancelled = vi.fn()
+      const onResolved = vi.fn();
+      const onCancelled = vi.fn();
 
       render(
         <ConflictResolutionDialog
@@ -168,15 +168,15 @@ describe('Sync Workflow Integration', () => {
           onResolved={onResolved}
           onCancelled={onCancelled}
         />
-      )
+      );
 
-      expect(onResolved).toBeDefined()
-      expect(onCancelled).toBeDefined()
-    })
+      expect(onResolved).toBeDefined();
+      expect(onCancelled).toBeDefined();
+    });
 
     it('should handle multiple conflicts', async () => {
-      const onResolved = vi.fn()
-      const onCancelled = vi.fn()
+      const onResolved = vi.fn();
+      const onCancelled = vi.fn();
 
       const conflicts = [
         {
@@ -242,7 +242,7 @@ describe('Sync Workflow Integration', () => {
           suggestedResolution: 'merge' as const,
           autoResolve: false,
         },
-      ]
+      ];
 
       for (const conflict of conflicts) {
         render(
@@ -252,34 +252,34 @@ describe('Sync Workflow Integration', () => {
             onResolved={onResolved}
             onCancelled={onCancelled}
           />
-        )
+        );
       }
 
-      expect(conflicts).toHaveLength(3)
-    })
-  })
+      expect(conflicts).toHaveLength(3);
+    });
+  });
 
   describe('3. Manual Sync Control', () => {
     it('should trigger manual sync', async () => {
-      const mockSyncNow = vi.mocked(syncManagerService.syncNow)
-      mockSyncNow.mockResolvedValue(undefined)
+      const mockSyncNow = vi.mocked(syncManagerService.syncNow);
+      mockSyncNow.mockResolvedValue(undefined);
 
-      await mockSyncNow()
+      await mockSyncNow();
 
-      expect(mockSyncNow).toHaveBeenCalled()
-    })
+      expect(mockSyncNow).toHaveBeenCalled();
+    });
 
     it('should handle sync cancellation gracefully', async () => {
-      const mockSyncNow = vi.mocked(syncManagerService.syncNow)
-      mockSyncNow.mockRejectedValue(new Error('Sync cancelled'))
+      const mockSyncNow = vi.mocked(syncManagerService.syncNow);
+      mockSyncNow.mockRejectedValue(new Error('Sync cancelled'));
 
       try {
-        await mockSyncNow()
+        await mockSyncNow();
       } catch (error) {
-        expect(error).toBeDefined()
+        expect(error).toBeDefined();
       }
 
-      expect(mockSyncNow).toHaveBeenCalled()
-    })
-  })
-})
+      expect(mockSyncNow).toHaveBeenCalled();
+    });
+  });
+});

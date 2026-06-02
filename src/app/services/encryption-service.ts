@@ -12,29 +12,29 @@
  * @tags service,security,encryption,web-crypto
  */
 
-const ALGORITHM_NAME = 'AES-GCM'
-const KEY_LENGTH = 256
-const IV_LENGTH = 12
-const SALT_LENGTH = 16
-const ITERATIONS = 100000
-const HASH_ALGORITHM = 'SHA-256'
+const ALGORITHM_NAME = 'AES-GCM';
+const KEY_LENGTH = 256;
+const IV_LENGTH = 12;
+const SALT_LENGTH = 16;
+const ITERATIONS = 100000;
+const HASH_ALGORITHM = 'SHA-256';
 
 export interface EncryptedData {
-  ciphertext: string
-  iv: string
-  salt: string
+  ciphertext: string;
+  iv: string;
+  salt: string;
 }
 
 export interface EncryptionConfig {
-  keyLength?: number
-  ivLength?: number
-  saltLength?: number
-  iterations?: number
+  keyLength?: number;
+  ivLength?: number;
+  saltLength?: number;
+  iterations?: number;
 }
 
 class EncryptionService {
-  private key: CryptoKey | null = null
-  private config: Required<EncryptionConfig>
+  private key: CryptoKey | null = null;
+  private config: Required<EncryptionConfig>;
 
   constructor(config: EncryptionConfig = {}) {
     this.config = {
@@ -42,12 +42,12 @@ class EncryptionService {
       ivLength: config.ivLength ?? IV_LENGTH,
       saltLength: config.saltLength ?? SALT_LENGTH,
       iterations: config.iterations ?? ITERATIONS,
-    }
+    };
   }
 
   private async generateKeyFromPassword(password: string, salt: Uint8Array): Promise<CryptoKey> {
-    const encoder = new TextEncoder()
-    const passwordBuffer = encoder.encode(password)
+    const encoder = new TextEncoder();
+    const passwordBuffer = encoder.encode(password);
 
     const baseKey = await crypto.subtle.importKey(
       'raw',
@@ -55,7 +55,7 @@ class EncryptionService {
       { name: 'PBKDF2' },
       false,
       ['deriveBits', 'deriveKey']
-    )
+    );
 
     return crypto.subtle.deriveKey(
       {
@@ -68,64 +68,64 @@ class EncryptionService {
       { name: ALGORITHM_NAME, length: this.config.keyLength },
       false,
       ['encrypt', 'decrypt']
-    )
+    );
   }
 
   private generateRandomBytes(length: number): Uint8Array {
-    return crypto.getRandomValues(new Uint8Array(length))
+    return crypto.getRandomValues(new Uint8Array(length));
   }
 
   private arrayBufferToBase64(buffer: ArrayBuffer | Uint8Array): string {
-    const bytes = buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer)
-    let binary = ''
+    const bytes = buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer);
+    let binary = '';
     for (let i = 0; i < bytes.byteLength; i++) {
-      binary += String.fromCharCode(bytes[i])
+      binary += String.fromCharCode(bytes[i]);
     }
-    return btoa(binary)
+    return btoa(binary);
   }
 
   private base64ToArrayBuffer(base64: string): Uint8Array {
-    const binary = atob(base64)
-    const bytes = new Uint8Array(binary.length)
+    const binary = atob(base64);
+    const bytes = new Uint8Array(binary.length);
     for (let i = 0; i < binary.length; i++) {
-      bytes[i] = binary.charCodeAt(i)
+      bytes[i] = binary.charCodeAt(i);
     }
-    return bytes
+    return bytes;
   }
 
   async initialize(password: string): Promise<void> {
-    const salt = this.generateRandomBytes(this.config.saltLength)
-    this.key = await this.generateKeyFromPassword(password, salt)
-    
-    const storedSalt = localStorage.getItem('__enc_salt__')
+    const salt = this.generateRandomBytes(this.config.saltLength);
+    this.key = await this.generateKeyFromPassword(password, salt);
+
+    const storedSalt = localStorage.getItem('__enc_salt__');
     if (!storedSalt) {
-      localStorage.setItem('__enc_salt__', this.arrayBufferToBase64(salt))
+      localStorage.setItem('__enc_salt__', this.arrayBufferToBase64(salt));
     }
   }
 
   async initializeWithStoredKey(): Promise<boolean> {
-    const storedSalt = localStorage.getItem('__enc_salt__')
+    const storedSalt = localStorage.getItem('__enc_salt__');
     if (!storedSalt) {
-      return false
+      return false;
     }
 
-    const storedKey = localStorage.getItem('__enc_key__')
+    const storedKey = localStorage.getItem('__enc_key__');
     if (!storedKey) {
-      return false
+      return false;
     }
 
     try {
-      const keyBuffer = this.base64ToArrayBuffer(storedKey)
+      const keyBuffer = this.base64ToArrayBuffer(storedKey);
       this.key = await crypto.subtle.importKey(
         'raw',
         keyBuffer.buffer as ArrayBuffer,
         { name: ALGORITHM_NAME },
         false,
         ['encrypt', 'decrypt']
-      )
-      return true
+      );
+      return true;
     } catch {
-      return false
+      return false;
     }
   }
 
@@ -134,152 +134,152 @@ class EncryptionService {
       { name: ALGORITHM_NAME, length: this.config.keyLength },
       true,
       ['encrypt', 'decrypt']
-    )
+    );
 
-    const exportedKey = await crypto.subtle.exportKey('raw', this.key)
-    localStorage.setItem('__enc_key__', this.arrayBufferToBase64(exportedKey))
+    const exportedKey = await crypto.subtle.exportKey('raw', this.key);
+    localStorage.setItem('__enc_key__', this.arrayBufferToBase64(exportedKey));
   }
 
   isInitialized(): boolean {
-    return this.key !== null
+    return this.key !== null;
   }
 
   async encrypt(plaintext: string): Promise<EncryptedData> {
     if (!this.key) {
-      throw new Error('Encryption service not initialized')
+      throw new Error('Encryption service not initialized');
     }
 
-    const encoder = new TextEncoder()
-    const data = encoder.encode(plaintext)
+    const encoder = new TextEncoder();
+    const data = encoder.encode(plaintext);
 
-    const iv = this.generateRandomBytes(this.config.ivLength)
-    const salt = this.generateRandomBytes(this.config.saltLength)
+    const iv = this.generateRandomBytes(this.config.ivLength);
+    const salt = this.generateRandomBytes(this.config.saltLength);
 
     const ciphertext = await crypto.subtle.encrypt(
       { name: ALGORITHM_NAME, iv: iv.buffer as ArrayBuffer },
       this.key,
       data
-    )
+    );
 
     return {
       ciphertext: this.arrayBufferToBase64(ciphertext),
       iv: this.arrayBufferToBase64(iv),
       salt: this.arrayBufferToBase64(salt),
-    }
+    };
   }
 
   async decrypt(encryptedData: EncryptedData): Promise<string> {
     if (!this.key) {
-      throw new Error('Encryption service not initialized')
+      throw new Error('Encryption service not initialized');
     }
 
-    const ciphertext = this.base64ToArrayBuffer(encryptedData.ciphertext)
-    const iv = this.base64ToArrayBuffer(encryptedData.iv)
+    const ciphertext = this.base64ToArrayBuffer(encryptedData.ciphertext);
+    const iv = this.base64ToArrayBuffer(encryptedData.iv);
 
     const decrypted = await crypto.subtle.decrypt(
       { name: ALGORITHM_NAME, iv: iv.buffer as ArrayBuffer },
       this.key,
       ciphertext.buffer as ArrayBuffer
-    )
+    );
 
-    const decoder = new TextDecoder()
-    return decoder.decode(decrypted)
+    const decoder = new TextDecoder();
+    return decoder.decode(decrypted);
   }
 
   async encryptObject<T>(obj: T): Promise<EncryptedData> {
-    const json = JSON.stringify(obj)
-    return this.encrypt(json)
+    const json = JSON.stringify(obj);
+    return this.encrypt(json);
   }
 
   async decryptObject<T>(encryptedData: EncryptedData): Promise<T> {
-    const json = await this.decrypt(encryptedData)
-    return JSON.parse(json) as T
+    const json = await this.decrypt(encryptedData);
+    return JSON.parse(json) as T;
   }
 
   async encryptForStorage(key: string, value: string): Promise<void> {
-    const encrypted = await this.encrypt(value)
-    localStorage.setItem(`__enc_${key}__`, JSON.stringify(encrypted))
+    const encrypted = await this.encrypt(value);
+    localStorage.setItem(`__enc_${key}__`, JSON.stringify(encrypted));
   }
 
   async decryptFromStorage(key: string): Promise<string | null> {
-    const stored = localStorage.getItem(`__enc_${key}__`)
+    const stored = localStorage.getItem(`__enc_${key}__`);
     if (!stored) {
-      return null
+      return null;
     }
 
     try {
-      const encrypted: EncryptedData = JSON.parse(stored)
-      return await this.decrypt(encrypted)
+      const encrypted: EncryptedData = JSON.parse(stored);
+      return await this.decrypt(encrypted);
     } catch {
-      return null
+      return null;
     }
   }
 
   async encryptObjectForStorage<T>(key: string, obj: T): Promise<void> {
-    const encrypted = await this.encryptObject(obj)
-    localStorage.setItem(`__enc_${key}__`, JSON.stringify(encrypted))
+    const encrypted = await this.encryptObject(obj);
+    localStorage.setItem(`__enc_${key}__`, JSON.stringify(encrypted));
   }
 
   async decryptObjectFromStorage<T>(key: string): Promise<T | null> {
-    const stored = localStorage.getItem(`__enc_${key}__`)
+    const stored = localStorage.getItem(`__enc_${key}__`);
     if (!stored) {
-      return null
+      return null;
     }
 
     try {
-      const encrypted: EncryptedData = JSON.parse(stored)
-      return await this.decryptObject<T>(encrypted)
+      const encrypted: EncryptedData = JSON.parse(stored);
+      return await this.decryptObject<T>(encrypted);
     } catch {
-      return null
+      return null;
     }
   }
 
   removeFromStorage(key: string): void {
-    localStorage.removeItem(`__enc_${key}__`)
+    localStorage.removeItem(`__enc_${key}__`);
   }
 
   clearAllEncryptedData(): void {
-    const keysToRemove: string[] = []
+    const keysToRemove: string[] = [];
     for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i)
+      const key = localStorage.key(i);
       if (key?.startsWith('__enc_')) {
-        keysToRemove.push(key)
+        keysToRemove.push(key);
       }
     }
-    keysToRemove.forEach(key => localStorage.removeItem(key))
+    keysToRemove.forEach((key) => localStorage.removeItem(key));
   }
 
   async hashPassword(password: string): Promise<string> {
-    const encoder = new TextEncoder()
-    const data = encoder.encode(password)
-    const hashBuffer = await crypto.subtle.digest(HASH_ALGORITHM, data)
-    return this.arrayBufferToBase64(hashBuffer)
+    const encoder = new TextEncoder();
+    const data = encoder.encode(password);
+    const hashBuffer = await crypto.subtle.digest(HASH_ALGORITHM, data);
+    return this.arrayBufferToBase64(hashBuffer);
   }
 
   async verifyPassword(password: string, storedHash: string): Promise<boolean> {
-    const hash = await this.hashPassword(password)
-    return hash === storedHash
+    const hash = await this.hashPassword(password);
+    return hash === storedHash;
   }
 
   async generateSecureRandom(length: number = 32): Promise<string> {
-    const bytes = this.generateRandomBytes(length)
-    return this.arrayBufferToBase64(bytes)
+    const bytes = this.generateRandomBytes(length);
+    return this.arrayBufferToBase64(bytes);
   }
 }
 
-export const encryptionService = new EncryptionService()
+export const encryptionService = new EncryptionService();
 
 export async function initializeEncryption(password?: string): Promise<void> {
   if (password) {
-    await encryptionService.initialize(password)
+    await encryptionService.initialize(password);
   } else {
-    const hasKey = await encryptionService.initializeWithStoredKey()
+    const hasKey = await encryptionService.initializeWithStoredKey();
     if (!hasKey) {
-      await encryptionService.generateAndStoreKey()
+      await encryptionService.generateAndStoreKey();
     }
   }
 }
 
 export function isEncryptionReady(): boolean {
-  return encryptionService.isInitialized()
+  return encryptionService.isInitialized();
 }

@@ -11,26 +11,21 @@
  * @tags service,conflict,merge,sync,critical
  */
 
-import {
-  ConflictType,
-} from '../types/sync'
-import type {
-  ConflictInfo,
-  SyncOperation,
-} from '../types/sync'
+import { ConflictType } from '../types/sync';
+import type { ConflictInfo, SyncOperation } from '../types/sync';
 
 /**
  * 冲突检测策略
  */
 export interface ConflictDetectionStrategy {
   /** 检测方法名称 */
-  name: string
+  name: string;
   /** 检测函数 */
-  detect: (local: Record<string, unknown>, server: Record<string, unknown>) => boolean
+  detect: (local: Record<string, unknown>, server: Record<string, unknown>) => boolean;
   /** 冲突类型 */
-  type: ConflictType
+  type: ConflictType;
   /** 优先级 */
-  priority: number
+  priority: number;
 }
 
 /**
@@ -38,14 +33,14 @@ export interface ConflictDetectionStrategy {
  */
 export interface ConflictResolutionStrategy {
   /** 解决方法名称 */
-  name: string
+  name: string;
   /** 解决函数 */
   resolve: (
     local: Record<string, unknown>,
     server: Record<string, unknown>
-  ) => Record<string, unknown>
+  ) => Record<string, unknown>;
   /** 描述 */
-  description: string
+  description: string;
 }
 
 /**
@@ -53,16 +48,16 @@ export interface ConflictResolutionStrategy {
  * 检测和解决数据同步冲突
  */
 export class ConflictResolutionService {
-  private static instance: ConflictResolutionService
+  private static instance: ConflictResolutionService;
 
   // 冲突检测策略
-  private detectionStrategies: ConflictDetectionStrategy[] = []
+  private detectionStrategies: ConflictDetectionStrategy[] = [];
 
   // 冲突解决策略
-  private resolutionStrategies: Map<ConflictType, ConflictResolutionStrategy[]> = new Map()
+  private resolutionStrategies: Map<ConflictType, ConflictResolutionStrategy[]> = new Map();
 
   private constructor() {
-    this.initializeStrategies()
+    this.initializeStrategies();
   }
 
   /**
@@ -70,9 +65,9 @@ export class ConflictResolutionService {
    */
   static getInstance(): ConflictResolutionService {
     if (!ConflictResolutionService.instance) {
-      ConflictResolutionService.instance = new ConflictResolutionService()
+      ConflictResolutionService.instance = new ConflictResolutionService();
     }
-    return ConflictResolutionService.instance
+    return ConflictResolutionService.instance;
   }
 
   /**
@@ -83,93 +78,98 @@ export class ConflictResolutionService {
     this.registerDetectionStrategy({
       name: 'version-conflict',
       detect: (local, server) => {
-        const localVersion = local.version as number
-        const serverVersion = server.version as number
-        return localVersion !== undefined && serverVersion !== undefined && localVersion !== serverVersion
+        const localVersion = local.version as number;
+        const serverVersion = server.version as number;
+        return (
+          localVersion !== undefined &&
+          serverVersion !== undefined &&
+          localVersion !== serverVersion
+        );
       },
       type: ConflictType.VERSION,
       priority: 1,
-    })
+    });
 
     this.registerDetectionStrategy({
       name: 'content-conflict',
       detect: (local, server) => {
-        const localCopy = { ...local }
-        const serverCopy = { ...server }
-        delete localCopy.updatedAt
-        delete serverCopy.updatedAt
-        const localContent = JSON.stringify(localCopy)
-        const serverContent = JSON.stringify(serverCopy)
-        return localContent !== serverContent
+        const localCopy = { ...local };
+        const serverCopy = { ...server };
+        delete localCopy.updatedAt;
+        delete serverCopy.updatedAt;
+        const localContent = JSON.stringify(localCopy);
+        const serverContent = JSON.stringify(serverCopy);
+        return localContent !== serverContent;
       },
       type: ConflictType.CONTENT,
       priority: 2,
-    })
+    });
 
     this.registerDetectionStrategy({
       name: 'concurrent-edit',
       detect: (local, server) => {
-        const localUpdatedAt = local.updatedAt as number
-        const serverUpdatedAt = server.updatedAt as number
+        const localUpdatedAt = local.updatedAt as number;
+        const serverUpdatedAt = server.updatedAt as number;
         if (!localUpdatedAt || !serverUpdatedAt) {
-          return false
+          return false;
         }
-        const timeDiff = Math.abs(localUpdatedAt - serverUpdatedAt)
-        return timeDiff < 1000
+        const timeDiff = Math.abs(localUpdatedAt - serverUpdatedAt);
+        return timeDiff < 1000;
       },
       type: ConflictType.CONCURRENT_EDIT,
       priority: 3,
-    })
+    });
 
     // 注册解决策略
     this.registerResolutionStrategy(ConflictType.VERSION, {
       name: 'latest-version',
       resolve: (local, server) => {
-        const localVersion = local.version as number
-        const serverVersion = server.version as number
-        return localVersion > serverVersion ? local : server
+        const localVersion = local.version as number;
+        const serverVersion = server.version as number;
+        return localVersion > serverVersion ? local : server;
       },
       description: '使用最新版本',
-    })
+    });
 
     this.registerResolutionStrategy(ConflictType.VERSION, {
       name: 'merge-version',
       resolve: (local, server) => {
         // 简单合并策略
-        const merged = { ...local, ...server }
-        merged.version = Math.max((local.version as number) || 0, (server.version as number) || 0) + 1
-        merged.updatedAt = Date.now()
-        return merged
+        const merged = { ...local, ...server };
+        merged.version =
+          Math.max((local.version as number) || 0, (server.version as number) || 0) + 1;
+        merged.updatedAt = Date.now();
+        return merged;
       },
       description: '合并版本',
-    })
+    });
 
     this.registerResolutionStrategy(ConflictType.CONTENT, {
       name: 'latest-timestamp',
       resolve: (local, server) => {
-        const localUpdatedAt = local.updatedAt as number
-        const serverUpdatedAt = server.updatedAt as number
-        return localUpdatedAt > serverUpdatedAt ? local : server
+        const localUpdatedAt = local.updatedAt as number;
+        const serverUpdatedAt = server.updatedAt as number;
+        return localUpdatedAt > serverUpdatedAt ? local : server;
       },
       description: '使用最新时间戳的版本',
-    })
+    });
 
     this.registerResolutionStrategy(ConflictType.CONCURRENT_EDIT, {
       name: 'local-priority',
       resolve: (local) => {
-        return local
+        return local;
       },
       description: '优先使用本地版本',
-    })
+    });
   }
 
   /**
    * 注册检测策略
    */
   registerDetectionStrategy(strategy: ConflictDetectionStrategy): void {
-    this.detectionStrategies.push(strategy)
+    this.detectionStrategies.push(strategy);
     // 按优先级排序
-    this.detectionStrategies.sort((a, b) => a.priority - b.priority)
+    this.detectionStrategies.sort((a, b) => a.priority - b.priority);
   }
 
   /**
@@ -180,9 +180,9 @@ export class ConflictResolutionService {
     strategy: ConflictResolutionStrategy
   ): void {
     if (!this.resolutionStrategies.has(conflictType)) {
-      this.resolutionStrategies.set(conflictType, [])
+      this.resolutionStrategies.set(conflictType, []);
     }
-    this.resolutionStrategies.get(conflictType)!.push(strategy)
+    this.resolutionStrategies.get(conflictType)!.push(strategy);
   }
 
   /**
@@ -192,7 +192,7 @@ export class ConflictResolutionService {
     operation: SyncOperation,
     serverData: Record<string, unknown>
   ): ConflictInfo | null {
-    const { localData, resourceType, resourceId, timestamp } = operation
+    const { localData, resourceType, resourceId, timestamp } = operation;
 
     // 按优先级检测冲突
     for (const strategy of this.detectionStrategies) {
@@ -217,11 +217,11 @@ export class ConflictResolutionService {
           description: this.getConflictDescription(strategy.type, localData, serverData),
           suggestedResolution: this.getSuggestedResolution(strategy.type),
           autoResolve: this.canAutoResolve(strategy.type),
-        }
+        };
       }
     }
 
-    return null
+    return null;
   }
 
   /**
@@ -234,17 +234,17 @@ export class ConflictResolutionService {
   ): string {
     switch (type) {
       case ConflictType.VERSION:
-        return `版本冲突: 本地版本 ${local.version} vs 服务器版本 ${server.version}`
+        return `版本冲突: 本地版本 ${local.version} vs 服务器版本 ${server.version}`;
       case ConflictType.CONTENT:
-        return '内容冲突: 本地和服务器的内容不一致'
+        return '内容冲突: 本地和服务器的内容不一致';
       case ConflictType.CONCURRENT_EDIT:
-        return '并发编辑: 检测到同时编辑'
+        return '并发编辑: 检测到同时编辑';
       case ConflictType.DELETE_CONFLICT:
-        return '删除冲突: 一方删除了资源，另一方修改了资源'
+        return '删除冲突: 一方删除了资源，另一方修改了资源';
       case ConflictType.REFERENCE:
-        return '引用冲突: 资源被其他资源引用'
+        return '引用冲突: 资源被其他资源引用';
       default:
-        return '未知冲突类型'
+        return '未知冲突类型';
     }
   }
 
@@ -254,13 +254,13 @@ export class ConflictResolutionService {
   private getSuggestedResolution(type: ConflictType): 'local' | 'server' | 'merge' {
     switch (type) {
       case ConflictType.VERSION:
-        return 'merge'
+        return 'merge';
       case ConflictType.CONTENT:
-        return 'server'
+        return 'server';
       case ConflictType.CONCURRENT_EDIT:
-        return 'local'
+        return 'local';
       default:
-        return 'server'
+        return 'server';
     }
   }
 
@@ -269,7 +269,7 @@ export class ConflictResolutionService {
    */
   private canAutoResolve(type: ConflictType): boolean {
     // 某些冲突类型可以自动解决
-    return type === ConflictType.VERSION || type === ConflictType.CONCURRENT_EDIT
+    return type === ConflictType.VERSION || type === ConflictType.CONCURRENT_EDIT;
   }
 
   /**
@@ -280,33 +280,33 @@ export class ConflictResolutionService {
     resolution: 'local' | 'server' | 'merge',
     strategyName?: string
   ): Promise<Record<string, unknown>> {
-    let resolvedData: Record<string, unknown>
+    let resolvedData: Record<string, unknown>;
 
     switch (resolution) {
       case 'local':
-        resolvedData = conflict.localVersion.data
-        break
+        resolvedData = conflict.localVersion.data;
+        break;
       case 'server':
-        resolvedData = conflict.serverVersion.data
-        break
+        resolvedData = conflict.serverVersion.data;
+        break;
       case 'merge':
         // 使用指定的合并策略，或默认合并策略
-        const strategies = this.resolutionStrategies.get(conflict.type) || []
+        const strategies = this.resolutionStrategies.get(conflict.type) || [];
         const strategy = strategyName
           ? strategies.find((s) => s.name === strategyName)
-          : strategies.find((s) => s.name.includes('merge'))
+          : strategies.find((s) => s.name.includes('merge'));
         if (strategy) {
-          resolvedData = strategy.resolve(conflict.localVersion.data, conflict.serverVersion.data)
+          resolvedData = strategy.resolve(conflict.localVersion.data, conflict.serverVersion.data);
         } else {
           // 默认合并
-          resolvedData = this.defaultMerge(conflict.localVersion.data, conflict.serverVersion.data)
+          resolvedData = this.defaultMerge(conflict.localVersion.data, conflict.serverVersion.data);
         }
-        break
+        break;
       default:
-        throw new Error(`不支持的解决方式: ${resolution}`)
+        throw new Error(`不支持的解决方式: ${resolution}`);
     }
 
-    return resolvedData
+    return resolvedData;
   }
 
   /**
@@ -316,12 +316,12 @@ export class ConflictResolutionService {
     local: Record<string, unknown>,
     server: Record<string, unknown>
   ): Record<string, unknown> {
-    const merged: Record<string, unknown> = { ...local, ...server }
+    const merged: Record<string, unknown> = { ...local, ...server };
 
-    merged.version = Math.max((local.version as number) || 0, (server.version as number) || 0) + 1
-    merged.updatedAt = Date.now()
+    merged.version = Math.max((local.version as number) || 0, (server.version as number) || 0) + 1;
+    merged.updatedAt = Date.now();
 
-    return merged
+    return merged;
   }
 
   /**
@@ -329,11 +329,11 @@ export class ConflictResolutionService {
    */
   async autoResolveConflict(conflict: ConflictInfo): Promise<Record<string, unknown>> {
     if (!conflict.autoResolve) {
-      throw new Error('此冲突不能自动解决，需要手动选择')
+      throw new Error('此冲突不能自动解决，需要手动选择');
     }
 
     // 使用建议的解决方式
-    return this.resolveConflict(conflict, conflict.suggestedResolution)
+    return this.resolveConflict(conflict, conflict.suggestedResolution);
   }
 
   /**
@@ -343,26 +343,26 @@ export class ConflictResolutionService {
     operations: SyncOperation[],
     serverDataMap: Map<string, Record<string, unknown>>
   ): ConflictInfo[] {
-    const conflicts: ConflictInfo[] = []
+    const conflicts: ConflictInfo[] = [];
 
     operations.forEach((operation) => {
-      const serverData = serverDataMap.get(operation.resourceId)
+      const serverData = serverDataMap.get(operation.resourceId);
       if (serverData) {
-        const conflict = this.detectConflict(operation, serverData)
+        const conflict = this.detectConflict(operation, serverData);
         if (conflict) {
-          conflicts.push(conflict)
+          conflicts.push(conflict);
         }
       }
-    })
+    });
 
-    return conflicts
+    return conflicts;
   }
 
   /**
    * 获取可用的解决策略
    */
   getAvailableResolutions(conflictType: ConflictType): ConflictResolutionStrategy[] {
-    return this.resolutionStrategies.get(conflictType) || []
+    return this.resolutionStrategies.get(conflictType) || [];
   }
 
   /**
@@ -372,40 +372,40 @@ export class ConflictResolutionService {
     local: Record<string, unknown>,
     server: Record<string, unknown>
   ): {
-    added: Record<string, unknown>
-    removed: Record<string, unknown>
-    modified: Record<string, { local: unknown; server: unknown }>
+    added: Record<string, unknown>;
+    removed: Record<string, unknown>;
+    modified: Record<string, { local: unknown; server: unknown }>;
   } {
-    const added: Record<string, unknown> = {}
-    const removed: Record<string, unknown> = {}
-    const modified: Record<string, { local: unknown; server: unknown }> = {}
+    const added: Record<string, unknown> = {};
+    const removed: Record<string, unknown> = {};
+    const modified: Record<string, { local: unknown; server: unknown }> = {};
 
-    const allKeys = new Set([...Object.keys(local), ...Object.keys(server)])
+    const allKeys = new Set([...Object.keys(local), ...Object.keys(server)]);
 
     allKeys.forEach((key) => {
-      const localValue = local[key]
-      const serverValue = server[key]
+      const localValue = local[key];
+      const serverValue = server[key];
 
       if (localValue === undefined) {
-        added[key] = serverValue
+        added[key] = serverValue;
       } else if (serverValue === undefined) {
-        removed[key] = localValue
+        removed[key] = localValue;
       } else if (localValue !== serverValue) {
-        modified[key] = { local: localValue, server: serverValue }
+        modified[key] = { local: localValue, server: serverValue };
       }
-    })
+    });
 
-    return { added, removed, modified }
+    return { added, removed, modified };
   }
 
   /**
    * 获取冲突统计
    */
   getConflictStatistics(): {
-    totalConflicts: number
-    byType: Record<ConflictType, number>
-    autoResolved: number
-    manuallyResolved: number
+    totalConflicts: number;
+    byType: Record<ConflictType, number>;
+    autoResolved: number;
+    manuallyResolved: number;
   } {
     // 这里简化实现，实际应该从存储中读取统计
     return {
@@ -419,6 +419,6 @@ export class ConflictResolutionService {
       },
       autoResolved: 0,
       manuallyResolved: 0,
-    }
+    };
   }
 }

@@ -13,115 +13,115 @@
  * @tags service,security,csrf,protection
  */
 
-const CSRF_TOKEN_KEY = 'yyc3_csrf_token'
-const CSRF_TOKEN_LENGTH = 32
-const CSRF_TOKEN_EXPIRY = 3600000 // 1 hour in milliseconds
+const CSRF_TOKEN_KEY = 'yyc3_csrf_token';
+const CSRF_TOKEN_LENGTH = 32;
+const CSRF_TOKEN_EXPIRY = 3600000; // 1 hour in milliseconds
 
 interface CSRFToken {
-  token: string
-  createdAt: number
-  expiresAt: number
+  token: string;
+  createdAt: number;
+  expiresAt: number;
 }
 
 class CSRFService {
-  private token: CSRFToken | null = null
+  private token: CSRFToken | null = null;
 
   constructor() {
-    this.loadToken()
+    this.loadToken();
   }
 
   private generateToken(): string {
-    const array = new Uint8Array(CSRF_TOKEN_LENGTH)
-    crypto.getRandomValues(array)
-    return Array.from(array, (byte) => byte.toString(16).padStart(2, '0')).join('')
+    const array = new Uint8Array(CSRF_TOKEN_LENGTH);
+    crypto.getRandomValues(array);
+    return Array.from(array, (byte) => byte.toString(16).padStart(2, '0')).join('');
   }
 
   private loadToken(): void {
     try {
-      const stored = localStorage.getItem(CSRF_TOKEN_KEY)
+      const stored = localStorage.getItem(CSRF_TOKEN_KEY);
       if (stored) {
-        const parsed = JSON.parse(stored) as CSRFToken
+        const parsed = JSON.parse(stored) as CSRFToken;
         if (parsed && parsed.expiresAt > Date.now()) {
-          this.token = parsed
-          return
+          this.token = parsed;
+          return;
         }
       }
     } catch (error) {
-      console.warn('[CSRF] Failed to load token from storage:', error)
+      console.warn('[CSRF] Failed to load token from storage:', error);
     }
-    this.generateNewToken()
+    this.generateNewToken();
   }
 
   private saveToken(): void {
     if (this.token) {
       try {
-        localStorage.setItem(CSRF_TOKEN_KEY, JSON.stringify(this.token))
+        localStorage.setItem(CSRF_TOKEN_KEY, JSON.stringify(this.token));
       } catch (error) {
-        console.warn('[CSRF] Failed to save token to storage:', error)
+        console.warn('[CSRF] Failed to save token to storage:', error);
       }
     }
   }
 
   generateNewToken(): string {
-    const now = Date.now()
+    const now = Date.now();
     this.token = {
       token: this.generateToken(),
       createdAt: now,
       expiresAt: now + CSRF_TOKEN_EXPIRY,
-    }
-    this.saveToken()
-    return this.token.token
+    };
+    this.saveToken();
+    return this.token.token;
   }
 
   getToken(): string {
     if (!this.token || this.token.expiresAt <= Date.now()) {
-      return this.generateNewToken()
+      return this.generateNewToken();
     }
-    return this.token.token
+    return this.token.token;
   }
 
   validateToken(tokenToValidate: string): boolean {
     if (!this.token) {
-      return false
+      return false;
     }
 
     if (this.token.expiresAt <= Date.now()) {
-      this.generateNewToken()
-      return false
+      this.generateNewToken();
+      return false;
     }
 
-    return this.token.token === tokenToValidate
+    return this.token.token === tokenToValidate;
   }
 
   clearToken(): void {
-    this.token = null
+    this.token = null;
     try {
-      localStorage.removeItem(CSRF_TOKEN_KEY)
+      localStorage.removeItem(CSRF_TOKEN_KEY);
     } catch (error) {
-      console.warn('[CSRF] Failed to clear token from storage:', error)
+      console.warn('[CSRF] Failed to clear token from storage:', error);
     }
   }
 
   getTokenInfo(): CSRFToken | null {
-    return this.token ? { ...this.token } : null
+    return this.token ? { ...this.token } : null;
   }
 
   isTokenExpiringSoon(thresholdMs: number = 300000): boolean {
     if (!this.token) {
-      return true
+      return true;
     }
-    return this.token.expiresAt - Date.now() < thresholdMs
+    return this.token.expiresAt - Date.now() < thresholdMs;
   }
 
   refreshTokenIfNeeded(): string {
     if (this.isTokenExpiringSoon()) {
-      return this.generateNewToken()
+      return this.generateNewToken();
     }
-    return this.getToken()
+    return this.getToken();
   }
 }
 
-export const csrfService = new CSRFService()
+export const csrfService = new CSRFService();
 
 export function withCSRFToken<T extends Record<string, unknown>>(
   data: T,
@@ -130,7 +130,7 @@ export function withCSRFToken<T extends Record<string, unknown>>(
   return {
     ...data,
     [tokenKey]: csrfService.getToken(),
-  }
+  };
 }
 
 export function createCSRFHeaders(
@@ -140,7 +140,7 @@ export function createCSRFHeaders(
   return {
     ...headers,
     [tokenHeader]: csrfService.getToken(),
-  }
+  };
 }
 
 export async function fetchWithCSRF(
@@ -148,11 +148,11 @@ export async function fetchWithCSRF(
   options: RequestInit = {},
   tokenHeader: string = 'X-CSRF-Token'
 ): Promise<Response> {
-  const headers = new Headers(options.headers || {})
-  headers.set(tokenHeader, csrfService.getToken())
+  const headers = new Headers(options.headers || {});
+  headers.set(tokenHeader, csrfService.getToken());
 
   return fetch(url, {
     ...options,
     headers,
-  })
+  });
 }

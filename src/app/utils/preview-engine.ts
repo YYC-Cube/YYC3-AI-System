@@ -17,52 +17,60 @@
 
 /* ── Types ── */
 export type PreviewLanguage =
-  | 'html' | 'css' | 'javascript' | 'typescript'
-  | 'react' | 'vue' | 'markdown' | 'svg' | 'canvas' | 'json'
+  | 'html'
+  | 'css'
+  | 'javascript'
+  | 'typescript'
+  | 'react'
+  | 'vue'
+  | 'markdown'
+  | 'svg'
+  | 'canvas'
+  | 'json';
 
-export type PreviewMode = 'realtime' | 'manual' | 'delayed' | 'smart'
+export type PreviewMode = 'realtime' | 'manual' | 'delayed' | 'smart';
 
 export type PreviewDevice = {
-  id: string
-  name: string
-  width: number
-  height: number
-  ua?: string
-}
+  id: string;
+  name: string;
+  width: number;
+  height: number;
+  ua?: string;
+};
 
 export interface ConsoleEntry {
-  id: string
-  type: 'log' | 'warn' | 'error' | 'info'
-  message: string
-  timestamp: number
+  id: string;
+  type: 'log' | 'warn' | 'error' | 'info';
+  message: string;
+  timestamp: number;
 }
 
 export interface PreviewError {
-  type: 'compile' | 'runtime' | 'timeout' | 'sandbox' | 'memory'
-  message: string
-  line?: number
-  column?: number
-  stack?: string
+  type: 'compile' | 'runtime' | 'timeout' | 'sandbox' | 'memory';
+  message: string;
+  line?: number;
+  column?: number;
+  stack?: string;
 }
 
 export interface PreviewMetrics {
-  compileTime: number
-  renderTime: number
-  totalTime: number
-  codeSize: number
-  elementCount: number
-  updateCount: number
-  lastUpdate: number
+  compileTime: number;
+  renderTime: number;
+  totalTime: number;
+  codeSize: number;
+  elementCount: number;
+  updateCount: number;
+  lastUpdate: number;
 }
 
 export interface HistoryEntry {
-  id: string
-  code: string
-  language: PreviewLanguage
-  html: string
-  timestamp: number
-  device: string
-  metrics: PreviewMetrics
+  id: string;
+  code: string;
+  language: PreviewLanguage;
+  html: string;
+  timestamp: number;
+  device: string;
+  metrics: PreviewMetrics;
 }
 
 /* ── Default Devices ── */
@@ -75,57 +83,64 @@ export const PREVIEW_DEVICES: PreviewDevice[] = [
   { id: 'mobile-se', name: 'iPhone SE', width: 375, height: 667 },
   { id: 'mobile-pro', name: 'iPhone 14 Pro Max', width: 430, height: 932 },
   { id: 'android', name: 'Pixel 7', width: 412, height: 915 },
-]
+];
 
 /* ── Language detection ── */
 export function detectLanguage(filename: string, code: string): PreviewLanguage {
-  const ext = filename.split('.').pop()?.toLowerCase()
-  if (ext === 'html' || ext === 'htm') return 'html'
-  if (ext === 'css' || ext === 'scss' || ext === 'less') return 'css'
-  if (ext === 'md' || ext === 'mdx') return 'markdown'
-  if (ext === 'svg') return 'svg'
-  if (ext === 'json') return 'json'
-  if (ext === 'vue') return 'vue'
-  if (ext === 'tsx' || ext === 'jsx') return 'react'
-  if (ext === 'ts') return 'typescript'
-  if (ext === 'js') return 'javascript'
+  const ext = filename.split('.').pop()?.toLowerCase();
+  if (ext === 'html' || ext === 'htm') return 'html';
+  if (ext === 'css' || ext === 'scss' || ext === 'less') return 'css';
+  if (ext === 'md' || ext === 'mdx') return 'markdown';
+  if (ext === 'svg') return 'svg';
+  if (ext === 'json') return 'json';
+  if (ext === 'vue') return 'vue';
+  if (ext === 'tsx' || ext === 'jsx') return 'react';
+  if (ext === 'ts') return 'typescript';
+  if (ext === 'js') return 'javascript';
   // Content-based detection
-  if (code.includes('import React') || code.includes('from \'react\'') || code.includes('useState')) return 'react'
-  if (code.includes('<!DOCTYPE') || code.includes('<html')) return 'html'
-  if (code.includes('# ') && code.includes('\n')) return 'markdown'
-  if (code.includes('<svg')) return 'svg'
-  if (code.includes('canvas.getContext') || code.includes('CanvasRenderingContext')) return 'canvas'
-  return 'javascript'
+  if (code.includes('import React') || code.includes("from 'react'") || code.includes('useState'))
+    return 'react';
+  if (code.includes('<!DOCTYPE') || code.includes('<html')) return 'html';
+  if (code.includes('# ') && code.includes('\n')) return 'markdown';
+  if (code.includes('<svg')) return 'svg';
+  if (code.includes('canvas.getContext') || code.includes('CanvasRenderingContext'))
+    return 'canvas';
+  return 'javascript';
 }
 
 /* ── Markdown → HTML (simple) ── */
 function markdownToHtml(md: string): string {
-  let html = md
+  let html = md;
   // Headers
-  html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>')
-  html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>')
-  html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>')
+  html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+  html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+  html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
   // Bold/italic
-  html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-  html = html.replace(/\*(.+?)\*/g, '<em>$1</em>')
+  html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
   // Code blocks
-  html = html.replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code class="language-$1">$2</code></pre>')
+  html = html.replace(/```(\w*)\n([\s\S]*?)```/g, '<pre><code class="language-$1">$2</code></pre>');
   // Inline code
-  html = html.replace(/`(.+?)`/g, '<code>$1</code>')
+  html = html.replace(/`(.+?)`/g, '<code>$1</code>');
   // Lists
-  html = html.replace(/^- (.+)$/gm, '<li>$1</li>')
-  html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
+  html = html.replace(/^- (.+)$/gm, '<li>$1</li>');
+  html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
   // Links
-  html = html.replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2">$1</a>')
+  html = html.replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2">$1</a>');
   // Paragraphs
-  html = html.replace(/\n\n/g, '</p><p>')
-  html = `<p>${html}</p>`
-  html = html.replace(/<p><\/p>/g, '')
-  return html
+  html = html.replace(/\n\n/g, '</p><p>');
+  html = `<p>${html}</p>`;
+  html = html.replace(/<p><\/p>/g, '');
+  return html;
 }
 
 /* ── Base HTML template for iframe ── */
-function createBaseHtml(bodyContent: string, styles: string = '', scripts: string = '', isDark: boolean = true): string {
+function createBaseHtml(
+  bodyContent: string,
+  styles: string = '',
+  scripts: string = '',
+  isDark: boolean = true
+): string {
   return `<!DOCTYPE html>
 <html lang="en" class="${isDark ? 'dark' : ''}">
 <head>
@@ -188,15 +203,19 @@ setTimeout(function() {
 </script>
 ${scripts}
 </body>
-</html>`
+</html>`;
 }
 
 /* ── Compile code to iframe HTML ── */
-export function compileToHtml(code: string, language: PreviewLanguage, isDark: boolean): { html: string; error: PreviewError | null } {
+export function compileToHtml(
+  code: string,
+  language: PreviewLanguage,
+  isDark: boolean
+): { html: string; error: PreviewError | null } {
   try {
     switch (language) {
       case 'html':
-        return { html: createBaseHtml(code, '', '', isDark), error: null }
+        return { html: createBaseHtml(code, '', '', isDark), error: null };
 
       case 'css':
         return {
@@ -210,17 +229,19 @@ export function compileToHtml(code: string, language: PreviewLanguage, isDark: b
               <div class="demo-grid"><div>A</div><div>B</div><div>C</div><div>D</div></div>
             </div>`,
             `.css-preview { padding: 20px; } .demo-box { width: 100px; height: 100px; background: #6366f1; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; color: white; margin: 8px; } .demo-btn { padding: 8px 16px; border: none; border-radius: 6px; background: #818cf8; color: white; cursor: pointer; margin: 8px; } .demo-text { margin: 12px 0; } .demo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; } .demo-grid div { padding: 16px; background: rgba(99,102,241,0.15); border-radius: 6px; text-align: center; } ${code}`,
-            '', isDark
+            '',
+            isDark
           ),
-          error: null
-        }
+          error: null,
+        };
 
       case 'javascript':
       case 'typescript':
         return {
           html: createBaseHtml(
             '<div id="app"></div><div id="output" style="padding: 16px; font-family: monospace; font-size: 13px; white-space: pre-wrap;"></div>',
-            '', `<script>
+            '',
+            `<script>
 try {
   const __output = document.getElementById('output');
   const __origLog = console.log;
@@ -234,15 +255,16 @@ try {
   document.getElementById('output').innerHTML = '<div class="error-display"><div class="title">Runtime Error</div>' + e.message + '</div>';
   console.error(e.message);
 }
-</script>`, isDark
+</script>`,
+            isDark
           ),
-          error: null
-        }
+          error: null,
+        };
 
       case 'react': {
         // Simulated React rendering — show the component source with mock rendering
-        const componentMatch = code.match(/(?:export\s+)?(?:default\s+)?function\s+(\w+)/)
-        const componentName = componentMatch?.[1] || 'Component'
+        const componentMatch = code.match(/(?:export\s+)?(?:default\s+)?function\s+(\w+)/);
+        const componentName = componentMatch?.[1] || 'Component';
         return {
           html: createBaseHtml(
             `<div id="root" style="padding: 20px;">
@@ -265,10 +287,12 @@ try {
                 </div>
               </div>
             </div>`,
-            '', '', isDark
+            '',
+            '',
+            isDark
           ),
-          error: null
-        }
+          error: null,
+        };
       }
 
       case 'markdown':
@@ -276,25 +300,29 @@ try {
           html: createBaseHtml(
             `<article style="max-width:720px;margin:0 auto;padding:32px;">${markdownToHtml(code)}</article>`,
             'article h1 { border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.3em; } article h2 { border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.2em; }',
-            '', isDark
+            '',
+            isDark
           ),
-          error: null
-        }
+          error: null,
+        };
 
       case 'svg':
         return {
           html: createBaseHtml(
             `<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;">${code}</div>`,
-            'svg { max-width: 100%; height: auto; }', '', isDark
+            'svg { max-width: 100%; height: auto; }',
+            '',
+            isDark
           ),
-          error: null
-        }
+          error: null,
+        };
 
       case 'canvas':
         return {
           html: createBaseHtml(
             '<canvas id="canvas" width="600" height="400" style="border:1px solid rgba(255,255,255,0.1);border-radius:8px;display:block;margin:20px auto;"></canvas>',
-            '', `<script>
+            '',
+            `<script>
 try {
   const canvas = document.getElementById('canvas');
   const ctx = canvas.getContext('2d');
@@ -302,68 +330,89 @@ try {
 } catch(e) {
   document.body.innerHTML += '<div class="error-display"><div class="title">Canvas Error</div>' + e.message + '</div>';
 }
-</script>`, isDark
+</script>`,
+            isDark
           ),
-          error: null
-        }
+          error: null,
+        };
 
       case 'json':
         try {
-          const parsed = JSON.parse(code)
-          const formatted = JSON.stringify(parsed, null, 2)
+          const parsed = JSON.parse(code);
+          const formatted = JSON.stringify(parsed, null, 2);
           return {
             html: createBaseHtml(
               `<pre style="padding:20px;font-size:13px;"><code>${escapeHtml(formatted)}</code></pre>`,
-              '', '', isDark
+              '',
+              '',
+              isDark
             ),
-            error: null
-          }
+            error: null,
+          };
         } catch (e) {
           return {
             html: createBaseHtml(
               `<div class="error-display"><div class="title">JSON Parse Error</div>${(e as Error).message}</div>`,
-              '', '', isDark
+              '',
+              '',
+              isDark
             ),
-            error: { type: 'compile', message: (e as Error).message }
-          }
+            error: { type: 'compile', message: (e as Error).message },
+          };
         }
 
       default:
         return {
-          html: createBaseHtml(`<pre style="padding:20px;font-size:13px;"><code>${escapeHtml(code)}</code></pre>`, '', '', isDark),
-          error: null
-        }
+          html: createBaseHtml(
+            `<pre style="padding:20px;font-size:13px;"><code>${escapeHtml(code)}</code></pre>`,
+            '',
+            '',
+            isDark
+          ),
+          error: null,
+        };
     }
   } catch (err) {
     const error: PreviewError = {
       type: 'compile',
       message: (err as Error).message || 'Unknown compilation error',
-    }
+    };
     return {
       html: createBaseHtml(
         `<div class="error-display"><div class="title">Compilation Error</div>${escapeHtml(error.message)}</div>`,
-        '', '', isDark
+        '',
+        '',
+        isDark
       ),
       error,
-    }
+    };
   }
 }
 
 function escapeHtml(str: string): string {
-  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
 
 /* ── Debounce utility ── */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function debounce<T extends (...args: any[]) => any>(fn: T, ms: number): T & { cancel: () => void } {
-  let timer: ReturnType<typeof setTimeout> | null = null
+export function debounce<T extends (...args: any[]) => any>(
+  fn: T,
+  ms: number
+): T & { cancel: () => void } {
+  let timer: ReturnType<typeof setTimeout> | null = null;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const debounced = ((...args: any[]) => {
-    if (timer) clearTimeout(timer)
-    timer = setTimeout(() => fn(...args), ms)
-  }) as T & { cancel: () => void }
-  debounced.cancel = () => { if (timer) clearTimeout(timer) }
-  return debounced
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), ms);
+  }) as T & { cancel: () => void };
+  debounced.cancel = () => {
+    if (timer) clearTimeout(timer);
+  };
+  return debounced;
 }
 
 /* ── Mock code samples for demo ── */
@@ -627,4 +676,4 @@ ctx.fillText('YYC\u00B3 Canvas Preview', 180, 380);`,
     "realtime": "Yjs CRDT + WebSocket"
   }
 }`,
-}
+};

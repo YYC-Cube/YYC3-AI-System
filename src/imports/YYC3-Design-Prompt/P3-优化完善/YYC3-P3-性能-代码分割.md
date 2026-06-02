@@ -13,6 +13,7 @@ tags: p3,performance,code-splitting
 ## 策略
 
 ### 1. Route-based Splitting
+
 ```typescript
 const Home = React.lazy(() => import('./pages/Home'));
 const Editor = React.lazy(() => import('./pages/Editor'));
@@ -20,10 +21,12 @@ const Settings = React.lazy(() => import('./pages/Settings'));
 const Database = React.lazy(() => import('./pages/Database'));
 const Collaboration = React.lazy(() => import('./pages/Collaboration'));
 ```
+
 - 每个路由页面独立 chunk
 - Suspense fallback 加载指示器
 
 ### 2. Vendor Chunks (vite.config.ts)
+
 ```typescript
 manualChunks: {
   'react-vendor': ['react', 'react-dom', 'react-router-dom'],
@@ -36,6 +39,7 @@ manualChunks: {
 ```
 
 ### 3. Dynamic Import (按需加载)
+
 ```typescript
 // 重型模块按需加载
 const MonacoEditor = React.lazy(() => import('./editor/MonacoEditor'));
@@ -45,6 +49,7 @@ const TerminalPanel = React.lazy(() => import('./panels/TerminalPanel'));
 ```
 
 ### 4. Prefetch 策略
+
 ```typescript
 // 预加载可能需要的模块
 const prefetchEditor = () => import('./editor/MonacoEditor');
@@ -53,6 +58,7 @@ const prefetchEditor = () => import('./editor/MonacoEditor');
 ```
 
 ## 构建优化
+
 - chunkSizeWarningLimit: 1000KB
 - minify: terser (drop_console/debugger)
 - sourcemap: true (production 可选关闭)

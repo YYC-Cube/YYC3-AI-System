@@ -11,72 +11,72 @@
  * @tags app,react,main-component,entry-point
  */
 
-import { useEffect } from 'react'
-import { RouterProvider } from 'react-router'
-import { Toaster } from 'sonner'
+import { useEffect } from 'react';
+import { RouterProvider } from 'react-router';
+import { Toaster } from 'sonner';
 
-import { ErrorBoundary } from './components/ErrorBoundary'
-import { router } from './routes'
-import { syncAIModelsToAppStore } from './services/settings-integration'
-import { useAppStore } from './store'
-import { getThemeTokens } from './utils/theme'
+import { ErrorBoundary } from './components/ErrorBoundary';
+import { router } from './routes';
+import { syncAIModelsToAppStore } from './services/settings-integration';
+import { useAppStore } from './store';
+import { getThemeTokens } from './utils/theme';
 
 export default function App() {
-  const theme = useAppStore((s) => s.theme)
-  const customThemeConfig = useAppStore((s) => s.customThemeConfig)
+  const theme = useAppStore((s) => s.theme);
+  const customThemeConfig = useAppStore((s) => s.customThemeConfig);
 
   // Sync AI models from aiProviderService on app mount
   useEffect(() => {
-    syncAIModelsToAppStore()
-  }, [])
+    syncAIModelsToAppStore();
+  }, []);
 
   // Apply dark class for Tailwind
   useEffect(() => {
-    const t = getThemeTokens(theme)
+    const t = getThemeTokens(theme);
     if (t.isDark) {
-      document.documentElement.classList.add('dark')
+      document.documentElement.classList.add('dark');
     } else {
-      document.documentElement.classList.remove('dark')
+      document.documentElement.classList.remove('dark');
     }
-  }, [theme])
+  }, [theme]);
 
   // Apply customThemeConfig colors to CSS variables for runtime override
   useEffect(() => {
-    if (!customThemeConfig) return
-    const root = document.documentElement
-    const c = customThemeConfig.colors
-    const f = customThemeConfig.fonts
-    const r = customThemeConfig.radius
+    if (!customThemeConfig) return;
+    const root = document.documentElement;
+    const c = customThemeConfig.colors;
+    const f = customThemeConfig.fonts;
+    const r = customThemeConfig.radius;
 
     if (c) {
-      if (c.primary) root.style.setProperty('--yyc3-primary', c.primary)
-      if (c.secondary) root.style.setProperty('--yyc3-secondary', c.secondary)
-      if (c.accent) root.style.setProperty('--yyc3-accent', c.accent)
-      if (c.background) root.style.setProperty('--yyc3-background', c.background)
-      if (c.card) root.style.setProperty('--yyc3-card', c.card)
-      if (c.border) root.style.setProperty('--yyc3-border', c.border)
+      if (c.primary) root.style.setProperty('--yyc3-primary', c.primary);
+      if (c.secondary) root.style.setProperty('--yyc3-secondary', c.secondary);
+      if (c.accent) root.style.setProperty('--yyc3-accent', c.accent);
+      if (c.background) root.style.setProperty('--yyc3-background', c.background);
+      if (c.card) root.style.setProperty('--yyc3-card', c.card);
+      if (c.border) root.style.setProperty('--yyc3-border', c.border);
       // Derived alpha shades for glass effects
       if (c.primary) {
-        root.style.setProperty('--yyc3-primary-10', c.primary + '1a')
-        root.style.setProperty('--yyc3-primary-20', c.primary + '33')
+        root.style.setProperty('--yyc3-primary-10', c.primary + '1a');
+        root.style.setProperty('--yyc3-primary-20', c.primary + '33');
       }
       if (c.accent) {
-        root.style.setProperty('--yyc3-accent-10', c.accent + '1a')
-        root.style.setProperty('--yyc3-accent-20', c.accent + '33')
+        root.style.setProperty('--yyc3-accent-10', c.accent + '1a');
+        root.style.setProperty('--yyc3-accent-20', c.accent + '33');
       }
     }
     if (f) {
-      if (f.sans) root.style.setProperty('--yyc3-font-sans', f.sans)
-      if (f.mono) root.style.setProperty('--yyc3-font-mono', f.mono)
+      if (f.sans) root.style.setProperty('--yyc3-font-sans', f.sans);
+      if (f.mono) root.style.setProperty('--yyc3-font-mono', f.mono);
     }
     if (r) {
-      if (r.sm) root.style.setProperty('--yyc3-radius-sm', r.sm)
-      if (r.md) root.style.setProperty('--yyc3-radius-md', r.md)
-      if (r.lg) root.style.setProperty('--yyc3-radius-lg', r.lg)
+      if (r.sm) root.style.setProperty('--yyc3-radius-sm', r.sm);
+      if (r.md) root.style.setProperty('--yyc3-radius-md', r.md);
+      if (r.lg) root.style.setProperty('--yyc3-radius-lg', r.lg);
     }
-  }, [customThemeConfig])
+  }, [customThemeConfig]);
 
-  const t = getThemeTokens(theme)
+  const t = getThemeTokens(theme);
 
   return (
     <ErrorBoundary showDetails={process.env.NODE_ENV === 'development'}>
@@ -127,5 +127,5 @@ export default function App() {
         }
       `}</style>
     </ErrorBoundary>
-  )
+  );
 }

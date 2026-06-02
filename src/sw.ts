@@ -11,26 +11,26 @@
  * @tags service-worker,pwa,cache,offline,critical
  */
 
-import { CacheableResponsePlugin } from 'workbox-cacheable-response'
+import { CacheableResponsePlugin } from 'workbox-cacheable-response';
 import {
   precacheAndRoute,
   cleanupOutdatedCaches,
   createHandlerBoundToURL,
-} from 'workbox-precaching'
-import { registerRoute, NavigationRoute } from 'workbox-routing'
+} from 'workbox-precaching';
+import { registerRoute, NavigationRoute } from 'workbox-routing';
 import {
   StaleWhileRevalidate,
   NetworkFirst,
   CacheFirst,
   ExpirationPlugin,
-} from 'workbox-strategies'
+} from 'workbox-strategies';
 
 // ============================================================
 // Service Worker版本管理
 // ============================================================
 
-const SW_VERSION = '1.0.1'
-const CACHE_VERSION = 'v1'
+const SW_VERSION = '1.0.1';
+const CACHE_VERSION = 'v1';
 
 // ============================================================
 // 缓存配置常量
@@ -46,7 +46,7 @@ const CACHE_NAMES = {
   API: 'api-cache-v1',
   AI_API: 'ai-api-cache-v1',
   CONFIG: 'config-cache-v1',
-}
+};
 
 // ============================================================
 // 预缓存配置
@@ -58,7 +58,7 @@ const PRECACHE_URLS = [
   '/',
   '/index.html',
   // 预缓存将在构建时通过workbox-precaching注入
-]
+];
 
 // ============================================================
 // Service Worker生命周期
@@ -69,7 +69,7 @@ const PRECACHE_URLS = [
  * 预缓存关键资源
  */
 self.addEventListener('install', (event) => {
-  console.log(`[YYC³ SW] Installing version ${SW_VERSION}`)
+  console.log(`[YYC³ SW] Installing version ${SW_VERSION}`);
 
   // 预缓存关键资源
   event.waitUntil(
@@ -78,22 +78,22 @@ self.addEventListener('install', (event) => {
       precacheAndRoute(self.__WB_MANIFEST || PRECACHE_URLS),
       // 创建API缓存
       caches.open(`${CACHE_VERSION}-api`).then((cache) => {
-        console.log('[YYC³ SW] API cache created')
+        console.log('[YYC³ SW] API cache created');
       }),
     ]).then(() => {
-      console.log('[YYC³ SW] Installation complete')
+      console.log('[YYC³ SW] Installation complete');
       // 立即激活新的Service Worker
-      return self.skipWaiting()
+      return self.skipWaiting();
     })
-  )
-})
+  );
+});
 
 /**
  * Service Worker激活事件
  * 清理旧缓存
  */
 self.addEventListener('activate', (event) => {
-  console.log(`[YYC³ SW] Activating version ${SW_VERSION}`)
+  console.log(`[YYC³ SW] Activating version ${SW_VERSION}`);
 
   event.waitUntil(
     Promise.all([
@@ -104,24 +104,21 @@ self.addEventListener('activate', (event) => {
         return Promise.all(
           cacheNames
             .filter((cacheName) => {
-              return (
-                cacheName.startsWith('yyc3-') &&
-                !cacheName.includes(CACHE_VERSION)
-              )
+              return cacheName.startsWith('yyc3-') && !cacheName.includes(CACHE_VERSION);
             })
             .map((cacheName) => {
-              console.log(`[YYC³ SW] Deleting old cache: ${cacheName}`)
-              return caches.delete(cacheName)
+              console.log(`[YYC³ SW] Deleting old cache: ${cacheName}`);
+              return caches.delete(cacheName);
             })
-        )
+        );
       }),
     ]).then(() => {
-      console.log('[YYC³ SW] Activation complete')
+      console.log('[YYC³ SW] Activation complete');
       // 立即控制所有客户端
-      return self.clients.claim()
+      return self.clients.claim();
     })
-  )
-})
+  );
+});
 
 // ============================================================
 // 消息处理
@@ -132,26 +129,27 @@ self.addEventListener('activate', (event) => {
  */
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
-    console.log('[YYC³ SW] Skip waiting requested')
-    self.skipWaiting()
+    console.log('[YYC³ SW] Skip waiting requested');
+    self.skipWaiting();
   }
 
   if (event.data && event.data.type === 'GET_VERSION') {
-    event.ports[0].postMessage({ version: SW_VERSION })
+    event.ports[0].postMessage({ version: SW_VERSION });
   }
 
   if (event.data && event.data.type === 'CLEAR_CACHE') {
     event.waitUntil(
-      caches.keys().then((cacheNames) => {
-        return Promise.all(
-          cacheNames.map((cacheName) => caches.delete(cacheName))
-        )
-      }).then(() => {
-        event.ports[0].postMessage({ success: true })
-      })
-    )
+      caches
+        .keys()
+        .then((cacheNames) => {
+          return Promise.all(cacheNames.map((cacheName) => caches.delete(cacheName)));
+        })
+        .then(() => {
+          event.ports[0].postMessage({ success: true });
+        })
+    );
   }
-})
+});
 
 // ============================================================
 // 缓存策略配置
@@ -167,7 +165,7 @@ registerRoute(
       url.hostname.includes('cdn.jsdelivr.net') ||
       url.hostname.includes('unpkg.com') ||
       url.hostname.includes('cdnjs.cloudflare.com')
-    )
+    );
   },
   new CacheFirst({
     cacheName: CACHE_NAMES.CDN,
@@ -182,7 +180,7 @@ registerRoute(
       }),
     ],
   })
-)
+);
 
 /**
  * 2. Monaco Editor - Cache-First策略（长期缓存30天）
@@ -194,7 +192,7 @@ registerRoute(
       url.pathname.includes('monaco-editor') ||
       url.pathname.includes('/node_modules/monaco-editor') ||
       url.href.includes('monaco')
-    )
+    );
   },
   new CacheFirst({
     cacheName: CACHE_NAMES.MONACO,
@@ -209,7 +207,7 @@ registerRoute(
       }),
     ],
   })
-)
+);
 
 /**
  * 3. 图片资源 - Cache-First策略（长期缓存30天）
@@ -220,7 +218,7 @@ registerRoute(
     return (
       request.destination === 'image' ||
       /\.(png|jpg|jpeg|svg|gif|webp|avif|ico)$/i.test(request.url)
-    )
+    );
   },
   new CacheFirst({
     cacheName: CACHE_NAMES.IMAGE,
@@ -235,7 +233,7 @@ registerRoute(
       }),
     ],
   })
-)
+);
 
 /**
  * 4. 字体资源 - Cache-First策略（永久缓存365天）
@@ -243,10 +241,7 @@ registerRoute(
  */
 registerRoute(
   ({ request }) => {
-    return (
-      request.destination === 'font' ||
-      /\.(woff|woff2|ttf|eot|otf)$/i.test(request.url)
-    )
+    return request.destination === 'font' || /\.(woff|woff2|ttf|eot|otf)$/i.test(request.url);
   },
   new CacheFirst({
     cacheName: CACHE_NAMES.FONT,
@@ -261,7 +256,7 @@ registerRoute(
       }),
     ],
   })
-)
+);
 
 /**
  * 5. 静态资源（JS/CSS） - Cache-First策略（缓存7天）
@@ -269,7 +264,7 @@ registerRoute(
  */
 registerRoute(
   ({ request }) => {
-    return /\.(js|css)$/i.test(request.url)
+    return /\.(js|css)$/i.test(request.url);
   },
   new CacheFirst({
     cacheName: CACHE_NAMES.STATIC,
@@ -284,7 +279,7 @@ registerRoute(
       }),
     ],
   })
-)
+);
 
 /**
  * 6. AI API请求 - Network-First策略（缓存15分钟，5秒超时）
@@ -308,14 +303,14 @@ registerRoute(
         cacheWillUpdate: async ({ request, response }) => {
           // 只缓存成功的GET请求
           if (request.method !== 'GET' || !response || response.status !== 200) {
-            return null
+            return null;
           }
-          return response
+          return response;
         },
       },
     ],
   })
-)
+);
 
 /**
  * 7. 普通API请求 - Network-First策略（缓存5分钟，3秒超时）
@@ -323,7 +318,7 @@ registerRoute(
  */
 registerRoute(
   ({ url }) => {
-    return url.pathname.startsWith('/api/') && !url.pathname.startsWith('/api/ai/')
+    return url.pathname.startsWith('/api/') && !url.pathname.startsWith('/api/ai/');
   },
   new NetworkFirst({
     cacheName: CACHE_NAMES.API,
@@ -341,14 +336,14 @@ registerRoute(
         cacheWillUpdate: async ({ request, response }) => {
           // 只缓存成功的GET请求
           if (request.method !== 'GET' || !response || response.status !== 200) {
-            return null
+            return null;
           }
-          return response
+          return response;
         },
       },
     ],
   })
-)
+);
 
 /**
  * 8. 配置文件 - Stale-While-Revalidate策略（缓存1小时）
@@ -369,7 +364,7 @@ registerRoute(
       }),
     ],
   })
-)
+);
 
 /**
  * 导航请求: Network-First策略
@@ -385,10 +380,10 @@ const navigationHandler = new NetworkFirst({
       },
     },
   ],
-})
+});
 
-const navigationRoute = new NavigationRoute(navigationHandler)
-registerRoute(navigationRoute)
+const navigationRoute = new NavigationRoute(navigationHandler);
+registerRoute(navigationRoute);
 
 // ============================================================
 // 工具函数
@@ -398,41 +393,41 @@ registerRoute(navigationRoute)
  * 获取缓存统计信息
  */
 async function getCacheStats() {
-  const cacheNames = await caches.keys()
+  const cacheNames = await caches.keys();
   const stats = {
     totalCaches: cacheNames.length,
     caches: [] as Array<{ name: string; size: number }>,
-  }
+  };
 
   for (const cacheName of cacheNames) {
-    const cache = await caches.open(cacheName)
-    const keys = await cache.keys()
-    let size = 0
+    const cache = await caches.open(cacheName);
+    const keys = await cache.keys();
+    let size = 0;
 
     for (const request of keys) {
-      const response = await cache.match(request)
+      const response = await cache.match(request);
       if (response) {
-        const blob = await response.blob()
-        size += blob.size
+        const blob = await response.blob();
+        size += blob.size;
       }
     }
 
     stats.caches.push({
       name: cacheName,
       size,
-    })
+    });
   }
 
-  return stats
+  return stats;
 }
 
 /**
  * 清理所有缓存
  */
 async function clearAllCaches() {
-  const cacheNames = await caches.keys()
-  await Promise.all(cacheNames.map((name) => caches.delete(name)))
-  console.log('[YYC³ SW] All caches cleared')
+  const cacheNames = await caches.keys();
+  await Promise.all(cacheNames.map((name) => caches.delete(name)));
+  console.log('[YYC³ SW] All caches cleared');
 }
 
 // ============================================================
@@ -445,7 +440,7 @@ async function clearAllCaches() {
  */
 registerRoute(
   ({ url }) => {
-    return url.pathname.startsWith('/offline.html')
+    return url.pathname.startsWith('/offline.html');
   },
   new CacheFirst({
     cacheName: `${CACHE_VERSION}-offline`,
@@ -457,7 +452,7 @@ registerRoute(
       },
     ],
   })
-)
+);
 
 /**
  * 创建离线回送页面(如果不存在)
@@ -466,18 +461,18 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(`${CACHE_VERSION}-offline`).then((cache) => {
       return cache.add('/offline.html').catch(() => {
-        console.warn('[YYC³ SW] Offline page not found, skipping')
-      })
+        console.warn('[YYC³ SW] Offline page not found, skipping');
+      });
     })
-  )
-})
+  );
+});
 
 // ============================================================
 // 导出Service Worker信息
 // ============================================================
 
 // 导出版本信息,用于客户端检查
-self.__SW_VERSION__ = SW_VERSION
-self.__CACHE_VERSION__ = CACHE_VERSION
+self.__SW_VERSION__ = SW_VERSION;
+self.__CACHE_VERSION__ = CACHE_VERSION;
 
-console.log(`[YYC³ SW] Service Worker ${SW_VERSION} loaded`)
+console.log(`[YYC³ SW] Service Worker ${SW_VERSION} loaded`);

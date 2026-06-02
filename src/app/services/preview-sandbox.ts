@@ -19,67 +19,75 @@
 // ═════════════════════════════════════════════════════
 
 export interface ConsoleEntry {
-  level: 'log' | 'warn' | 'error' | 'info' | 'debug'
-  message: string
-  timestamp: number
+  level: 'log' | 'warn' | 'error' | 'info' | 'debug';
+  message: string;
+  timestamp: number;
 }
 
 export interface PreviewMetrics {
-  renderTime: number
-  fps: number
-  memoryUsage: number
+  renderTime: number;
+  fps: number;
+  memoryUsage: number;
 }
 
 export interface PreviewDevice {
-  id: string
-  name: string
-  width: number
-  height: number
-  pixelRatio: number
+  id: string;
+  name: string;
+  width: number;
+  height: number;
+  pixelRatio: number;
 }
 
-export type PreviewMode = 'realtime' | 'manual' | 'delayed' | 'smart'
-export type PreviewLanguage = 'html' | 'css' | 'javascript' | 'react' | 'markdown' | 'svg' | 'canvas' | 'json'
+export type PreviewMode = 'realtime' | 'manual' | 'delayed' | 'smart';
+export type PreviewLanguage =
+  | 'html'
+  | 'css'
+  | 'javascript'
+  | 'react'
+  | 'markdown'
+  | 'svg'
+  | 'canvas'
+  | 'json';
 
 export interface SandboxConfig {
   /** Code to render */
-  code: string
+  code: string;
   /** Language: html, css, javascript, react, markdown, svg, canvas, json */
-  language: string
+  language: string;
   /** Preview mode */
-  mode: PreviewMode
+  mode: PreviewMode;
   /** Debounce delay in ms */
-  delay: number
+  delay: number;
   /** Device configuration */
-  device: PreviewDevice
+  device: PreviewDevice;
   /** Enable console capture */
-  captureConsole: boolean
+  captureConsole: boolean;
   /** Enable error boundary */
-  enableErrorBoundary: boolean
+  enableErrorBoundary: boolean;
   /** Enable performance monitoring */
-  enablePerformance: boolean
+  enablePerformance: boolean;
 }
 
 export interface SandboxResult {
   /** Generated HTML */
-  html: string
+  html: string;
   /** Errors */
-  errors: PreviewError[]
+  errors: PreviewError[];
   /** Console entries */
-  console: ConsoleEntry[]
+  console: ConsoleEntry[];
   /** Performance metrics */
-  metrics: PreviewMetrics
+  metrics: PreviewMetrics;
   /** Bundle size in bytes */
-  bundleSize: number
+  bundleSize: number;
 }
 
 export interface PreviewError {
-  type: 'syntax' | 'runtime' | 'security' | 'network'
-  message: string
-  line?: number
-  column?: number
-  stack?: string
-  timestamp: number
+  type: 'syntax' | 'runtime' | 'security' | 'network';
+  message: string;
+  line?: number;
+  column?: number;
+  stack?: string;
+  timestamp: number;
 }
 
 // ═════════════════════════════════════════════════════
@@ -87,80 +95,80 @@ export interface PreviewError {
 // ═════════════════════════════════════════════════════
 
 class PreviewSandboxService {
-  private iframe: HTMLIFrameElement | null = null
-  private consoleBuffer: ConsoleEntry[] = []
-  private errorBuffer: PreviewError[] = []
-  private hotReloadTimer: number | null = null
-  private observers: Map<string, Set<Function>> = new Map()
+  private iframe: HTMLIFrameElement | null = null;
+  private consoleBuffer: ConsoleEntry[] = [];
+  private errorBuffer: PreviewError[] = [];
+  private hotReloadTimer: number | null = null;
+  private observers: Map<string, Set<Function>> = new Map();
 
   /**
    * Create sandbox iframe
    */
   createSandbox(container: HTMLElement): HTMLIFrameElement {
     // Remove existing iframe
-    const existing = container.querySelector('iframe')
+    const existing = container.querySelector('iframe');
     if (existing) {
-      existing.remove()
+      existing.remove();
     }
 
     // Create new iframe with sandbox attributes
-    const iframe = document.createElement('iframe')
-    iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-modals')
-    iframe.style.width = '100%'
-    iframe.style.height = '100%'
-    iframe.style.border = 'none'
-    iframe.style.background = 'transparent'
-    
-    container.appendChild(iframe)
-    this.iframe = iframe
+    const iframe = document.createElement('iframe');
+    iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-modals');
+    iframe.style.width = '100%';
+    iframe.style.height = '100%';
+    iframe.style.border = 'none';
+    iframe.style.background = 'transparent';
+
+    container.appendChild(iframe);
+    this.iframe = iframe;
 
     // Setup console capture
-    this.setupConsoleCapture(iframe)
-    
-    // Setup error boundary
-    this.setupErrorBoundary(iframe)
+    this.setupConsoleCapture(iframe);
 
-    return iframe
+    // Setup error boundary
+    this.setupErrorBoundary(iframe);
+
+    return iframe;
   }
 
   /**
    * Render code in sandbox
    */
   async render(config: SandboxConfig): Promise<SandboxResult> {
-    const startTime = performance.now()
-    
+    const startTime = performance.now();
+
     try {
       // Compile code to HTML
-      const html = await this.compileCode(config)
-      
+      const html = await this.compileCode(config);
+
       // Update iframe
-      this.updateContent(html)
-      
+      this.updateContent(html);
+
       // Calculate metrics
-      const metrics = this.calculateMetrics(startTime)
-      
+      const metrics = this.calculateMetrics(startTime);
+
       return {
         html,
         errors: [...this.errorBuffer],
         console: [...this.consoleBuffer],
         metrics,
         bundleSize: new Blob([html]).size,
-      }
+      };
     } catch (error) {
       const previewError: PreviewError = {
         type: 'runtime',
         message: error instanceof Error ? error.message : 'Unknown error',
         timestamp: Date.now(),
-      }
-      this.errorBuffer.push(previewError)
-      
+      };
+      this.errorBuffer.push(previewError);
+
       return {
         html: '',
         errors: [previewError],
         console: [],
         metrics: { renderTime: 0, fps: 0, memoryUsage: 0 },
         bundleSize: 0,
-      }
+      };
     }
   }
 
@@ -168,40 +176,40 @@ class PreviewSandboxService {
    * Hot reload - update content without full refresh
    */
   hotReload(changes: { file: string; code: string }): void {
-    if (!this.iframe) return
+    if (!this.iframe) return;
 
-    console.log('[PreviewSandbox] Hot reload:', changes.file)
-    
+    console.log('[PreviewSandbox] Hot reload:', changes.file);
+
     // Debounce hot reload
     if (this.hotReloadTimer) {
-      window.clearTimeout(this.hotReloadTimer)
+      window.clearTimeout(this.hotReloadTimer);
     }
 
     this.hotReloadTimer = window.setTimeout(() => {
-      this.injectCode(changes.code)
-      this.notifyObservers('hotReload', { file: changes.file, timestamp: Date.now() })
-    }, 300)
+      this.injectCode(changes.code);
+      this.notifyObservers('hotReload', { file: changes.file, timestamp: Date.now() });
+    }, 300);
   }
 
   /**
    * Inject CSS/JS without full reload
    */
   private injectCode(code: string): void {
-    if (!this.iframe?.contentDocument) return
+    if (!this.iframe?.contentDocument) return;
 
-    const doc = this.iframe.contentDocument
-    
+    const doc = this.iframe.contentDocument;
+
     // Detect code type
     if (code.includes('{') && code.includes('}')) {
       // CSS
-      const style = doc.createElement('style')
-      style.textContent = code
-      doc.head.appendChild(style)
+      const style = doc.createElement('style');
+      style.textContent = code;
+      doc.head.appendChild(style);
     } else {
       // JS
-      const script = doc.createElement('script')
-      script.textContent = code
-      doc.body.appendChild(script)
+      const script = doc.createElement('script');
+      script.textContent = code;
+      doc.body.appendChild(script);
     }
   }
 
@@ -211,32 +219,32 @@ class PreviewSandboxService {
   private setupConsoleCapture(iframe: HTMLIFrameElement): void {
     // Listen for console messages from iframe
     window.addEventListener('message', (event) => {
-      if (event.source !== iframe.contentWindow) return
-      
+      if (event.source !== iframe.contentWindow) return;
+
       if (event.data?.type === 'console') {
         const entry: ConsoleEntry = {
           level: event.data.level,
           message: event.data.message,
           timestamp: Date.now(),
-        }
-        this.consoleBuffer.push(entry)
-        this.notifyObservers('console', entry)
+        };
+        this.consoleBuffer.push(entry);
+        this.notifyObservers('console', entry);
       }
-      
+
       if (event.data?.type === 'error') {
         const error: PreviewError = {
           type: 'runtime',
           message: event.data.message,
           timestamp: Date.now(),
-        }
-        this.errorBuffer.push(error)
-        this.notifyObservers('error', error)
+        };
+        this.errorBuffer.push(error);
+        this.notifyObservers('error', error);
       }
-      
+
       if (event.data?.type === 'metrics') {
-        this.notifyObservers('metrics', event.data.metrics)
+        this.notifyObservers('metrics', event.data.metrics);
       }
-    })
+    });
   }
 
   /**
@@ -250,45 +258,45 @@ class PreviewSandboxService {
         line: event instanceof ErrorEvent ? event.lineno : undefined,
         column: event instanceof ErrorEvent ? event.colno : undefined,
         timestamp: Date.now(),
-      }
-      this.errorBuffer.push(error)
-      this.notifyObservers('error', error)
-    })
+      };
+      this.errorBuffer.push(error);
+      this.notifyObservers('error', error);
+    });
   }
 
   /**
    * Compile code to HTML based on language
    */
   private async compileCode(config: SandboxConfig): Promise<string> {
-    const { code, language } = config
-    
+    const { code, language } = config;
+
     switch (language) {
       case 'html':
-        return this.compileHtml(code)
-      
+        return this.compileHtml(code);
+
       case 'css':
-        return this.compileCss(code)
-      
+        return this.compileCss(code);
+
       case 'javascript':
-        return this.compileJavaScript(code)
-      
+        return this.compileJavaScript(code);
+
       case 'react':
-        return this.compileReact(code)
-      
+        return this.compileReact(code);
+
       case 'markdown':
-        return this.compileMarkdown(code)
-      
+        return this.compileMarkdown(code);
+
       case 'svg':
-        return this.compileSvg(code)
-      
+        return this.compileSvg(code);
+
       case 'canvas':
-        return this.compileCanvas(code)
-      
+        return this.compileCanvas(code);
+
       case 'json':
-        return this.compileJson(code)
-      
+        return this.compileJson(code);
+
       default:
-        return this.compileHtml(code)
+        return this.compileHtml(code);
     }
   }
 
@@ -298,9 +306,9 @@ class PreviewSandboxService {
   private compileHtml(code: string): string {
     // Auto-add DOCTYPE if missing
     if (!code.trim().startsWith('<!DOCTYPE')) {
-      return `<!DOCTYPE html>\n${code}`
+      return `<!DOCTYPE html>\n${code}`;
     }
-    return code
+    return code;
   }
 
   /**
@@ -317,7 +325,7 @@ class PreviewSandboxService {
     <p>CSS Preview - Add HTML to see styles applied</p>
   </div>
 </body>
-</html>`
+</html>`;
   }
 
   /**
@@ -340,7 +348,7 @@ class PreviewSandboxService {
     }
   </script>
 </body>
-</html>`
+</html>`;
   }
 
   /**
@@ -378,7 +386,7 @@ class PreviewSandboxService {
     }
   </script>
 </body>
-</html>`
+</html>`;
   }
 
   /**
@@ -394,8 +402,8 @@ class PreviewSandboxService {
       .replace(/\*(.*)\*/gim, '<em>$1</em>')
       .replace(/\[(.*)\]\((.*)\)/gim, '<a href="$2">$1</a>')
       .replace(/`(.*?)`/gim, '<code>$1</code>')
-      .replace(/\n/gim, '<br>')
-    
+      .replace(/\n/gim, '<br>');
+
     return `<!DOCTYPE html>
 <html>
 <head>
@@ -410,7 +418,7 @@ class PreviewSandboxService {
 <body>
   ${html}
 </body>
-</html>`
+</html>`;
   }
 
   /**
@@ -429,7 +437,7 @@ class PreviewSandboxService {
 <body>
   ${code}
 </body>
-</html>`
+</html>`;
   }
 
   /**
@@ -459,7 +467,7 @@ class PreviewSandboxService {
     }
   </script>
 </body>
-</html>`
+</html>`;
   }
 
   /**
@@ -467,7 +475,7 @@ class PreviewSandboxService {
    */
   private compileJson(code: string): string {
     try {
-      const formatted = JSON.stringify(JSON.parse(code), null, 2)
+      const formatted = JSON.stringify(JSON.parse(code), null, 2);
       return `<!DOCTYPE html>
 <html>
 <head>
@@ -480,7 +488,7 @@ class PreviewSandboxService {
 <body>
   <pre>${formatted}</pre>
 </body>
-</html>`
+</html>`;
     } catch (error) {
       return `<!DOCTYPE html>
 <html>
@@ -494,7 +502,7 @@ class PreviewSandboxService {
   <h3>Invalid JSON</h3>
   <p>${error instanceof Error ? error.message : 'Unknown error'}</p>
 </body>
-</html>`
+</html>`;
     }
   }
 
@@ -502,28 +510,28 @@ class PreviewSandboxService {
    * Update iframe content
    */
   private updateContent(html: string): void {
-    if (!this.iframe) return
-    
-    const doc = this.iframe.contentDocument
-    if (!doc) return
-    
-    doc.open()
-    doc.write(html)
-    doc.close()
+    if (!this.iframe) return;
+
+    const doc = this.iframe.contentDocument;
+    if (!doc) return;
+
+    doc.open();
+    doc.write(html);
+    doc.close();
   }
 
   /**
    * Calculate performance metrics
    */
   private calculateMetrics(startTime: number): PreviewMetrics {
-    const renderTime = performance.now() - startTime
-    const perfWithMemory = performance as Performance & { memory?: { usedJSHeapSize: number } }
-    
+    const renderTime = performance.now() - startTime;
+    const perfWithMemory = performance as Performance & { memory?: { usedJSHeapSize: number } };
+
     return {
       renderTime,
       fps: renderTime > 0 ? Math.round(1000 / renderTime) : 0,
       memoryUsage: perfWithMemory.memory ? perfWithMemory.memory.usedJSHeapSize : 0,
-    }
+    };
   }
 
   /**
@@ -531,28 +539,28 @@ class PreviewSandboxService {
    */
   subscribe(event: string, callback: Function): () => void {
     if (!this.observers.has(event)) {
-      this.observers.set(event, new Set())
+      this.observers.set(event, new Set());
     }
-    this.observers.get(event)!.add(callback)
-    
+    this.observers.get(event)!.add(callback);
+
     return () => {
-      this.observers.get(event)?.delete(callback)
-    }
+      this.observers.get(event)?.delete(callback);
+    };
   }
 
   /**
    * Notify observers
    */
   private notifyObservers(event: string, data: unknown): void {
-    this.observers.get(event)?.forEach(callback => callback(data))
+    this.observers.get(event)?.forEach((callback) => callback(data));
   }
 
   /**
    * Clear buffers
    */
   clear(): void {
-    this.consoleBuffer = []
-    this.errorBuffer = []
+    this.consoleBuffer = [];
+    this.errorBuffer = [];
   }
 
   /**
@@ -560,13 +568,13 @@ class PreviewSandboxService {
    */
   destroy(): void {
     if (this.iframe) {
-      this.iframe.remove()
-      this.iframe = null
+      this.iframe.remove();
+      this.iframe = null;
     }
-    this.clear()
-    this.observers.clear()
+    this.clear();
+    this.observers.clear();
     if (this.hotReloadTimer) {
-      window.clearTimeout(this.hotReloadTimer)
+      window.clearTimeout(this.hotReloadTimer);
     }
   }
 }
@@ -575,5 +583,5 @@ class PreviewSandboxService {
 // Singleton Instance
 // ═════════════════════════════════════════════════════
 
-export const previewSandbox = new PreviewSandboxService()
-export default previewSandbox
+export const previewSandbox = new PreviewSandboxService();
+export default previewSandbox;

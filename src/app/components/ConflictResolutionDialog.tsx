@@ -11,26 +11,26 @@
  * @tags component,sync,conflict,ui
  */
 
-import * as LucideIcons from 'lucide-react'
-import React, { useState, useCallback, useEffect } from 'react'
+import * as LucideIcons from 'lucide-react';
+import React, { useState, useCallback, useEffect } from 'react';
 
-import { ConflictResolutionService } from '../../services/conflict-resolution-service'
-import { SyncQueueService } from '../../services/sync-queue-service'
-import { SyncOperationStatus } from '../../types/sync'
-import type { ConflictInfo } from '../../types/sync'
+import { ConflictResolutionService } from '../../services/conflict-resolution-service';
+import { SyncQueueService } from '../../services/sync-queue-service';
+import { SyncOperationStatus } from '../../types/sync';
+import type { ConflictInfo } from '../../types/sync';
 
 /**
  * 冲突解决对话框组件属性
  */
 interface ConflictResolutionDialogProps {
   /** 冲突信息 */
-  conflict: ConflictInfo
+  conflict: ConflictInfo;
   /** 解决成功回调 */
-  onResolved?: (resolvedData: Record<string, unknown>) => void
+  onResolved?: (resolvedData: Record<string, unknown>) => void;
   /** 取消回调 */
-  onCancelled?: () => void
+  onCancelled?: () => void;
   /** 是否显示 */
-  open?: boolean
+  open?: boolean;
 }
 
 /**
@@ -43,27 +43,27 @@ export function ConflictResolutionDialog({
   onCancelled,
   open = true,
 }: ConflictResolutionDialogProps) {
-  const [selectedResolution, setSelectedResolution] = useState<
-    'local' | 'server' | 'merge'
-  >(conflict.suggestedResolution)
+  const [selectedResolution, setSelectedResolution] = useState<'local' | 'server' | 'merge'>(
+    conflict.suggestedResolution
+  );
   const [selectedStrategy, setSelectedStrategy] = useState<string>(
     conflict.suggestedResolution === 'merge' ? 'merge-version' : ''
-  )
-  const [diffView, setDiffView] = useState(false)
-  const [previewData, setPreviewData] = useState<Record<string, unknown> | null>(null)
-  const [isResolving, setIsResolving] = useState(false)
+  );
+  const [diffView, setDiffView] = useState(false);
+  const [previewData, setPreviewData] = useState<Record<string, unknown> | null>(null);
+  const [isResolving, setIsResolving] = useState(false);
 
-  const resolutionService = ConflictResolutionService.getInstance()
-  const queueService = SyncQueueService.getInstance()
+  const resolutionService = ConflictResolutionService.getInstance();
+  const queueService = SyncQueueService.getInstance();
 
   // 获取可用的解决策略
-  const availableStrategies = resolutionService.getAvailableResolutions(conflict.type)
+  const availableStrategies = resolutionService.getAvailableResolutions(conflict.type);
 
   // 计算冲突差异
   const diff = resolutionService.getConflictDiff(
     conflict.localVersion.data,
     conflict.serverVersion.data
-  )
+  );
 
   /**
    * 预览解决结果
@@ -72,89 +72,96 @@ export function ConflictResolutionDialog({
     resolutionService
       .resolveConflict(conflict, selectedResolution, selectedStrategy)
       .then((data) => {
-        setPreviewData(data)
+        setPreviewData(data);
       })
       .catch((error) => {
-        console.error('预览解决结果失败:', error)
-      })
-  }, [conflict, selectedResolution, selectedStrategy, resolutionService])
+        console.error('预览解决结果失败:', error);
+      });
+  }, [conflict, selectedResolution, selectedStrategy, resolutionService]);
 
   /**
    * 确认解决冲突
    */
   const handleResolve = useCallback(async () => {
-    setIsResolving(true)
+    setIsResolving(true);
     try {
       const resolvedData = await resolutionService.resolveConflict(
         conflict,
         selectedResolution,
         selectedStrategy
-      )
+      );
 
       // 更新队列中的操作
-      const operation = queueService.getOperation(conflict.resourceId)
+      const operation = queueService.getOperation(conflict.resourceId);
       if (operation) {
-        operation.localData = resolvedData
-        await queueService.updateOperationStatus(operation.id, SyncOperationStatus.SYNCING, { localData: resolvedData })
+        operation.localData = resolvedData;
+        await queueService.updateOperationStatus(operation.id, SyncOperationStatus.SYNCING, {
+          localData: resolvedData,
+        });
       }
 
-      onResolved?.(resolvedData)
+      onResolved?.(resolvedData);
     } catch (error) {
-      console.error('解决冲突失败:', error)
+      console.error('解决冲突失败:', error);
     } finally {
-      setIsResolving(false)
+      setIsResolving(false);
     }
-  }, [conflict, selectedResolution, selectedStrategy, resolutionService, queueService, onResolved])
+  }, [conflict, selectedResolution, selectedStrategy, resolutionService, queueService, onResolved]);
 
   /**
    * 尝试自动解决
    */
   const handleAutoResolve = useCallback(async () => {
     if (!conflict.autoResolve) {
-      return
+      return;
     }
 
-    setIsResolving(true)
+    setIsResolving(true);
     try {
-      const resolvedData = await resolutionService.autoResolveConflict(conflict)
+      const resolvedData = await resolutionService.autoResolveConflict(conflict);
 
       // 更新队列中的操作
-      const operation = queueService.getOperation(conflict.resourceId)
+      const operation = queueService.getOperation(conflict.resourceId);
       if (operation) {
-        operation.localData = resolvedData
-        await queueService.updateOperationStatus(operation.id, SyncOperationStatus.SYNCING, { localData: resolvedData })
+        operation.localData = resolvedData;
+        await queueService.updateOperationStatus(operation.id, SyncOperationStatus.SYNCING, {
+          localData: resolvedData,
+        });
       }
 
-      onResolved?.(resolvedData)
+      onResolved?.(resolvedData);
     } catch (error) {
-      console.error('自动解决失败:', error)
+      console.error('自动解决失败:', error);
     } finally {
-      setIsResolving(false)
+      setIsResolving(false);
     }
-  }, [conflict, resolutionService, queueService, onResolved])
+  }, [conflict, resolutionService, queueService, onResolved]);
 
   /**
    * 格式化数据展示
    */
   const formatData = (data: Record<string, unknown>): string => {
-    return JSON.stringify(data, null, 2)
-  }
+    return JSON.stringify(data, null, 2);
+  };
 
   // 当选择变化时预览
   useEffect(() => {
-    previewResolution()
-  }, [selectedResolution, selectedStrategy, previewResolution])
+    previewResolution();
+  }, [selectedResolution, selectedStrategy, previewResolution]);
 
   // 初始预览
   useEffect(() => {
-    previewResolution()
-  }, [])
+    previewResolution();
+  }, []);
 
   if (!open) {
-    return null
+    return null;
   }
 
-  const Icons = LucideIcons as unknown as Record<string, React.ComponentType<{ className?: string }>>
+  const Icons = LucideIcons as unknown as Record<
+    string,
+    React.ComponentType<{ className?: string }>
+  >;
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -167,9 +174,7 @@ export function ConflictResolutionDialog({
             </div>
             <div>
               <h2 className="text-xl font-bold text-gray-900 dark:text-white">冲突检测</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                {conflict.description}
-              </p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{conflict.description}</p>
             </div>
           </div>
           <button
@@ -187,7 +192,9 @@ export function ConflictResolutionDialog({
             <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 border border-blue-200 dark:border-blue-800">
               <div className="flex items-center gap-2 mb-3">
                 <Icons.HardDrive className="w-4 h-4 text-blue-600" />
-                <span className="text-sm font-semibold text-blue-900 dark:text-blue-100">本地版本</span>
+                <span className="text-sm font-semibold text-blue-900 dark:text-blue-100">
+                  本地版本
+                </span>
                 <span className="text-xs text-blue-600 dark:text-blue-400">
                   v{conflict.localVersion.version}
                 </span>
@@ -206,7 +213,9 @@ export function ConflictResolutionDialog({
             <div className="bg-green-50 dark:bg-green-900/20 rounded-xl p-4 border border-green-200 dark:border-green-800">
               <div className="flex items-center gap-2 mb-3">
                 <Icons.Cloud className="w-4 h-4 text-green-600" />
-                <span className="text-sm font-semibold text-green-900 dark:text-green-100">服务器版本</span>
+                <span className="text-sm font-semibold text-green-900 dark:text-green-100">
+                  服务器版本
+                </span>
                 <span className="text-xs text-green-600 dark:text-green-400">
                   v{conflict.serverVersion.version}
                 </span>
@@ -232,9 +241,7 @@ export function ConflictResolutionDialog({
                     删除 ({Object.keys(diff.removed).length})
                   </div>
                   <pre className="text-xs text-gray-700 dark:text-gray-300 font-mono">
-                    {Object.keys(diff.removed).length > 0
-                      ? formatData(diff.removed)
-                      : '无'}
+                    {Object.keys(diff.removed).length > 0 ? formatData(diff.removed) : '无'}
                   </pre>
                 </div>
                 <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-3">
@@ -242,9 +249,7 @@ export function ConflictResolutionDialog({
                     新增 ({Object.keys(diff.added).length})
                   </div>
                   <pre className="text-xs text-gray-700 dark:text-gray-300 font-mono">
-                    {Object.keys(diff.added).length > 0
-                      ? formatData(diff.added)
-                      : '无'}
+                    {Object.keys(diff.added).length > 0 ? formatData(diff.added) : '无'}
                   </pre>
                 </div>
                 <div className="bg-amber-50 dark:bg-amber-900/20 rounded-lg p-3">
@@ -252,9 +257,7 @@ export function ConflictResolutionDialog({
                     修改 ({Object.keys(diff.modified).length})
                   </div>
                   <pre className="text-xs text-gray-700 dark:text-gray-300 font-mono">
-                    {Object.keys(diff.modified).length > 0
-                      ? formatData(diff.modified)
-                      : '无'}
+                    {Object.keys(diff.modified).length > 0 ? formatData(diff.modified) : '无'}
                   </pre>
                 </div>
               </div>
@@ -281,12 +284,14 @@ export function ConflictResolutionDialog({
           <div className="flex flex-col gap-4">
             {/* 解决方式选择 */}
             <div className="flex items-center gap-4">
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">选择解决方式:</span>
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                选择解决方式:
+              </span>
               <div className="flex gap-2">
                 <button
                   onClick={() => {
-                    setSelectedResolution('local')
-                    setDiffView(false)
+                    setSelectedResolution('local');
+                    setDiffView(false);
                   }}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                     selectedResolution === 'local'
@@ -299,8 +304,8 @@ export function ConflictResolutionDialog({
                 </button>
                 <button
                   onClick={() => {
-                    setSelectedResolution('server')
-                    setDiffView(false)
+                    setSelectedResolution('server');
+                    setDiffView(false);
                   }}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                     selectedResolution === 'server'
@@ -313,8 +318,8 @@ export function ConflictResolutionDialog({
                 </button>
                 <button
                   onClick={() => {
-                    setSelectedResolution('merge')
-                    setDiffView(false)
+                    setSelectedResolution('merge');
+                    setDiffView(false);
                   }}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                     selectedResolution === 'merge'
@@ -331,7 +336,9 @@ export function ConflictResolutionDialog({
             {/* 合并策略选择 */}
             {selectedResolution === 'merge' && availableStrategies.length > 0 && (
               <div className="flex items-center gap-4">
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">合并策略:</span>
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  合并策略:
+                </span>
                 <div className="flex gap-2 flex-wrap">
                   {availableStrategies.map((strategy) => (
                     <button
@@ -400,5 +407,5 @@ export function ConflictResolutionDialog({
         </div>
       </div>
     </div>
-  )
+  );
 }

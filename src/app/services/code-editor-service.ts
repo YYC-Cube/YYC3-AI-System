@@ -21,29 +21,29 @@
  */
 
 export interface EditorPosition {
-  line: number
-  column: number
+  line: number;
+  column: number;
 }
 
 export interface EditorRange {
-  start: EditorPosition
-  end: EditorPosition
+  start: EditorPosition;
+  end: EditorPosition;
 }
 
 export interface SyntaxToken {
-  type: string
-  value: string
-  range: EditorRange
+  type: string;
+  value: string;
+  range: EditorRange;
 }
 
 export interface CompletionItem {
-  label: string
-  kind: CompletionItemKind
-  detail?: string
-  documentation?: string
-  insertText: string
-  sortText?: string
-  filterText?: string
+  label: string;
+  kind: CompletionItemKind;
+  detail?: string;
+  documentation?: string;
+  insertText: string;
+  sortText?: string;
+  filterText?: string;
 }
 
 export enum CompletionItemKind {
@@ -64,13 +64,13 @@ export enum CompletionItemKind {
 }
 
 export interface Diagnostic {
-  id: string
-  severity: DiagnosticSeverity
-  message: string
-  range: EditorRange
-  source?: string
-  code?: string
-  suggestions?: string[]
+  id: string;
+  severity: DiagnosticSeverity;
+  message: string;
+  range: EditorRange;
+  source?: string;
+  code?: string;
+  suggestions?: string[];
 }
 
 export enum DiagnosticSeverity {
@@ -81,15 +81,15 @@ export enum DiagnosticSeverity {
 }
 
 export interface CodeAction {
-  title: string
-  kind: CodeActionKind
+  title: string;
+  kind: CodeActionKind;
   edit?: {
     changes: Array<{
-      range: EditorRange
-      newText: string
-    }>
-  }
-  isPreferred?: boolean
+      range: EditorRange;
+      newText: string;
+    }>;
+  };
+  isPreferred?: boolean;
 }
 
 export enum CodeActionKind {
@@ -102,26 +102,29 @@ export enum CodeActionKind {
 }
 
 export interface FormattingOptions {
-  tabSize: number
-  insertSpaces: boolean
-  semicolons?: boolean
-  singleQuote?: boolean
-  trailingComma?: 'none' | 'es5' | 'all'
-  printWidth?: number
+  tabSize: number;
+  insertSpaces: boolean;
+  semicolons?: boolean;
+  singleQuote?: boolean;
+  trailingComma?: 'none' | 'es5' | 'all';
+  printWidth?: number;
 }
 
 export interface NavigationItem {
-  name: string
-  kind: string
-  range: EditorRange
-  children?: NavigationItem[]
+  name: string;
+  kind: string;
+  range: EditorRange;
+  children?: NavigationItem[];
 }
 
-const LANGUAGE_CONFIG: Record<string, {
-  extensions: string[]
-  aliases: string[]
-  tokenizer?: RegExp[]
-}> = {
+const LANGUAGE_CONFIG: Record<
+  string,
+  {
+    extensions: string[];
+    aliases: string[];
+    tokenizer?: RegExp[];
+  }
+> = {
   typescript: {
     extensions: ['.ts', '.tsx'],
     aliases: ['ts', 'tsx'],
@@ -162,66 +165,198 @@ const LANGUAGE_CONFIG: Record<string, {
     extensions: ['.sh', '.bash', '.zsh'],
     aliases: ['bash', 'zsh'],
   },
-}
+};
 
 const KEYWORDS: Record<string, string[]> = {
   typescript: [
-    'abstract', 'any', 'as', 'asserts', 'async', 'await', 'bigint', 'boolean',
-    'break', 'case', 'catch', 'class', 'const', 'constructor', 'continue',
-    'debugger', 'declare', 'default', 'delete', 'do', 'else', 'enum', 'export',
-    'extends', 'false', 'finally', 'for', 'from', 'function', 'get', 'if',
-    'implements', 'import', 'in', 'infer', 'instanceof', 'interface', 'is',
-    'keyof', 'let', 'module', 'namespace', 'never', 'new', 'null', 'number',
-    'object', 'package', 'private', 'protected', 'public', 'readonly', 'require',
-    'global', 'return', 'set', 'static', 'string', 'super', 'switch', 'symbol',
-    'this', 'throw', 'true', 'try', 'type', 'typeof', 'undefined', 'unique',
-    'unknown', 'var', 'void', 'while', 'with', 'yield', 'async', 'await',
+    'abstract',
+    'any',
+    'as',
+    'asserts',
+    'async',
+    'await',
+    'bigint',
+    'boolean',
+    'break',
+    'case',
+    'catch',
+    'class',
+    'const',
+    'constructor',
+    'continue',
+    'debugger',
+    'declare',
+    'default',
+    'delete',
+    'do',
+    'else',
+    'enum',
+    'export',
+    'extends',
+    'false',
+    'finally',
+    'for',
+    'from',
+    'function',
+    'get',
+    'if',
+    'implements',
+    'import',
+    'in',
+    'infer',
+    'instanceof',
+    'interface',
+    'is',
+    'keyof',
+    'let',
+    'module',
+    'namespace',
+    'never',
+    'new',
+    'null',
+    'number',
+    'object',
+    'package',
+    'private',
+    'protected',
+    'public',
+    'readonly',
+    'require',
+    'global',
+    'return',
+    'set',
+    'static',
+    'string',
+    'super',
+    'switch',
+    'symbol',
+    'this',
+    'throw',
+    'true',
+    'try',
+    'type',
+    'typeof',
+    'undefined',
+    'unique',
+    'unknown',
+    'var',
+    'void',
+    'while',
+    'with',
+    'yield',
+    'async',
+    'await',
   ],
   python: [
-    'False', 'None', 'True', 'and', 'as', 'assert', 'async', 'await', 'break',
-    'class', 'continue', 'def', 'del', 'elif', 'else', 'except', 'finally',
-    'for', 'from', 'global', 'if', 'import', 'in', 'is', 'lambda', 'nonlocal',
-    'not', 'or', 'pass', 'raise', 'return', 'try', 'while', 'with', 'yield',
+    'False',
+    'None',
+    'True',
+    'and',
+    'as',
+    'assert',
+    'async',
+    'await',
+    'break',
+    'class',
+    'continue',
+    'def',
+    'del',
+    'elif',
+    'else',
+    'except',
+    'finally',
+    'for',
+    'from',
+    'global',
+    'if',
+    'import',
+    'in',
+    'is',
+    'lambda',
+    'nonlocal',
+    'not',
+    'or',
+    'pass',
+    'raise',
+    'return',
+    'try',
+    'while',
+    'with',
+    'yield',
   ],
   javascript: [
-    'async', 'await', 'break', 'case', 'catch', 'class', 'const', 'continue',
-    'debugger', 'default', 'delete', 'do', 'else', 'export', 'extends', 'false',
-    'finally', 'for', 'function', 'if', 'import', 'in', 'instanceof', 'let',
-    'new', 'null', 'return', 'super', 'switch', 'this', 'throw', 'true', 'try',
-    'typeof', 'undefined', 'var', 'void', 'while', 'with', 'yield',
+    'async',
+    'await',
+    'break',
+    'case',
+    'catch',
+    'class',
+    'const',
+    'continue',
+    'debugger',
+    'default',
+    'delete',
+    'do',
+    'else',
+    'export',
+    'extends',
+    'false',
+    'finally',
+    'for',
+    'function',
+    'if',
+    'import',
+    'in',
+    'instanceof',
+    'let',
+    'new',
+    'null',
+    'return',
+    'super',
+    'switch',
+    'this',
+    'throw',
+    'true',
+    'try',
+    'typeof',
+    'undefined',
+    'var',
+    'void',
+    'while',
+    'with',
+    'yield',
   ],
-}
+};
 
 class CodeEditorService {
-  private diagnostics: Map<string, Diagnostic[]> = new Map()
-  private _completionCache: Map<string, CompletionItem[]> = new Map()
+  private diagnostics: Map<string, Diagnostic[]> = new Map();
+  private _completionCache: Map<string, CompletionItem[]> = new Map();
 
   constructor() {
-    void this._completionCache
+    void this._completionCache;
   }
 
   getLanguage(filePath: string): string {
-    const ext = '.' + filePath.split('.').pop()?.toLowerCase()
+    const ext = '.' + filePath.split('.').pop()?.toLowerCase();
     for (const [language, config] of Object.entries(LANGUAGE_CONFIG)) {
       if (config.extensions.includes(ext)) {
-        return language
+        return language;
       }
     }
-    return 'plaintext'
+    return 'plaintext';
   }
 
   tokenize(content: string, language: string): SyntaxToken[] {
-    const tokens: SyntaxToken[] = []
-    const lines = content.split('\n')
+    const tokens: SyntaxToken[] = [];
+    const lines = content.split('\n');
 
-    const keywords = KEYWORDS[language] || []
-    const keywordPattern = keywords.length > 0
-      ? new RegExp(`\\b(${keywords.join('|')})\\b`, 'g')
-      : null
+    const keywords = KEYWORDS[language] || [];
+    const keywordPattern =
+      keywords.length > 0 ? new RegExp(`\\b(${keywords.join('|')})\\b`, 'g') : null;
 
     lines.forEach((line, lineIndex) => {
       if (keywordPattern) {
-        let match
+        let match;
         while ((match = keywordPattern.exec(line)) !== null) {
           tokens.push({
             type: 'keyword',
@@ -230,12 +365,12 @@ class CodeEditorService {
               start: { line: lineIndex, column: match.index },
               end: { line: lineIndex, column: match.index + match[1].length },
             },
-          })
+          });
         }
       }
 
-      const stringPattern = /(["'`])(?:(?!\1)[^\\]|\\.)*\1/g
-      let stringMatch
+      const stringPattern = /(["'`])(?:(?!\1)[^\\]|\\.)*\1/g;
+      let stringMatch;
       while ((stringMatch = stringPattern.exec(line)) !== null) {
         tokens.push({
           type: 'string',
@@ -244,11 +379,11 @@ class CodeEditorService {
             start: { line: lineIndex, column: stringMatch.index },
             end: { line: lineIndex, column: stringMatch.index + stringMatch[0].length },
           },
-        })
+        });
       }
 
-      const numberPattern = /\b(\d+\.?\d*)\b/g
-      let numberMatch
+      const numberPattern = /\b(\d+\.?\d*)\b/g;
+      let numberMatch;
       while ((numberMatch = numberPattern.exec(line)) !== null) {
         tokens.push({
           type: 'number',
@@ -257,11 +392,11 @@ class CodeEditorService {
             start: { line: lineIndex, column: numberMatch.index },
             end: { line: lineIndex, column: numberMatch.index + numberMatch[1].length },
           },
-        })
+        });
       }
 
-      const commentPattern = language === 'python' ? /(#.*)$/g : /(\/\/.*$|\/\*[\s\S]*?\*\/)/g
-      let commentMatch
+      const commentPattern = language === 'python' ? /(#.*)$/g : /(\/\/.*$|\/\*[\s\S]*?\*\/)/g;
+      let commentMatch;
       while ((commentMatch = commentPattern.exec(line)) !== null) {
         tokens.push({
           type: 'comment',
@@ -270,11 +405,11 @@ class CodeEditorService {
             start: { line: lineIndex, column: commentMatch.index },
             end: { line: lineIndex, column: commentMatch.index + commentMatch[1].length },
           },
-        })
+        });
       }
-    })
+    });
 
-    return tokens
+    return tokens;
   }
 
   getCompletions(
@@ -283,9 +418,9 @@ class CodeEditorService {
     language: string,
     context?: { word?: string; lineContent?: string }
   ): CompletionItem[] {
-    const items: CompletionItem[] = []
-    const keywords = KEYWORDS[language] || []
-    const word = context?.word || ''
+    const items: CompletionItem[] = [];
+    const keywords = KEYWORDS[language] || [];
+    const word = context?.word || '';
 
     keywords.forEach((keyword) => {
       if (!word || keyword.startsWith(word)) {
@@ -295,26 +430,26 @@ class CodeEditorService {
           insertText: keyword,
           sortText: `1_${keyword}`,
           filterText: keyword,
-        })
+        });
       }
-    })
+    });
 
-    const snippets = this.getSnippets(language)
+    const snippets = this.getSnippets(language);
     snippets.forEach((snippet) => {
       if (!word || snippet.label.toLowerCase().includes(word.toLowerCase())) {
-        items.push(snippet)
+        items.push(snippet);
       }
-    })
+    });
 
-    return items.sort((a, b) => (a.sortText || '').localeCompare(b.sortText || ''))
+    return items.sort((a, b) => (a.sortText || '').localeCompare(b.sortText || ''));
   }
 
   getDiagnostics(filePath: string, content: string, language: string): Diagnostic[] {
-    const diagnostics: Diagnostic[] = []
-    const lines = content.split('\n')
+    const diagnostics: Diagnostic[] = [];
+    const lines = content.split('\n');
 
     lines.forEach((line, lineIndex) => {
-      const trailingWhitespace = line.match(/\s+$/)
+      const trailingWhitespace = line.match(/\s+$/);
       if (trailingWhitespace) {
         diagnostics.push({
           id: `trailing-${lineIndex}`,
@@ -326,7 +461,7 @@ class CodeEditorService {
           },
           source: 'editor',
           suggestions: ['删除行尾空白字符'],
-        })
+        });
       }
 
       if (line.length > 120) {
@@ -339,13 +474,13 @@ class CodeEditorService {
             end: { line: lineIndex, column: line.length },
           },
           source: 'editor',
-        })
+        });
       }
-    })
+    });
 
     if (language === 'typescript' || language === 'javascript') {
-      const openBraces = (content.match(/{/g) || []).length
-      const closeBraces = (content.match(/}/g) || []).length
+      const openBraces = (content.match(/{/g) || []).length;
+      const closeBraces = (content.match(/}/g) || []).length;
       if (openBraces !== closeBraces) {
         diagnostics.push({
           id: 'brace-mismatch',
@@ -356,23 +491,21 @@ class CodeEditorService {
             end: { line: lines.length - 1, column: lines[lines.length - 1].length },
           },
           source: 'editor',
-        })
+        });
       }
     }
 
-    this.diagnostics.set(filePath, diagnostics)
-    return diagnostics
+    this.diagnostics.set(filePath, diagnostics);
+    return diagnostics;
   }
 
   getCodeActions(filePath: string, range: EditorRange): CodeAction[] {
-    const diagnostics = this.diagnostics.get(filePath) || []
-    const actions: CodeAction[] = []
+    const diagnostics = this.diagnostics.get(filePath) || [];
+    const actions: CodeAction[] = [];
 
     const relevantDiagnostics = diagnostics.filter(
-      (d) =>
-        d.range.start.line >= range.start.line &&
-        d.range.end.line <= range.end.line
-    )
+      (d) => d.range.start.line >= range.start.line && d.range.end.line <= range.end.line
+    );
 
     for (const diagnostic of relevantDiagnostics) {
       if (diagnostic.id.startsWith('trailing-')) {
@@ -388,47 +521,47 @@ class CodeEditorService {
               },
             ],
           },
-        })
+        });
       }
     }
 
-    return actions
+    return actions;
   }
 
   format(content: string, _language: string, options: FormattingOptions): string {
-    const formatted = content
-    const lines = formatted.split('\n')
+    const formatted = content;
+    const lines = formatted.split('\n');
 
-    const indentStr = options.insertSpaces ? ' '.repeat(options.tabSize) : '\t'
+    const indentStr = options.insertSpaces ? ' '.repeat(options.tabSize) : '\t';
 
-    let indentLevel = 0
+    let indentLevel = 0;
     const formattedLines = lines.map((line) => {
-      const trimmed = line.trim()
-      if (!trimmed) return ''
+      const trimmed = line.trim();
+      if (!trimmed) return '';
 
       if (trimmed.startsWith('}') || trimmed.startsWith(']') || trimmed.startsWith(')')) {
-        indentLevel = Math.max(0, indentLevel - 1)
+        indentLevel = Math.max(0, indentLevel - 1);
       }
 
-      const formattedLine = indentStr.repeat(indentLevel) + trimmed
+      const formattedLine = indentStr.repeat(indentLevel) + trimmed;
 
-      const openBraces = (trimmed.match(/{|\[|\(/g) || []).length
-      const closeBraces = (trimmed.match(/}|\]|\)/g) || []).length
-      indentLevel += openBraces - closeBraces
+      const openBraces = (trimmed.match(/{|\[|\(/g) || []).length;
+      const closeBraces = (trimmed.match(/}|\]|\)/g) || []).length;
+      indentLevel += openBraces - closeBraces;
 
-      return formattedLine
-    })
+      return formattedLine;
+    });
 
-    return formattedLines.join('\n')
+    return formattedLines.join('\n');
   }
 
   getNavigationSymbols(content: string, language: string): NavigationItem[] {
-    const symbols: NavigationItem[] = []
-    const lines = content.split('\n')
+    const symbols: NavigationItem[] = [];
+    const lines = content.split('\n');
 
     if (language === 'typescript' || language === 'javascript') {
       lines.forEach((line, lineIndex) => {
-        const classMatch = line.match(/class\s+(\w+)/)
+        const classMatch = line.match(/class\s+(\w+)/);
         if (classMatch) {
           symbols.push({
             name: classMatch[1],
@@ -437,10 +570,12 @@ class CodeEditorService {
               start: { line: lineIndex, column: 0 },
               end: { line: lineIndex, column: line.length },
             },
-          })
+          });
         }
 
-        const functionMatch = line.match(/(?:function\s+(\w+)|(?:async\s+)?(\w+)\s*\([^)]*\)\s*(?::\s*\w+)?\s*{)/)
+        const functionMatch = line.match(
+          /(?:function\s+(\w+)|(?:async\s+)?(\w+)\s*\([^)]*\)\s*(?::\s*\w+)?\s*{)/
+        );
         if (functionMatch) {
           symbols.push({
             name: functionMatch[1] || functionMatch[2],
@@ -449,10 +584,10 @@ class CodeEditorService {
               start: { line: lineIndex, column: 0 },
               end: { line: lineIndex, column: line.length },
             },
-          })
+          });
         }
 
-        const constMatch = line.match(/const\s+(\w+)\s*=/)
+        const constMatch = line.match(/const\s+(\w+)\s*=/);
         if (constMatch) {
           symbols.push({
             name: constMatch[1],
@@ -461,16 +596,16 @@ class CodeEditorService {
               start: { line: lineIndex, column: 0 },
               end: { line: lineIndex, column: line.length },
             },
-          })
+          });
         }
-      })
+      });
     }
 
-    return symbols
+    return symbols;
   }
 
   private getSnippets(language: string): CompletionItem[] {
-    const snippets: CompletionItem[] = []
+    const snippets: CompletionItem[] = [];
 
     if (language === 'typescript' || language === 'javascript') {
       snippets.push(
@@ -509,7 +644,7 @@ class CodeEditorService {
           insertText: "import { $2 } from '$1'",
           sortText: '0_import',
         }
-      )
+      );
     }
 
     if (language === 'python') {
@@ -535,13 +670,13 @@ class CodeEditorService {
           insertText: 'if ${1:condition}:\n\t${2:pass}',
           sortText: '0_if',
         }
-      )
+      );
     }
 
-    return snippets
+    return snippets;
   }
 }
 
-export const codeEditorService = new CodeEditorService()
+export const codeEditorService = new CodeEditorService();
 
-export default CodeEditorService
+export default CodeEditorService;

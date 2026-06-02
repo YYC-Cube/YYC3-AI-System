@@ -11,6 +11,7 @@ tags: p1,state,zustand,global
 # YYC³ P1-状态-全局状态管理
 
 ## Stores 架构
+
 1. useAuthStore (persist) - user, isAuthenticated, login/logout/refreshToken
 2. useUserStore (devtools + subscribeWithSelector) - users[], CRUD ops
 3. useProjectStore (devtools + subscribeWithSelector) - projects[], CRUD ops
@@ -21,6 +22,7 @@ tags: p1,state,zustand,global
 8. useNotificationStore (subscribeWithSelector) - notifications[], auto-dismiss
 
 ## 设计原则
+
 - 选择器优化: useStore(state => state.field) 避免不必要重渲染
 - Middleware: devtools(开发调试), persist(持久化), subscribeWithSelector(精确订阅)
 - 类型安全: 完整 TypeScript 接口定义

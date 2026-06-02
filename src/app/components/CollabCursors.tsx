@@ -15,58 +15,60 @@
  * @tags component,collaboration,cursors,visualization
  */
 
-import { Eye, EyeOff, Users } from 'lucide-react'
-import { motion, AnimatePresence } from 'motion/react'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { Eye, EyeOff, Users } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { useAppStore } from '../store'
-import { getI18n } from '../utils/i18n'
-import { getThemeTokens } from '../utils/theme'
-import { wsCollab, type WSPeer } from '../utils/ws-collab'
+import { useAppStore } from '../store';
+import { getI18n } from '../utils/i18n';
+import { getThemeTokens } from '../utils/theme';
+import { wsCollab, type WSPeer } from '../utils/ws-collab';
 
 /* ── Simulated typing activity for each peer ── */
 function usePeerActivity(peers: WSPeer[], currentFile: string) {
-  const [activities, setActivities] = useState<Record<string, 'typing' | 'idle' | 'selecting'>>({})
+  const [activities, setActivities] = useState<Record<string, 'typing' | 'idle' | 'selecting'>>({});
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const next: Record<string, 'typing' | 'idle' | 'selecting'> = {}
-      peers.forEach(p => {
-        if (!p.online || p.file !== currentFile) return
-        const r = Math.random()
-        if (r < 0.4) next[p.id] = 'typing'
-        else if (r < 0.55) next[p.id] = 'selecting'
-        else next[p.id] = 'idle'
-      })
-      setActivities(next)
-    }, 2500)
-    return () => clearInterval(interval)
-  }, [peers, currentFile])
+      const next: Record<string, 'typing' | 'idle' | 'selecting'> = {};
+      peers.forEach((p) => {
+        if (!p.online || p.file !== currentFile) return;
+        const r = Math.random();
+        if (r < 0.4) next[p.id] = 'typing';
+        else if (r < 0.55) next[p.id] = 'selecting';
+        else next[p.id] = 'idle';
+      });
+      setActivities(next);
+    }, 2500);
+    return () => clearInterval(interval);
+  }, [peers, currentFile]);
 
-  return activities
+  return activities;
 }
 
 /* ── Simulated selections (line ranges) ── */
 function usePeerSelections(peers: WSPeer[], currentFile: string) {
-  const [selections, setSelections] = useState<Record<string, { startLine: number; endLine: number }>>({})
+  const [selections, setSelections] = useState<
+    Record<string, { startLine: number; endLine: number }>
+  >({});
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const next: Record<string, { startLine: number; endLine: number }> = {}
-      peers.forEach(p => {
-        if (!p.online || p.file !== currentFile || !p.cursor) return
+      const next: Record<string, { startLine: number; endLine: number }> = {};
+      peers.forEach((p) => {
+        if (!p.online || p.file !== currentFile || !p.cursor) return;
         if (Math.random() < 0.3) {
-          const start = p.cursor.line
-          const end = start + Math.floor(Math.random() * 4) + 1
-          next[p.id] = { startLine: start, endLine: Math.min(end, start + 5) }
+          const start = p.cursor.line;
+          const end = start + Math.floor(Math.random() * 4) + 1;
+          next[p.id] = { startLine: start, endLine: Math.min(end, start + 5) };
         }
-      })
-      setSelections(next)
-    }, 4000)
-    return () => clearInterval(interval)
-  }, [peers, currentFile])
+      });
+      setSelections(next);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [peers, currentFile]);
 
-  return selections
+  return selections;
 }
 
 /* ══════════════════════════════════════════════════ */
@@ -74,57 +76,68 @@ function usePeerSelections(peers: WSPeer[], currentFile: string) {
 /* ══════════════════════════════════════════════════ */
 
 interface CollabCursorsProps {
-  currentFile: string
-  lineHeight?: number
-  editorScrollTop?: number
+  currentFile: string;
+  lineHeight?: number;
+  editorScrollTop?: number;
 }
 
-export function CollabCursors({ currentFile, lineHeight = 20, editorScrollTop = 0 }: CollabCursorsProps) {
-  const { theme, language } = useAppStore()
-  const t = getThemeTokens(theme)
-  const i = getI18n(language)
+export function CollabCursors({
+  currentFile,
+  lineHeight = 20,
+  editorScrollTop = 0,
+}: CollabCursorsProps) {
+  const { theme, language } = useAppStore();
+  const t = getThemeTokens(theme);
+  const i = getI18n(language);
 
-  const [peers, setPeers] = useState<WSPeer[]>([])
-  const [followingUser, setFollowingUser] = useState<string | null>(null)
-  const [showPanel, setShowPanel] = useState(false)
+  const [peers, setPeers] = useState<WSPeer[]>([]);
+  const [followingUser, setFollowingUser] = useState<string | null>(null);
+  const [showPanel, setShowPanel] = useState(false);
 
   // Subscribe to peer updates from WSCollab
   useEffect(() => {
     const handler = (event: string, data: unknown) => {
       if (event === 'peers-updated') {
-        setPeers(data as WSPeer[])
+        setPeers(data as WSPeer[]);
       }
-    }
-    wsCollab.on('peers-updated', handler)
-    setPeers(wsCollab.peers)
-    return () => wsCollab.off('peers-updated', handler)
-  }, [])
+    };
+    wsCollab.on('peers-updated', handler);
+    setPeers(wsCollab.peers);
+    return () => wsCollab.off('peers-updated', handler);
+  }, []);
 
   // Filter peers on this file
-  const filePeers = useMemo(() =>
-    peers.filter(p => p.online && p.file === currentFile && p.cursor),
-  [peers, currentFile])
+  const filePeers = useMemo(
+    () => peers.filter((p) => p.online && p.file === currentFile && p.cursor),
+    [peers, currentFile]
+  );
 
-  const activities = usePeerActivity(peers, currentFile)
-  const selections = usePeerSelections(peers, currentFile)
+  const activities = usePeerActivity(peers, currentFile);
+  const selections = usePeerSelections(peers, currentFile);
 
-  const getActivityLabel = useCallback((activity: string | undefined) => {
-    switch (activity) {
-      case 'typing': return i.mcTyping
-      case 'selecting': return i.mcSelection
-      default: return i.mcIdle
-    }
-  }, [i])
+  const getActivityLabel = useCallback(
+    (activity: string | undefined) => {
+      switch (activity) {
+        case 'typing':
+          return i.mcTyping;
+        case 'selecting':
+          return i.mcSelection;
+        default:
+          return i.mcIdle;
+      }
+    },
+    [i]
+  );
 
   return (
     <>
       {/* ── Cursor overlays per peer ── */}
       <AnimatePresence>
-        {filePeers.map(peer => {
-          if (!peer.cursor) return null
-          const topPos = (peer.cursor.line - 1) * lineHeight + 4 - editorScrollTop
-          const activity = activities[peer.id]
-          const selection = selections[peer.id]
+        {filePeers.map((peer) => {
+          if (!peer.cursor) return null;
+          const topPos = (peer.cursor.line - 1) * lineHeight + 4 - editorScrollTop;
+          const activity = activities[peer.id];
+          const selection = selections[peer.id];
 
           return (
             <div key={peer.id} className="contents">
@@ -159,7 +172,8 @@ export function CollabCursors({ currentFile, lineHeight = 20, editorScrollTop = 
                   style={{
                     backgroundColor: peer.color,
                     height: `${lineHeight}px`,
-                    animation: activity === 'typing' ? 'none' : 'yyc3CursorBlink 1s ease-in-out infinite',
+                    animation:
+                      activity === 'typing' ? 'none' : 'yyc3CursorBlink 1s ease-in-out infinite',
                   }}
                 />
               </motion.div>
@@ -187,15 +201,24 @@ export function CollabCursors({ currentFile, lineHeight = 20, editorScrollTop = 
                   {/* Typing indicator dots */}
                   {activity === 'typing' && (
                     <span className="flex gap-px ml-0.5">
-                      <span className="w-1 h-1 rounded-full bg-white animate-bounce" style={{ animationDelay: '0ms' }} />
-                      <span className="w-1 h-1 rounded-full bg-white animate-bounce" style={{ animationDelay: '150ms' }} />
-                      <span className="w-1 h-1 rounded-full bg-white animate-bounce" style={{ animationDelay: '300ms' }} />
+                      <span
+                        className="w-1 h-1 rounded-full bg-white animate-bounce"
+                        style={{ animationDelay: '0ms' }}
+                      />
+                      <span
+                        className="w-1 h-1 rounded-full bg-white animate-bounce"
+                        style={{ animationDelay: '150ms' }}
+                      />
+                      <span
+                        className="w-1 h-1 rounded-full bg-white animate-bounce"
+                        style={{ animationDelay: '300ms' }}
+                      />
                     </span>
                   )}
                 </div>
               </motion.div>
             </div>
-          )
+          );
         })}
       </AnimatePresence>
 
@@ -204,7 +227,9 @@ export function CollabCursors({ currentFile, lineHeight = 20, editorScrollTop = 
         <button
           onClick={() => setShowPanel(!showPanel)}
           className={`flex items-center gap-1.5 px-2 py-1 rounded-lg text-[9px] backdrop-blur-sm ${t.transition} ${
-            t.isDark ? 'bg-white/[0.06] hover:bg-white/[0.1] text-white/60' : 'bg-black/[0.04] hover:bg-black/[0.08] text-black/60'
+            t.isDark
+              ? 'bg-white/[0.06] hover:bg-white/[0.1] text-white/60'
+              : 'bg-black/[0.04] hover:bg-black/[0.08] text-black/60'
           }`}
         >
           <Users className="w-3 h-3" />
@@ -225,19 +250,25 @@ export function CollabCursors({ currentFile, lineHeight = 20, editorScrollTop = 
                 </span>
               </div>
               <div className="py-1 max-h-[200px] overflow-y-auto">
-                {filePeers.map(p => (
+                {filePeers.map((p) => (
                   <button
                     key={p.id}
                     onClick={() => setFollowingUser(followingUser === p.id ? null : p.id)}
                     className={`w-full flex items-center gap-2 px-3 py-1.5 text-[10px] ${t.transition} ${t.interactive.menuItem}`}
                   >
-                    <div className="w-4 h-4 rounded-full flex items-center justify-center text-[8px] text-white" style={{ backgroundColor: p.color, fontWeight: 700 }}>
+                    <div
+                      className="w-4 h-4 rounded-full flex items-center justify-center text-[8px] text-white"
+                      style={{ backgroundColor: p.color, fontWeight: 700 }}
+                    >
                       {p.name[0]}
                     </div>
                     <div className="flex-1 text-left min-w-0">
-                      <div className={`truncate ${t.text.primary}`} style={{ fontWeight: 500 }}>{p.name}</div>
+                      <div className={`truncate ${t.text.primary}`} style={{ fontWeight: 500 }}>
+                        {p.name}
+                      </div>
                       <div className={`text-[8px] ${t.text.dimmed}`}>
-                        Ln {p.cursor?.line}, Col {p.cursor?.col} · {getActivityLabel(activities[p.id])}
+                        Ln {p.cursor?.line}, Col {p.cursor?.col} ·{' '}
+                        {getActivityLabel(activities[p.id])}
                       </div>
                     </div>
                     {followingUser === p.id ? (
@@ -260,32 +291,36 @@ export function CollabCursors({ currentFile, lineHeight = 20, editorScrollTop = 
 
       {/* ── Follow user banner ── */}
       <AnimatePresence>
-        {followingUser && (() => {
-          const followed = filePeers.find(p => p.id === followingUser)
-          if (!followed) return null
-          return (
-            <motion.div
-              key="follow-banner"
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="absolute top-1 left-1/2 -translate-x-1/2 z-[15] flex items-center gap-2 px-3 py-1 rounded-full backdrop-blur-sm"
-              style={{ backgroundColor: `${followed.color}25`, border: `1px solid ${followed.color}40` }}
-            >
-              <Eye className="w-3 h-3" style={{ color: followed.color }} />
-              <span className="text-[9px]" style={{ color: followed.color, fontWeight: 600 }}>
-                {i.mcFollowUser}: {followed.name}
-              </span>
-              <button
-                onClick={() => setFollowingUser(null)}
-                className="text-[9px] underline opacity-70 hover:opacity-100"
-                style={{ color: followed.color }}
+        {followingUser &&
+          (() => {
+            const followed = filePeers.find((p) => p.id === followingUser);
+            if (!followed) return null;
+            return (
+              <motion.div
+                key="follow-banner"
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="absolute top-1 left-1/2 -translate-x-1/2 z-[15] flex items-center gap-2 px-3 py-1 rounded-full backdrop-blur-sm"
+                style={{
+                  backgroundColor: `${followed.color}25`,
+                  border: `1px solid ${followed.color}40`,
+                }}
               >
-                {i.mcStopFollowing}
-              </button>
-            </motion.div>
-          )
-        })()}
+                <Eye className="w-3 h-3" style={{ color: followed.color }} />
+                <span className="text-[9px]" style={{ color: followed.color, fontWeight: 600 }}>
+                  {i.mcFollowUser}: {followed.name}
+                </span>
+                <button
+                  onClick={() => setFollowingUser(null)}
+                  className="text-[9px] underline opacity-70 hover:opacity-100"
+                  style={{ color: followed.color }}
+                >
+                  {i.mcStopFollowing}
+                </button>
+              </motion.div>
+            );
+          })()}
       </AnimatePresence>
 
       {/* CSS for cursor blink animation */}
@@ -296,5 +331,5 @@ export function CollabCursors({ currentFile, lineHeight = 20, editorScrollTop = 
         }
       `}</style>
     </>
-  )
+  );
 }

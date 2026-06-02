@@ -13,345 +13,340 @@
  * @tags utils,performance,debounce,throttle
  */
 
-export type DebounceFunction<T extends (...args: any[]) => any> = (
-  ...args: Parameters<T>
-) => void
+export type DebounceFunction<T extends (...args: any[]) => any> = (...args: Parameters<T>) => void;
 
-export type ThrottleFunction<T extends (...args: any[]) => any> = (
-  ...args: Parameters<T>
-) => void
+export type ThrottleFunction<T extends (...args: any[]) => any> = (...args: Parameters<T>) => void;
 
 export interface DebounceOptions {
-  delay?: number
-  leading?: boolean
-  trailing?: boolean
-  maxWait?: number
+  delay?: number;
+  leading?: boolean;
+  trailing?: boolean;
+  maxWait?: number;
 }
 
 export interface ThrottleOptions {
-  interval?: number
-  leading?: boolean
-  trailing?: boolean
+  interval?: number;
+  leading?: boolean;
+  trailing?: boolean;
 }
 
 export interface DebouncedState {
-  pending: boolean
-  callCount: number
+  pending: boolean;
+  callCount: number;
 }
 
 export function debounce<T extends (...args: any[]) => any>(
   func: T,
   options: DebounceOptions = {}
 ): DebounceFunction<T> & {
-  cancel: () => void
-  flush: () => void
-  pending: () => boolean
+  cancel: () => void;
+  flush: () => void;
+  pending: () => boolean;
 } {
-  const {
-    delay = 100,
-    leading = false,
-    trailing = true,
-    maxWait,
-  } = options
+  const { delay = 100, leading = false, trailing = true, maxWait } = options;
 
-  let timeoutId: ReturnType<typeof setTimeout> | null = null
-  let lastCallTime = 0
-  let lastArgs: Parameters<T> | null = null
-  let result: ReturnType<T> | undefined
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
+  let lastCallTime = 0;
+  let lastArgs: Parameters<T> | null = null;
+  let result: ReturnType<T> | undefined;
 
   const invokeFunc = (time: number) => {
-    const args = lastArgs
-    lastArgs = null
-    lastCallTime = time
-    result = func(...(args as Parameters<T>)) as ReturnType<T> | undefined
-    return result
-  }
+    const args = lastArgs;
+    lastArgs = null;
+    lastCallTime = time;
+    result = func(...(args as Parameters<T>)) as ReturnType<T> | undefined;
+    return result;
+  };
 
   const startTimer = (pendingFunc: () => void, wait: number) => {
     if (timeoutId) {
-      clearTimeout(timeoutId)
+      clearTimeout(timeoutId);
     }
-    timeoutId = setTimeout(pendingFunc, wait)
-  }
+    timeoutId = setTimeout(pendingFunc, wait);
+  };
 
   const shouldInvoke = (time: number) => {
-    const timeSinceLastCall = time - lastCallTime
+    const timeSinceLastCall = time - lastCallTime;
     return (
       lastCallTime === 0 ||
       timeSinceLastCall >= delay ||
       (maxWait !== undefined && timeSinceLastCall >= maxWait)
-    )
-  }
+    );
+  };
 
   const trailingEdge = (time: number) => {
-    timeoutId = null
+    timeoutId = null;
     if (trailing && lastArgs) {
-      return invokeFunc(time)
+      return invokeFunc(time);
     }
-    lastArgs = null
-    return result
-  }
+    lastArgs = null;
+    return result;
+  };
 
   const remainingWait = (time: number) => {
-    const timeSinceLastCall = time - lastCallTime
-    const timeWaiting = delay - timeSinceLastCall
-    return maxWait !== undefined
-      ? Math.min(timeWaiting, maxWait - timeSinceLastCall)
-      : timeWaiting
-  }
+    const timeSinceLastCall = time - lastCallTime;
+    const timeWaiting = delay - timeSinceLastCall;
+    return maxWait !== undefined ? Math.min(timeWaiting, maxWait - timeSinceLastCall) : timeWaiting;
+  };
 
   const timerExpired = () => {
-    const time = Date.now()
+    const time = Date.now();
     if (shouldInvoke(time)) {
-      return trailingEdge(time)
+      return trailingEdge(time);
     }
-    startTimer(timerExpired, remainingWait(time))
-    return undefined
-  }
+    startTimer(timerExpired, remainingWait(time));
+    return undefined;
+  };
 
   const leadingEdge = (time: number) => {
-    lastCallTime = time
+    lastCallTime = time;
     if (leading) {
-      return invokeFunc(time)
+      return invokeFunc(time);
     }
-    startTimer(timerExpired, delay)
-    return result
-  }
+    startTimer(timerExpired, delay);
+    return result;
+  };
 
   const debounced = (...args: Parameters<T>) => {
-    const time = Date.now()
-    const isInvoking = shouldInvoke(time)
+    const time = Date.now();
+    const isInvoking = shouldInvoke(time);
 
-    lastArgs = args
+    lastArgs = args;
 
     if (isInvoking) {
       if (timeoutId === null) {
-        return leadingEdge(time)
+        return leadingEdge(time);
       }
       if (maxWait !== undefined) {
-        startTimer(timerExpired, delay)
-        return invokeFunc(time)
+        startTimer(timerExpired, delay);
+        return invokeFunc(time);
       }
     }
     if (timeoutId === null) {
-      startTimer(timerExpired, delay)
+      startTimer(timerExpired, delay);
     }
-    return result
-  }
+    return result;
+  };
 
   const cancel = () => {
     if (timeoutId) {
-      clearTimeout(timeoutId)
+      clearTimeout(timeoutId);
     }
-    timeoutId = null
-    lastArgs = null
-    lastCallTime = 0
-  }
+    timeoutId = null;
+    lastArgs = null;
+    lastCallTime = 0;
+  };
 
   const flush = () => {
     if (timeoutId) {
-      clearTimeout(timeoutId)
+      clearTimeout(timeoutId);
       if (trailing && lastArgs) {
-        return invokeFunc(Date.now())
+        return invokeFunc(Date.now());
       }
     }
-    timeoutId = null
-    lastArgs = null
-    lastCallTime = 0
-    return result
-  }
+    timeoutId = null;
+    lastArgs = null;
+    lastCallTime = 0;
+    return result;
+  };
 
-  const pending = () => timeoutId !== null
+  const pending = () => timeoutId !== null;
 
-  ;(debounced as DebounceFunction<T> & {
-    cancel: () => void
-    flush: () => void
-    pending: () => boolean
-  }).cancel = cancel
-  ;(debounced as DebounceFunction<T> & {
-    cancel: () => void
-    flush: () => void
-    pending: () => boolean
-  }).flush = flush
-  ;(debounced as DebounceFunction<T> & {
-    cancel: () => void
-    flush: () => void
-    pending: () => boolean
-  }).pending = pending
+  (
+    debounced as DebounceFunction<T> & {
+      cancel: () => void;
+      flush: () => void;
+      pending: () => boolean;
+    }
+  ).cancel = cancel;
+  (
+    debounced as DebounceFunction<T> & {
+      cancel: () => void;
+      flush: () => void;
+      pending: () => boolean;
+    }
+  ).flush = flush;
+  (
+    debounced as DebounceFunction<T> & {
+      cancel: () => void;
+      flush: () => void;
+      pending: () => boolean;
+    }
+  ).pending = pending;
 
   return debounced as DebounceFunction<T> & {
-    cancel: () => void
-    flush: () => void
-    pending: () => boolean
-  }
+    cancel: () => void;
+    flush: () => void;
+    pending: () => boolean;
+  };
 }
 
 export function throttle<T extends (...args: any[]) => any>(
   func: T,
   options: ThrottleOptions = {}
 ): ThrottleFunction<T> & {
-  cancel: () => void
-  flush: () => void
+  cancel: () => void;
+  flush: () => void;
 } {
-  const {
-    interval = 100,
-    leading = true,
-    trailing = true,
-  } = options
+  const { interval = 100, leading = true, trailing = true } = options;
 
-  let timeoutId: ReturnType<typeof setTimeout> | null = null
-  let lastArgs: Parameters<T> | null = null
-  let lastCallTime = 0
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
+  let lastArgs: Parameters<T> | null = null;
+  let lastCallTime = 0;
 
   const invokeFunc = () => {
     if (lastArgs) {
-      func(...lastArgs)
-      lastArgs = null
+      func(...lastArgs);
+      lastArgs = null;
     }
-  }
+  };
 
   const startTimer = () => {
     if (timeoutId) {
-      clearTimeout(timeoutId)
+      clearTimeout(timeoutId);
     }
     timeoutId = setTimeout(() => {
-      timeoutId = null
+      timeoutId = null;
       if (trailing && lastArgs) {
-        invokeFunc()
+        invokeFunc();
       }
-    }, interval)
-  }
+    }, interval);
+  };
 
   const throttled = (...args: Parameters<T>) => {
-    const now = Date.now()
-    const timeSinceLastCall = now - lastCallTime
+    const now = Date.now();
+    const timeSinceLastCall = now - lastCallTime;
 
-    lastArgs = args
+    lastArgs = args;
 
     if (timeSinceLastCall >= interval) {
-      lastCallTime = now
+      lastCallTime = now;
       if (leading) {
-        invokeFunc()
+        invokeFunc();
       }
-      startTimer()
+      startTimer();
     } else if (!timeoutId && trailing) {
-      startTimer()
+      startTimer();
     }
-  }
+  };
 
   const cancel = () => {
     if (timeoutId) {
-      clearTimeout(timeoutId)
-      timeoutId = null
+      clearTimeout(timeoutId);
+      timeoutId = null;
     }
-    lastArgs = null
-    lastCallTime = 0
-  }
+    lastArgs = null;
+    lastCallTime = 0;
+  };
 
   const flush = () => {
     if (timeoutId) {
-      clearTimeout(timeoutId)
-      invokeFunc()
-      timeoutId = null
+      clearTimeout(timeoutId);
+      invokeFunc();
+      timeoutId = null;
     }
-  }
+  };
 
-  ;(throttled as ThrottleFunction<T> & {
-    cancel: () => void
-    flush: () => void
-  }).cancel = cancel
-  ;(throttled as ThrottleFunction<T> & {
-    cancel: () => void
-    flush: () => void
-  }).flush = flush
+  (
+    throttled as ThrottleFunction<T> & {
+      cancel: () => void;
+      flush: () => void;
+    }
+  ).cancel = cancel;
+  (
+    throttled as ThrottleFunction<T> & {
+      cancel: () => void;
+      flush: () => void;
+    }
+  ).flush = flush;
 
   return throttled as ThrottleFunction<T> & {
-    cancel: () => void
-    flush: () => void
-  }
+    cancel: () => void;
+    flush: () => void;
+  };
 }
 
 export function rafThrottle<T extends (...args: any[]) => any>(
   func: T
 ): ThrottleFunction<T> & { cancel: () => void } {
-  let rafId: number | null = null
-  let lastArgs: Parameters<T> | null = null
+  let rafId: number | null = null;
+  let lastArgs: Parameters<T> | null = null;
 
   const throttled = (...args: Parameters<T>) => {
-    lastArgs = args
+    lastArgs = args;
     if (rafId === null) {
       rafId = requestAnimationFrame(() => {
-        rafId = null
+        rafId = null;
         if (lastArgs) {
-          func(...lastArgs)
-          lastArgs = null
+          func(...lastArgs);
+          lastArgs = null;
         }
-      })
+      });
     }
-  }
+  };
 
   const cancel = () => {
     if (rafId !== null) {
-      cancelAnimationFrame(rafId)
-      rafId = null
+      cancelAnimationFrame(rafId);
+      rafId = null;
     }
-    lastArgs = null
-  }
+    lastArgs = null;
+  };
 
-  ;(throttled as ThrottleFunction<T> & { cancel: () => void }).cancel = cancel
+  (throttled as ThrottleFunction<T> & { cancel: () => void }).cancel = cancel;
 
-  return throttled as ThrottleFunction<T> & { cancel: () => void }
+  return throttled as ThrottleFunction<T> & { cancel: () => void };
 }
 
 export function createDebouncedState<T>(
   initialState: T,
   delay: number = 100
 ): {
-  get: () => T
-  set: (value: T) => void
-  getImmediate: () => T
-  setImmediate: (value: T) => void
-  flush: () => void
-  cancel: () => void
+  get: () => T;
+  set: (value: T) => void;
+  getImmediate: () => T;
+  setImmediate: (value: T) => void;
+  flush: () => void;
+  cancel: () => void;
 } {
-  let immediateState = initialState
-  let debouncedState = initialState
-  let timeoutId: ReturnType<typeof setTimeout> | null = null
+  let immediateState = initialState;
+  let debouncedState = initialState;
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
   const flush = () => {
     if (timeoutId) {
-      clearTimeout(timeoutId)
-      timeoutId = null
+      clearTimeout(timeoutId);
+      timeoutId = null;
     }
-    debouncedState = immediateState
-  }
+    debouncedState = immediateState;
+  };
 
   const cancel = () => {
     if (timeoutId) {
-      clearTimeout(timeoutId)
-      timeoutId = null
+      clearTimeout(timeoutId);
+      timeoutId = null;
     }
-  }
+  };
 
   const set = (value: T) => {
-    immediateState = value
+    immediateState = value;
     if (timeoutId) {
-      clearTimeout(timeoutId)
+      clearTimeout(timeoutId);
     }
     timeoutId = setTimeout(() => {
-      debouncedState = immediateState
-      timeoutId = null
-    }, delay)
-  }
+      debouncedState = immediateState;
+      timeoutId = null;
+    }, delay);
+  };
 
   const setImmediate = (value: T) => {
-    immediateState = value
-    debouncedState = value
+    immediateState = value;
+    debouncedState = value;
     if (timeoutId) {
-      clearTimeout(timeoutId)
-      timeoutId = null
+      clearTimeout(timeoutId);
+      timeoutId = null;
     }
-  }
+  };
 
   return {
     get: () => debouncedState,
@@ -360,46 +355,46 @@ export function createDebouncedState<T>(
     setImmediate,
     flush,
     cancel,
-  }
+  };
 }
 
 export function debounceAsync<T extends (...args: any[]) => Promise<any>>(
   func: T,
   delay: number = 100
 ): (...args: Parameters<T>) => Promise<ReturnType<T>> {
-  let timeoutId: ReturnType<typeof setTimeout> | null = null
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
   let pendingPromise: {
-    resolve: (value: ReturnType<T>) => void
-    reject: (error: unknown) => void
-  } | null = null
+    resolve: (value: ReturnType<T>) => void;
+    reject: (error: unknown) => void;
+  } | null = null;
 
   return (...args: Parameters<T>): Promise<ReturnType<T>> => {
     return new Promise((resolve, reject) => {
       if (timeoutId) {
-        clearTimeout(timeoutId)
+        clearTimeout(timeoutId);
       }
 
       if (pendingPromise) {
-        pendingPromise.reject(new Error('Debounced: newer call superseded this one'))
+        pendingPromise.reject(new Error('Debounced: newer call superseded this one'));
       }
 
-      pendingPromise = { resolve, reject }
+      pendingPromise = { resolve, reject };
 
       timeoutId = setTimeout(async () => {
-        timeoutId = null
+        timeoutId = null;
         try {
-          const result = await func(...args)
+          const result = await func(...args);
           if (pendingPromise) {
-            pendingPromise.resolve(result as ReturnType<T>)
-            pendingPromise = null
+            pendingPromise.resolve(result as ReturnType<T>);
+            pendingPromise = null;
           }
         } catch (error) {
           if (pendingPromise) {
-            pendingPromise.reject(error)
-            pendingPromise = null
+            pendingPromise.reject(error);
+            pendingPromise = null;
           }
         }
-      }, delay)
-    })
-  }
+      }, delay);
+    });
+  };
 }

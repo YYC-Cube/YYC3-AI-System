@@ -11,6 +11,7 @@ tags: p1,AI,provider,integration
 # YYC³ P1-AI-多提供商集成
 
 ## 功能目标
+
 1. 多提供商支持 (OpenAI, Anthropic, 智谱AI, 百度文心, 阿里通义, Ollama)
 2. 统一 API 接口 (AIProviderInterface)
 3. 自动故障切换 + 负载均衡
@@ -18,20 +19,24 @@ tags: p1,AI,provider,integration
 5. 完善错误处理
 
 ## 架构: AIProviderInterface
+
 - name, isAvailable(), request(config), streamRequest(config, onChunk, onComplete, onError), getModels()
 
 ## 提供商实现
+
 - OpenAIProvider: /v1/chat/completions, Bearer token, SSE streaming
 - AnthropicProvider: /v1/messages, x-api-key header, content_block_delta streaming
 - (ZhipuProvider, BaiduProvider, AliyunProvider, OllamaProvider - 同模式)
 
 ## AIProviderManager
+
 - providers Map + config Map
 - getCurrentProvider / setCurrentProvider / selectProvider (按 priority)
 - request(config) / streamRequest(config) - 自动选择 provider
 - addProvider / removeProvider 动态管理
 
 ## 全局实例
+
 ```ts
 export const aiProviderManager = new AIProviderManager([
   { name: 'openai', apiKey: env.VITE_OPENAI_API_KEY, enabled: true, priority: 10 },

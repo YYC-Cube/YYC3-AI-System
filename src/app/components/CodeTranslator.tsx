@@ -16,24 +16,32 @@
  */
 
 import {
-  Languages, X, ArrowRightLeft, Copy, Check, Loader2,
-  ChevronDown, AlertTriangle, Info, Sparkles,
-  ArrowRight
-} from 'lucide-react'
-import { motion } from 'motion/react'
-import { useCallback, useState } from 'react'
-import { toast } from 'sonner'
+  Languages,
+  X,
+  ArrowRightLeft,
+  Copy,
+  Check,
+  Loader2,
+  ChevronDown,
+  AlertTriangle,
+  Info,
+  Sparkles,
+  ArrowRight,
+} from 'lucide-react';
+import { motion } from 'motion/react';
+import { useCallback, useState } from 'react';
+import { toast } from 'sonner';
 
-import { useAppStore } from '../store'
-import { getI18n } from '../utils/i18n'
-import { getThemeTokens } from '../utils/theme'
+import { useAppStore } from '../store';
+import { getI18n } from '../utils/i18n';
+import { getThemeTokens } from '../utils/theme';
 
 /* ── Supported languages ── */
 interface LangOption {
-  id: string
-  name: string
-  ext: string
-  color: string
+  id: string;
+  name: string;
+  ext: string;
+  color: string;
 }
 
 const LANGUAGES: LangOption[] = [
@@ -49,10 +57,13 @@ const LANGUAGES: LangOption[] = [
   { id: 'kotlin', name: 'Kotlin', ext: '.kt', color: '#a97bff' },
   { id: 'php', name: 'PHP', ext: '.php', color: '#4f5d95' },
   { id: 'ruby', name: 'Ruby', ext: '.rb', color: '#701516' },
-]
+];
 
 /* ── Translation results by pair ── */
-const TRANSLATIONS: Record<string, { code: string; confidence: number; notes: string[]; warnings: string[] }> = {
+const TRANSLATIONS: Record<
+  string,
+  { code: string; confidence: number; notes: string[]; warnings: string[] }
+> = {
   'typescript→python': {
     code: `from dataclasses import dataclass, field
 from typing import List, Optional, Callable
@@ -252,7 +263,7 @@ func (s *AppState) ToggleTerminal() {
       'Error handling not shown — Go functions typically return (result, error)',
     ],
   },
-}
+};
 
 /* ── Default source code ── */
 const DEFAULT_SOURCE = `// YYC3 PortAISys - App State (TypeScript + Zustand)
@@ -295,93 +306,113 @@ export const useAppStore = create<AppState>((set) => ({
     })),
   toggleTerminal: () => set((s) => ({ terminalVisible: !s.terminalVisible })),
   setViewMode: (mode) => set({ viewMode: mode }),
-}))`
+}))`;
 
 /* ── History entry ── */
 interface HistoryEntry {
-  id: string
-  from: string
-  to: string
-  timestamp: number
-  confidence: number
+  id: string;
+  from: string;
+  to: string;
+  timestamp: number;
+  confidence: number;
 }
 
 /* ══════════════════════════════════════════ */
 
-interface CodeTranslatorProps { open: boolean; onClose: () => void }
+interface CodeTranslatorProps {
+  open: boolean;
+  onClose: () => void;
+}
 
 export function CodeTranslator({ open, onClose }: CodeTranslatorProps) {
-  const { theme, language } = useAppStore()
-  const t = getThemeTokens(theme)
-  const ii = getI18n(language)
+  const { theme, language } = useAppStore();
+  const t = getThemeTokens(theme);
+  const ii = getI18n(language);
 
-  const [sourceLang, setSourceLang] = useState('typescript')
-  const [targetLang, setTargetLang] = useState('python')
-  const [sourceCode, setSourceCode] = useState(DEFAULT_SOURCE)
-  const [translatedCode, setTranslatedCode] = useState('')
-  const [translating, setTranslating] = useState(false)
-  const [confidence, setConfidence] = useState(0)
-  const [notes, setNotes] = useState<string[]>([])
-  const [warnings, setWarnings] = useState<string[]>([])
-  const [showSourceDropdown, setShowSourceDropdown] = useState(false)
-  const [showTargetDropdown, setShowTargetDropdown] = useState(false)
-  const [_history, setHistory] = useState<HistoryEntry[]>([])
-  const [copiedResult, setCopiedResult] = useState(false)
+  const [sourceLang, setSourceLang] = useState('typescript');
+  const [targetLang, setTargetLang] = useState('python');
+  const [sourceCode, setSourceCode] = useState(DEFAULT_SOURCE);
+  const [translatedCode, setTranslatedCode] = useState('');
+  const [translating, setTranslating] = useState(false);
+  const [confidence, setConfidence] = useState(0);
+  const [notes, setNotes] = useState<string[]>([]);
+  const [warnings, setWarnings] = useState<string[]>([]);
+  const [showSourceDropdown, setShowSourceDropdown] = useState(false);
+  const [showTargetDropdown, setShowTargetDropdown] = useState(false);
+  const [_history, setHistory] = useState<HistoryEntry[]>([]);
+  const [copiedResult, setCopiedResult] = useState(false);
 
-  const sourceLangObj = LANGUAGES.find(l => l.id === sourceLang)!
-  const targetLangObj = LANGUAGES.find(l => l.id === targetLang)!
+  const sourceLangObj = LANGUAGES.find((l) => l.id === sourceLang)!;
+  const targetLangObj = LANGUAGES.find((l) => l.id === targetLang)!;
 
   const translate = useCallback(() => {
-    if (!sourceCode.trim() || translating) return
-    setTranslating(true)
-    setTranslatedCode('')
-    setNotes([])
-    setWarnings([])
+    if (!sourceCode.trim() || translating) return;
+    setTranslating(true);
+    setTranslatedCode('');
+    setNotes([]);
+    setWarnings([]);
 
-    setTimeout(() => {
-      const key = `${sourceLang}\u2192${targetLang}`
-      const result = TRANSLATIONS[key]
-      if (result) {
-        setTranslatedCode(result.code)
-        setConfidence(result.confidence)
-        setNotes(result.notes)
-        setWarnings(result.warnings)
-      } else {
-        // Generic fallback
-        setTranslatedCode(`// AI-translated from ${sourceLangObj.name} to ${targetLangObj.name}\n// Translation engine: YYC3 AI Code Translator\n\n// TODO: Implement ${targetLangObj.name} equivalent\n// Source had ${sourceCode.split('\n').length} lines`)
-        setConfidence(65)
-        setNotes([`Generic translation from ${sourceLangObj.name} to ${targetLangObj.name}`, 'Manual review recommended'])
-        setWarnings([`No specialized ${sourceLangObj.name}\u2192${targetLangObj.name} translator available`])
-      }
-      setHistory(prev => [{
-        id: `h-${Date.now()}`, from: sourceLang, to: targetLang,
-        timestamp: Date.now(), confidence: TRANSLATIONS[key]?.confidence || 65,
-      }, ...prev.slice(0, 9)])
-      setTranslating(false)
-    }, 1500 + Math.random() * 1000)
-  }, [sourceCode, sourceLang, targetLang, translating, sourceLangObj, targetLangObj])
+    setTimeout(
+      () => {
+        const key = `${sourceLang}\u2192${targetLang}`;
+        const result = TRANSLATIONS[key];
+        if (result) {
+          setTranslatedCode(result.code);
+          setConfidence(result.confidence);
+          setNotes(result.notes);
+          setWarnings(result.warnings);
+        } else {
+          // Generic fallback
+          setTranslatedCode(
+            `// AI-translated from ${sourceLangObj.name} to ${targetLangObj.name}\n// Translation engine: YYC3 AI Code Translator\n\n// TODO: Implement ${targetLangObj.name} equivalent\n// Source had ${sourceCode.split('\n').length} lines`
+          );
+          setConfidence(65);
+          setNotes([
+            `Generic translation from ${sourceLangObj.name} to ${targetLangObj.name}`,
+            'Manual review recommended',
+          ]);
+          setWarnings([
+            `No specialized ${sourceLangObj.name}\u2192${targetLangObj.name} translator available`,
+          ]);
+        }
+        setHistory((prev) => [
+          {
+            id: `h-${Date.now()}`,
+            from: sourceLang,
+            to: targetLang,
+            timestamp: Date.now(),
+            confidence: TRANSLATIONS[key]?.confidence || 65,
+          },
+          ...prev.slice(0, 9),
+        ]);
+        setTranslating(false);
+      },
+      1500 + Math.random() * 1000
+    );
+  }, [sourceCode, sourceLang, targetLang, translating, sourceLangObj, targetLangObj]);
 
   const swapLangs = useCallback(() => {
-    const tmpLang = sourceLang
-    setSourceLang(targetLang)
-    setTargetLang(tmpLang)
+    const tmpLang = sourceLang;
+    setSourceLang(targetLang);
+    setTargetLang(tmpLang);
     if (translatedCode) {
-      setSourceCode(translatedCode)
-      setTranslatedCode('')
+      setSourceCode(translatedCode);
+      setTranslatedCode('');
     }
-  }, [sourceLang, targetLang, translatedCode])
+  }, [sourceLang, targetLang, translatedCode]);
 
   const copyResult = useCallback(() => {
-    navigator.clipboard.writeText(translatedCode)
-    setCopiedResult(true)
-    setTimeout(() => setCopiedResult(false), 2000)
-    toast.success(ii.ctCopyResult)
-  }, [translatedCode, ii])
+    navigator.clipboard.writeText(translatedCode);
+    setCopiedResult(true);
+    setTimeout(() => setCopiedResult(false), 2000);
+    toast.success(ii.ctCopyResult);
+  }, [translatedCode, ii]);
 
-  const confidenceColor = confidence >= 85 ? 'text-emerald-400' : confidence >= 70 ? 'text-amber-400' : 'text-red-400'
-  const confidenceLabel = confidence >= 85 ? ii.ctHigh : confidence >= 70 ? ii.ctMedium : ii.ctLow
+  const confidenceColor =
+    confidence >= 85 ? 'text-emerald-400' : confidence >= 70 ? 'text-amber-400' : 'text-red-400';
+  const confidenceLabel = confidence >= 85 ? ii.ctHigh : confidence >= 70 ? ii.ctMedium : ii.ctLow;
 
-  if (!open) return null
+  if (!open) return null;
 
   return (
     <>
@@ -393,38 +424,75 @@ export function CodeTranslator({ open, onClose }: CodeTranslatorProps) {
           className={`w-full max-w-6xl max-h-[85vh] rounded-2xl overflow-hidden flex flex-col ${t.surface.popover} ${t.border.popover} shadow-2xl`}
         >
           {/* Header */}
-          <div className={`flex items-center justify-between px-6 py-3 border-b ${t.border.subtle}`}>
+          <div
+            className={`flex items-center justify-between px-6 py-3 border-b ${t.border.subtle}`}
+          >
             <div className="flex items-center gap-3">
-              <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${t.isDark ? 'bg-gradient-to-br from-violet-500/20 to-pink-500/20' : 'bg-gradient-to-br from-violet-50 to-pink-50'}`}>
-                <Languages className={`w-4 h-4 ${t.isDark ? 'text-violet-400' : 'text-violet-500'}`} />
+              <div
+                className={`w-8 h-8 rounded-xl flex items-center justify-center ${t.isDark ? 'bg-gradient-to-br from-violet-500/20 to-pink-500/20' : 'bg-gradient-to-br from-violet-50 to-pink-50'}`}
+              >
+                <Languages
+                  className={`w-4 h-4 ${t.isDark ? 'text-violet-400' : 'text-violet-500'}`}
+                />
               </div>
               <div>
-                <h2 className={`text-[14px] ${t.text.primary}`} style={{ fontWeight: 700 }}>{ii.ctTitle}</h2>
-                <p className={`text-[10px] ${t.text.dimmed}`}>{ii.ctSubtitle} · {LANGUAGES.length} languages</p>
+                <h2 className={`text-[14px] ${t.text.primary}`} style={{ fontWeight: 700 }}>
+                  {ii.ctTitle}
+                </h2>
+                <p className={`text-[10px] ${t.text.dimmed}`}>
+                  {ii.ctSubtitle} · {LANGUAGES.length} languages
+                </p>
               </div>
             </div>
-            <button onClick={onClose} className={`p-2 rounded-xl ${t.transition} ${t.interactive.iconBtn}`}>
+            <button
+              onClick={onClose}
+              className={`p-2 rounded-xl ${t.transition} ${t.interactive.iconBtn}`}
+            >
               <X className="w-4 h-4" />
             </button>
           </div>
 
           {/* Language selector bar */}
-          <div className={`flex items-center justify-center gap-4 px-6 py-3 border-b ${t.border.subtle}`}>
+          <div
+            className={`flex items-center justify-center gap-4 px-6 py-3 border-b ${t.border.subtle}`}
+          >
             {/* Source lang */}
             <div className="relative">
-              <button onClick={() => { setShowSourceDropdown(!showSourceDropdown); setShowTargetDropdown(false) }}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl border ${t.border.subtle} ${t.transition} ${t.interactive.menuItem}`}>
-                <span className="w-3 h-3 rounded-full" style={{ backgroundColor: sourceLangObj.color }} />
-                <span className={`text-[11px] ${t.text.primary}`} style={{ fontWeight: 600 }}>{sourceLangObj.name}</span>
+              <button
+                onClick={() => {
+                  setShowSourceDropdown(!showSourceDropdown);
+                  setShowTargetDropdown(false);
+                }}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl border ${t.border.subtle} ${t.transition} ${t.interactive.menuItem}`}
+              >
+                <span
+                  className="w-3 h-3 rounded-full"
+                  style={{ backgroundColor: sourceLangObj.color }}
+                />
+                <span className={`text-[11px] ${t.text.primary}`} style={{ fontWeight: 600 }}>
+                  {sourceLangObj.name}
+                </span>
                 <ChevronDown className={`w-3 h-3 ${t.text.muted}`} />
               </button>
               {showSourceDropdown && (
-                <div className={`absolute top-full left-0 mt-1 z-10 w-44 rounded-xl overflow-hidden max-h-64 overflow-y-auto ${t.surface.popover} ${t.border.popover} shadow-xl ${t.scrollbar}`}>
-                  {LANGUAGES.map(l => (
-                    <button key={l.id} onClick={() => { setSourceLang(l.id); setShowSourceDropdown(false) }}
-                      className={`w-full flex items-center gap-2 px-3 py-2 text-[10px] text-left ${t.transition} ${sourceLang === l.id ? t.accent.primaryBg + ' ' + t.accent.primary : t.interactive.menuItem}`}>
-                      <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: l.color }} />
-                      {l.name} <span className={`ml-auto text-[8px] ${t.text.dimmed}`}>{l.ext}</span>
+                <div
+                  className={`absolute top-full left-0 mt-1 z-10 w-44 rounded-xl overflow-hidden max-h-64 overflow-y-auto ${t.surface.popover} ${t.border.popover} shadow-xl ${t.scrollbar}`}
+                >
+                  {LANGUAGES.map((l) => (
+                    <button
+                      key={l.id}
+                      onClick={() => {
+                        setSourceLang(l.id);
+                        setShowSourceDropdown(false);
+                      }}
+                      className={`w-full flex items-center gap-2 px-3 py-2 text-[10px] text-left ${t.transition} ${sourceLang === l.id ? t.accent.primaryBg + ' ' + t.accent.primary : t.interactive.menuItem}`}
+                    >
+                      <span
+                        className="w-2.5 h-2.5 rounded-full"
+                        style={{ backgroundColor: l.color }}
+                      />
+                      {l.name}{' '}
+                      <span className={`ml-auto text-[8px] ${t.text.dimmed}`}>{l.ext}</span>
                     </button>
                   ))}
                 </div>
@@ -432,25 +500,51 @@ export function CodeTranslator({ open, onClose }: CodeTranslatorProps) {
             </div>
 
             {/* Swap */}
-            <button onClick={swapLangs} className={`p-2 rounded-xl ${t.transition} ${t.interactive.iconBtn}`} title={ii.ctSwapLangs}>
+            <button
+              onClick={swapLangs}
+              className={`p-2 rounded-xl ${t.transition} ${t.interactive.iconBtn}`}
+              title={ii.ctSwapLangs}
+            >
               <ArrowRightLeft className="w-4 h-4" />
             </button>
 
             {/* Target lang */}
             <div className="relative">
-              <button onClick={() => { setShowTargetDropdown(!showTargetDropdown); setShowSourceDropdown(false) }}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl border ${t.border.subtle} ${t.transition} ${t.interactive.menuItem}`}>
-                <span className="w-3 h-3 rounded-full" style={{ backgroundColor: targetLangObj.color }} />
-                <span className={`text-[11px] ${t.text.primary}`} style={{ fontWeight: 600 }}>{targetLangObj.name}</span>
+              <button
+                onClick={() => {
+                  setShowTargetDropdown(!showTargetDropdown);
+                  setShowSourceDropdown(false);
+                }}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl border ${t.border.subtle} ${t.transition} ${t.interactive.menuItem}`}
+              >
+                <span
+                  className="w-3 h-3 rounded-full"
+                  style={{ backgroundColor: targetLangObj.color }}
+                />
+                <span className={`text-[11px] ${t.text.primary}`} style={{ fontWeight: 600 }}>
+                  {targetLangObj.name}
+                </span>
                 <ChevronDown className={`w-3 h-3 ${t.text.muted}`} />
               </button>
               {showTargetDropdown && (
-                <div className={`absolute top-full left-0 mt-1 z-10 w-44 rounded-xl overflow-hidden max-h-64 overflow-y-auto ${t.surface.popover} ${t.border.popover} shadow-xl ${t.scrollbar}`}>
-                  {LANGUAGES.filter(l => l.id !== sourceLang).map(l => (
-                    <button key={l.id} onClick={() => { setTargetLang(l.id); setShowTargetDropdown(false) }}
-                      className={`w-full flex items-center gap-2 px-3 py-2 text-[10px] text-left ${t.transition} ${targetLang === l.id ? t.accent.primaryBg + ' ' + t.accent.primary : t.interactive.menuItem}`}>
-                      <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: l.color }} />
-                      {l.name} <span className={`ml-auto text-[8px] ${t.text.dimmed}`}>{l.ext}</span>
+                <div
+                  className={`absolute top-full left-0 mt-1 z-10 w-44 rounded-xl overflow-hidden max-h-64 overflow-y-auto ${t.surface.popover} ${t.border.popover} shadow-xl ${t.scrollbar}`}
+                >
+                  {LANGUAGES.filter((l) => l.id !== sourceLang).map((l) => (
+                    <button
+                      key={l.id}
+                      onClick={() => {
+                        setTargetLang(l.id);
+                        setShowTargetDropdown(false);
+                      }}
+                      className={`w-full flex items-center gap-2 px-3 py-2 text-[10px] text-left ${t.transition} ${targetLang === l.id ? t.accent.primaryBg + ' ' + t.accent.primary : t.interactive.menuItem}`}
+                    >
+                      <span
+                        className="w-2.5 h-2.5 rounded-full"
+                        style={{ backgroundColor: l.color }}
+                      />
+                      {l.name}{' '}
+                      <span className={`ml-auto text-[8px] ${t.text.dimmed}`}>{l.ext}</span>
                     </button>
                   ))}
                 </div>
@@ -458,11 +552,19 @@ export function CodeTranslator({ open, onClose }: CodeTranslatorProps) {
             </div>
 
             {/* Translate button */}
-            <button onClick={translate} disabled={translating || !sourceCode.trim()}
+            <button
+              onClick={translate}
+              disabled={translating || !sourceCode.trim()}
               className={`flex items-center gap-2 px-5 py-2 rounded-xl text-[11px] ${t.transition} ${
                 translating ? 'opacity-50 cursor-not-allowed' : t.accent.solidBtn + ' text-white'
-              }`} style={{ fontWeight: 700 }}>
-              {translating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+              }`}
+              style={{ fontWeight: 700 }}
+            >
+              {translating ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Sparkles className="w-4 h-4" />
+              )}
               {translating ? ii.ctTranslating : ii.ctTranslate}
             </button>
           </div>
@@ -471,16 +573,25 @@ export function CodeTranslator({ open, onClose }: CodeTranslatorProps) {
           <div className="flex flex-1 overflow-hidden">
             {/* Source */}
             <div className={`flex-1 flex flex-col border-r ${t.border.subtle}`}>
-              <div className={`flex items-center justify-between px-4 py-1.5 border-b ${t.border.subtle}`}>
+              <div
+                className={`flex items-center justify-between px-4 py-1.5 border-b ${t.border.subtle}`}
+              >
                 <div className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full" style={{ backgroundColor: sourceLangObj.color }} />
-                  <span className={`text-[9px] ${t.text.muted}`} style={{ fontWeight: 600 }}>{ii.ctOriginal} · {sourceLangObj.name}</span>
+                  <span
+                    className="w-2 h-2 rounded-full"
+                    style={{ backgroundColor: sourceLangObj.color }}
+                  />
+                  <span className={`text-[9px] ${t.text.muted}`} style={{ fontWeight: 600 }}>
+                    {ii.ctOriginal} · {sourceLangObj.name}
+                  </span>
                 </div>
-                <span className={`text-[8px] ${t.text.dimmed}`}>{sourceCode.split('\n').length} lines</span>
+                <span className={`text-[8px] ${t.text.dimmed}`}>
+                  {sourceCode.split('\n').length} lines
+                </span>
               </div>
               <textarea
                 value={sourceCode}
-                onChange={e => setSourceCode(e.target.value)}
+                onChange={(e) => setSourceCode(e.target.value)}
                 className={`flex-1 p-4 font-mono text-[9px] resize-none outline-none ${t.isDark ? 'bg-[#0a0f1f] text-slate-300' : 'bg-white text-slate-700'}`}
                 spellCheck={false}
               />
@@ -488,10 +599,17 @@ export function CodeTranslator({ open, onClose }: CodeTranslatorProps) {
 
             {/* Target */}
             <div className="flex-1 flex flex-col">
-              <div className={`flex items-center justify-between px-4 py-1.5 border-b ${t.border.subtle}`}>
+              <div
+                className={`flex items-center justify-between px-4 py-1.5 border-b ${t.border.subtle}`}
+              >
                 <div className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full" style={{ backgroundColor: targetLangObj.color }} />
-                  <span className={`text-[9px] ${t.text.muted}`} style={{ fontWeight: 600 }}>{ii.ctTranslated} · {targetLangObj.name}</span>
+                  <span
+                    className="w-2 h-2 rounded-full"
+                    style={{ backgroundColor: targetLangObj.color }}
+                  />
+                  <span className={`text-[9px] ${t.text.muted}`} style={{ fontWeight: 600 }}>
+                    {ii.ctTranslated} · {targetLangObj.name}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
                   {confidence > 0 && (
@@ -500,25 +618,41 @@ export function CodeTranslator({ open, onClose }: CodeTranslatorProps) {
                     </span>
                   )}
                   {translatedCode && (
-                    <button onClick={copyResult} className={`p-0.5 rounded ${t.transition} ${t.interactive.iconBtn}`}>
-                      {copiedResult ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                    <button
+                      onClick={copyResult}
+                      className={`p-0.5 rounded ${t.transition} ${t.interactive.iconBtn}`}
+                    >
+                      {copiedResult ? (
+                        <Check className="w-3 h-3 text-emerald-400" />
+                      ) : (
+                        <Copy className="w-3 h-3" />
+                      )}
                     </button>
                   )}
                 </div>
               </div>
               <div className={`flex-1 overflow-auto ${t.scrollbar}`}>
                 {translating ? (
-                  <div className={`flex flex-col items-center justify-center h-full gap-3 ${t.text.dimmed}`}>
+                  <div
+                    className={`flex flex-col items-center justify-center h-full gap-3 ${t.text.dimmed}`}
+                  >
                     <Loader2 className="w-6 h-6 animate-spin text-violet-400" />
                     <span className="text-[11px]">{ii.ctTranslating}</span>
-                    <span className="text-[9px]">{sourceLangObj.name} <ArrowRight className="w-3 h-3 inline" /> {targetLangObj.name}</span>
+                    <span className="text-[9px]">
+                      {sourceLangObj.name} <ArrowRight className="w-3 h-3 inline" />{' '}
+                      {targetLangObj.name}
+                    </span>
                   </div>
                 ) : translatedCode ? (
-                  <pre className={`p-4 font-mono text-[9px] whitespace-pre-wrap ${t.isDark ? 'text-emerald-300/80' : 'text-slate-700'}`}>
+                  <pre
+                    className={`p-4 font-mono text-[9px] whitespace-pre-wrap ${t.isDark ? 'text-emerald-300/80' : 'text-slate-700'}`}
+                  >
                     {translatedCode}
                   </pre>
                 ) : (
-                  <div className={`flex flex-col items-center justify-center h-full gap-2 ${t.text.dimmed}`}>
+                  <div
+                    className={`flex flex-col items-center justify-center h-full gap-2 ${t.text.dimmed}`}
+                  >
                     <Languages className="w-6 h-6 opacity-20" />
                     <span className="text-[10px]">Click Translate to convert code</span>
                   </div>
@@ -529,16 +663,25 @@ export function CodeTranslator({ open, onClose }: CodeTranslatorProps) {
 
           {/* Notes & warnings footer */}
           {(notes.length > 0 || warnings.length > 0) && (
-            <div className={`px-6 py-2.5 border-t ${t.border.subtle} max-h-32 overflow-y-auto ${t.scrollbar}`}>
+            <div
+              className={`px-6 py-2.5 border-t ${t.border.subtle} max-h-32 overflow-y-auto ${t.scrollbar}`}
+            >
               <div className="flex gap-6">
                 {notes.length > 0 && (
                   <div className="flex-1">
                     <div className="flex items-center gap-1 mb-1">
                       <Info className="w-3 h-3 text-blue-400" />
-                      <span className={`text-[8px] uppercase tracking-wider ${t.text.dimmed}`} style={{ fontWeight: 600 }}>{ii.ctNotes}</span>
+                      <span
+                        className={`text-[8px] uppercase tracking-wider ${t.text.dimmed}`}
+                        style={{ fontWeight: 600 }}
+                      >
+                        {ii.ctNotes}
+                      </span>
                     </div>
                     {notes.map((n, idx) => (
-                      <p key={idx} className={`text-[8px] ${t.text.muted} pl-4`}>· {n}</p>
+                      <p key={idx} className={`text-[8px] ${t.text.muted} pl-4`}>
+                        · {n}
+                      </p>
                     ))}
                   </div>
                 )}
@@ -546,10 +689,17 @@ export function CodeTranslator({ open, onClose }: CodeTranslatorProps) {
                   <div className="flex-1">
                     <div className="flex items-center gap-1 mb-1">
                       <AlertTriangle className="w-3 h-3 text-amber-400" />
-                      <span className={`text-[8px] uppercase tracking-wider ${t.text.dimmed}`} style={{ fontWeight: 600 }}>{ii.ctWarnings}</span>
+                      <span
+                        className={`text-[8px] uppercase tracking-wider ${t.text.dimmed}`}
+                        style={{ fontWeight: 600 }}
+                      >
+                        {ii.ctWarnings}
+                      </span>
                     </div>
                     {warnings.map((w, idx) => (
-                      <p key={idx} className={`text-[8px] text-amber-400/80 pl-4`}>· {w}</p>
+                      <p key={idx} className={`text-[8px] text-amber-400/80 pl-4`}>
+                        · {w}
+                      </p>
                     ))}
                   </div>
                 )}
@@ -559,5 +709,5 @@ export function CodeTranslator({ open, onClose }: CodeTranslatorProps) {
         </motion.div>
       </div>
     </>
-  )
+  );
 }

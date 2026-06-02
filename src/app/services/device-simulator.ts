@@ -16,27 +16,27 @@
 // Types
 // ═════════════════════════════════════════════════════
 
-export type DeviceType = 'mobile' | 'tablet' | 'desktop' | 'tv' | 'custom'
-export type DeviceOrientation = 'portrait' | 'landscape'
+export type DeviceType = 'mobile' | 'tablet' | 'desktop' | 'tv' | 'custom';
+export type DeviceOrientation = 'portrait' | 'landscape';
 
 export interface DevicePreset {
-  id: string
-  name: string
-  type: DeviceType
-  width: number
-  height: number
-  pixelRatio: number
-  userAgent: string
-  orientation: DeviceOrientation
-  icon: string
+  id: string;
+  name: string;
+  type: DeviceType;
+  width: number;
+  height: number;
+  pixelRatio: number;
+  userAgent: string;
+  orientation: DeviceOrientation;
+  icon: string;
 }
 
 export interface SimulatorConfig {
-  device: DevicePreset
-  scale: number
-  showRulers: boolean
-  showGrid: boolean
-  highlightElements: boolean
+  device: DevicePreset;
+  scale: number;
+  showRulers: boolean;
+  showGrid: boolean;
+  highlightElements: boolean;
 }
 
 // ═════════════════════════════════════════════════════
@@ -78,7 +78,7 @@ export const DEVICE_PRESETS: DevicePreset[] = [
     orientation: 'portrait',
     icon: '📱',
   },
-  
+
   // Tablet
   {
     id: 'ipad-mini',
@@ -113,7 +113,7 @@ export const DEVICE_PRESETS: DevicePreset[] = [
     orientation: 'portrait',
     icon: '📟',
   },
-  
+
   // Desktop
   {
     id: 'macbook-pro-13',
@@ -159,7 +159,7 @@ export const DEVICE_PRESETS: DevicePreset[] = [
     orientation: 'landscape',
     icon: '🖥️',
   },
-  
+
   // TV
   {
     id: 'tv-1080p',
@@ -183,48 +183,48 @@ export const DEVICE_PRESETS: DevicePreset[] = [
     orientation: 'landscape',
     icon: '📺',
   },
-]
+];
 
 // ═════════════════════════════════════════════════════
 // Device Simulator Service
 // ═════════════════════════════════════════════════════
 
 class DeviceSimulatorService {
-  private currentDevice: DevicePreset = DEVICE_PRESETS[0]
-  private currentOrientation: DeviceOrientation = 'portrait'
-  private scale: number = 1
-  private observers: Set<Function> = new Set()
+  private currentDevice: DevicePreset = DEVICE_PRESETS[0];
+  private currentOrientation: DeviceOrientation = 'portrait';
+  private scale: number = 1;
+  private observers: Set<Function> = new Set();
 
   /**
    * Get all device presets
    */
   getPresets(): DevicePreset[] {
-    return DEVICE_PRESETS
+    return DEVICE_PRESETS;
   }
 
   /**
    * Get preset by ID
    */
   getPreset(id: string): DevicePreset | undefined {
-    return DEVICE_PRESETS.find(d => d.id === id)
+    return DEVICE_PRESETS.find((d) => d.id === id);
   }
 
   /**
    * Get presets by type
    */
   getPresetsByType(type: DeviceType): DevicePreset[] {
-    return DEVICE_PRESETS.filter(d => d.type === type)
+    return DEVICE_PRESETS.filter((d) => d.type === type);
   }
 
   /**
    * Set current device
    */
   setDevice(deviceId: string): void {
-    const device = this.getPreset(deviceId)
+    const device = this.getPreset(deviceId);
     if (device) {
-      this.currentDevice = device
-      this.currentOrientation = device.orientation
-      this.notifyObservers()
+      this.currentDevice = device;
+      this.currentOrientation = device.orientation;
+      this.notifyObservers();
     }
   }
 
@@ -242,39 +242,44 @@ class DeviceSimulatorService {
       userAgent: navigator.userAgent,
       orientation: width > height ? 'landscape' : 'portrait',
       icon: '📐',
-    }
-    this.notifyObservers()
+    };
+    this.notifyObservers();
   }
 
   /**
    * Toggle orientation
    */
   toggleOrientation(): void {
-    this.currentOrientation = this.currentOrientation === 'portrait' ? 'landscape' : 'portrait'
-    this.notifyObservers()
+    this.currentOrientation = this.currentOrientation === 'portrait' ? 'landscape' : 'portrait';
+    this.notifyObservers();
   }
 
   /**
    * Set scale
    */
   setScale(scale: number): void {
-    this.scale = Math.max(0.1, Math.min(2, scale))
-    this.notifyObservers()
+    this.scale = Math.max(0.1, Math.min(2, scale));
+    this.notifyObservers();
   }
 
   /**
    * Get current dimensions
    */
-  getCurrentDimensions(): { width: number; height: number; scaledWidth: number; scaledHeight: number } {
-    const { width, height } = this.currentDevice
-    const isPortrait = this.currentOrientation === 'portrait'
-    
+  getCurrentDimensions(): {
+    width: number;
+    height: number;
+    scaledWidth: number;
+    scaledHeight: number;
+  } {
+    const { width, height } = this.currentDevice;
+    const isPortrait = this.currentOrientation === 'portrait';
+
     return {
       width: isPortrait ? width : height,
       height: isPortrait ? height : width,
       scaledWidth: (isPortrait ? width : height) * this.scale,
       scaledHeight: (isPortrait ? height : width) * this.scale,
-    }
+    };
   }
 
   /**
@@ -287,7 +292,7 @@ class DeviceSimulatorService {
       showRulers: true,
       showGrid: false,
       highlightElements: false,
-    }
+    };
   }
 
   /**
@@ -299,7 +304,7 @@ class DeviceSimulatorService {
       { name: 'Tablet', width: 768, color: '#8b5cf6' },
       { name: 'Laptop', width: 1280, color: '#ec4899' },
       { name: 'Desktop', width: 1920, color: '#10b981' },
-    ]
+    ];
   }
 
   /**
@@ -311,9 +316,9 @@ class DeviceSimulatorService {
       tablet: 768,
       laptop: 1024,
       desktop: 1280,
-    }
-    
-    return width >= (breakpoints[breakpoint] || 0)
+    };
+
+    return width >= (breakpoints[breakpoint] || 0);
   }
 
   /**
@@ -321,35 +326,35 @@ class DeviceSimulatorService {
    */
   async screenshot(): Promise<Blob | null> {
     // In production, this would capture the iframe content
-    console.log('[DeviceSimulator] Screenshot requested')
-    return null
+    console.log('[DeviceSimulator] Screenshot requested');
+    return null;
   }
 
   /**
    * Subscribe to changes
    */
   subscribe(callback: Function): () => void {
-    this.observers.add(callback)
+    this.observers.add(callback);
     return () => {
-      this.observers.delete(callback)
-    }
+      this.observers.delete(callback);
+    };
   }
 
   /**
    * Notify observers
    */
   private notifyObservers(): void {
-    this.observers.forEach(callback => callback(this.getCurrentConfig()))
+    this.observers.forEach((callback) => callback(this.getCurrentConfig()));
   }
 
   /**
    * Reset to default
    */
   reset(): void {
-    this.currentDevice = DEVICE_PRESETS[0]
-    this.currentOrientation = 'portrait'
-    this.scale = 1
-    this.notifyObservers()
+    this.currentDevice = DEVICE_PRESETS[0];
+    this.currentOrientation = 'portrait';
+    this.scale = 1;
+    this.notifyObservers();
   }
 }
 
@@ -357,5 +362,5 @@ class DeviceSimulatorService {
 // Singleton Instance
 // ═════════════════════════════════════════════════════
 
-export const deviceSimulator = new DeviceSimulatorService()
-export default deviceSimulator
+export const deviceSimulator = new DeviceSimulatorService();
+export default deviceSimulator;

@@ -12,37 +12,90 @@
  * @tags test,icons,lucide,accessibility
  */
 
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react';
 import {
   // Common icons
-  Home, Settings, User, Bell, Search, Menu, X, Check,
+  Home,
+  Settings,
+  User,
+  Bell,
+  Search,
+  Menu,
+  X,
+  Check,
   // Navigation icons
-  ChevronLeft, ChevronRight, ChevronUp, ChevronDown,
-  ArrowLeft, ArrowRight, ArrowUp, ArrowDown,
+  ChevronLeft,
+  ChevronRight,
+  ChevronUp,
+  ChevronDown,
+  ArrowLeft,
+  ArrowRight,
+  ArrowUp,
+  ArrowDown,
   // Action icons
-  Plus, Minus, Edit, Trash2, Copy, Download, Upload,
+  Plus,
+  Minus,
+  Edit,
+  Trash2,
+  Copy,
+  Download,
+  Upload,
   // Status icons
-  CheckCircle, AlertCircle, XCircle, Info, Loader2,
+  CheckCircle,
+  AlertCircle,
+  XCircle,
+  Info,
+  Loader2,
   // File icons
-  File, FileText, FileCode, Folder, FolderOpen,
+  File,
+  FileText,
+  FileCode,
+  Folder,
+  FolderOpen,
   // Media icons
-  Image, Video, Camera, Volume2,
+  Image,
+  Video,
+  Camera,
+  Volume2,
   // Communication icons
-  Mail, MessageSquare, Phone, Share2,
+  Mail,
+  MessageSquare,
+  Phone,
+  Share2,
   // Tech icons
-  Code, Terminal, Database, Server, Wifi,
+  Code,
+  Terminal,
+  Database,
+  Server,
+  Wifi,
   // UI icons
-  Eye, EyeOff, Lock, Unlock, Star, Heart,
+  Eye,
+  EyeOff,
+  Lock,
+  Unlock,
+  Star,
+  Heart,
   // Calendar icons
-  Calendar, Clock, Timer,
+  Calendar,
+  Clock,
+  Timer,
   // Layout icons
-  Grid, List, Layout, Maximize2, Minimize2,
+  Grid,
+  List,
+  Layout,
+  Maximize2,
+  Minimize2,
   // Arrows
-  RefreshCw, RotateCw, RotateCcw,
+  RefreshCw,
+  RotateCw,
+  RotateCcw,
   // Misc
-  Zap, Flame, TrendingUp, TrendingDown,
-} from 'lucide-react'
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+  Zap,
+  Flame,
+  TrendingUp,
+  TrendingDown,
+} from 'lucide-react';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 // ═════════════════════════════════════════════════════
 // Icon Import Tests
@@ -51,154 +104,154 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 describe('Lucide React Icon Imports', () => {
   describe('Common Icons', () => {
     it('should import Home icon', () => {
-      expect(Home).toBeDefined()
-    })
+      expect(Home).toBeDefined();
+    });
 
     it('should import Settings icon', () => {
-      expect(Settings).toBeDefined()
-    })
+      expect(Settings).toBeDefined();
+    });
 
     it('should import User icon', () => {
-      expect(User).toBeDefined()
-    })
+      expect(User).toBeDefined();
+    });
 
     it('should import Bell icon', () => {
-      expect(Bell).toBeDefined()
-    })
+      expect(Bell).toBeDefined();
+    });
 
     it('should import Search icon', () => {
-      expect(Search).toBeDefined()
-    })
-  })
+      expect(Search).toBeDefined();
+    });
+  });
 
   describe('Navigation Icons', () => {
     it('should import Chevron icons', () => {
-      expect(ChevronLeft).toBeDefined()
-      expect(ChevronRight).toBeDefined()
-      expect(ChevronUp).toBeDefined()
-      expect(ChevronDown).toBeDefined()
-    })
+      expect(ChevronLeft).toBeDefined();
+      expect(ChevronRight).toBeDefined();
+      expect(ChevronUp).toBeDefined();
+      expect(ChevronDown).toBeDefined();
+    });
 
     it('should import Arrow icons', () => {
-      expect(ArrowLeft).toBeDefined()
-      expect(ArrowRight).toBeDefined()
-      expect(ArrowUp).toBeDefined()
-      expect(ArrowDown).toBeDefined()
-    })
-  })
+      expect(ArrowLeft).toBeDefined();
+      expect(ArrowRight).toBeDefined();
+      expect(ArrowUp).toBeDefined();
+      expect(ArrowDown).toBeDefined();
+    });
+  });
 
   describe('Action Icons', () => {
     it('should import Plus/Minus icons', () => {
-      expect(Plus).toBeDefined()
-      expect(Minus).toBeDefined()
-    })
+      expect(Plus).toBeDefined();
+      expect(Minus).toBeDefined();
+    });
 
     it('should import Edit/Delete icons', () => {
-      expect(Edit).toBeDefined()
-      expect(Trash2).toBeDefined()
-    })
+      expect(Edit).toBeDefined();
+      expect(Trash2).toBeDefined();
+    });
 
     it('should import Copy/Download/Upload icons', () => {
-      expect(Copy).toBeDefined()
-      expect(Download).toBeDefined()
-      expect(Upload).toBeDefined()
-    })
-  })
+      expect(Copy).toBeDefined();
+      expect(Download).toBeDefined();
+      expect(Upload).toBeDefined();
+    });
+  });
 
   describe('Status Icons', () => {
     it('should import status icons', () => {
-      expect(CheckCircle).toBeDefined()
-      expect(AlertCircle).toBeDefined()
-      expect(XCircle).toBeDefined()
-      expect(Info).toBeDefined()
-      expect(Loader2).toBeDefined()
-    })
-  })
+      expect(CheckCircle).toBeDefined();
+      expect(AlertCircle).toBeDefined();
+      expect(XCircle).toBeDefined();
+      expect(Info).toBeDefined();
+      expect(Loader2).toBeDefined();
+    });
+  });
 
   describe('File Icons', () => {
     it('should import File icons', () => {
-      expect(File).toBeDefined()
-      expect(FileText).toBeDefined()
-      expect(FileCode).toBeDefined()
-      expect(Folder).toBeDefined()
-      expect(FolderOpen).toBeDefined()
-    })
-  })
+      expect(File).toBeDefined();
+      expect(FileText).toBeDefined();
+      expect(FileCode).toBeDefined();
+      expect(Folder).toBeDefined();
+      expect(FolderOpen).toBeDefined();
+    });
+  });
 
   describe('Media Icons', () => {
     it('should import Media icons', () => {
-      expect(Image).toBeDefined()
-      expect(Video).toBeDefined()
-      expect(Audio).toBeDefined()
-      expect(Camera).toBeDefined()
-    })
-  })
+      expect(Image).toBeDefined();
+      expect(Video).toBeDefined();
+      expect(Audio).toBeDefined();
+      expect(Camera).toBeDefined();
+    });
+  });
 
   describe('Communication Icons', () => {
     it('should import Communication icons', () => {
-      expect(Mail).toBeDefined()
-      expect(MessageSquare).toBeDefined()
-      expect(Phone).toBeDefined()
-      expect(Share2).toBeDefined()
-    })
-  })
+      expect(Mail).toBeDefined();
+      expect(MessageSquare).toBeDefined();
+      expect(Phone).toBeDefined();
+      expect(Share2).toBeDefined();
+    });
+  });
 
   describe('Tech Icons', () => {
     it('should import Tech icons', () => {
-      expect(Code).toBeDefined()
-      expect(Terminal).toBeDefined()
-      expect(Database).toBeDefined()
-      expect(Server).toBeDefined()
-      expect(Wifi).toBeDefined()
-    })
-  })
+      expect(Code).toBeDefined();
+      expect(Terminal).toBeDefined();
+      expect(Database).toBeDefined();
+      expect(Server).toBeDefined();
+      expect(Wifi).toBeDefined();
+    });
+  });
 
   describe('UI Icons', () => {
     it('should import UI icons', () => {
-      expect(Eye).toBeDefined()
-      expect(EyeOff).toBeDefined()
-      expect(Lock).toBeDefined()
-      expect(Unlock).toBeDefined()
-      expect(Star).toBeDefined()
-      expect(Heart).toBeDefined()
-    })
-  })
+      expect(Eye).toBeDefined();
+      expect(EyeOff).toBeDefined();
+      expect(Lock).toBeDefined();
+      expect(Unlock).toBeDefined();
+      expect(Star).toBeDefined();
+      expect(Heart).toBeDefined();
+    });
+  });
 
   describe('Calendar Icons', () => {
     it('should import Calendar icons', () => {
-      expect(Calendar).toBeDefined()
-      expect(Clock).toBeDefined()
-      expect(Timer).toBeDefined()
-    })
-  })
+      expect(Calendar).toBeDefined();
+      expect(Clock).toBeDefined();
+      expect(Timer).toBeDefined();
+    });
+  });
 
   describe('Layout Icons', () => {
     it('should import Layout icons', () => {
-      expect(Grid).toBeDefined()
-      expect(List).toBeDefined()
-      expect(Layout).toBeDefined()
-      expect(Maximize2).toBeDefined()
-      expect(Minimize2).toBeDefined()
-    })
-  })
+      expect(Grid).toBeDefined();
+      expect(List).toBeDefined();
+      expect(Layout).toBeDefined();
+      expect(Maximize2).toBeDefined();
+      expect(Minimize2).toBeDefined();
+    });
+  });
 
   describe('Rotation Icons', () => {
     it('should import Rotation icons', () => {
-      expect(RefreshCw).toBeDefined()
-      expect(RotateCw).toBeDefined()
-      expect(RotateCcw).toBeDefined()
-    })
-  })
+      expect(RefreshCw).toBeDefined();
+      expect(RotateCw).toBeDefined();
+      expect(RotateCcw).toBeDefined();
+    });
+  });
 
   describe('Misc Icons', () => {
     it('should import Misc icons', () => {
-      expect(Zap).toBeDefined()
-      expect(Flame).toBeDefined()
-      expect(TrendingUp).toBeDefined()
-      expect(TrendingDown).toBeDefined()
-    })
-  })
-})
+      expect(Zap).toBeDefined();
+      expect(Flame).toBeDefined();
+      expect(TrendingUp).toBeDefined();
+      expect(TrendingDown).toBeDefined();
+    });
+  });
+});
 
 // ═════════════════════════════════════════════════════
 // Icon Rendering Tests
@@ -206,75 +259,75 @@ describe('Lucide React Icon Imports', () => {
 
 describe('Icon Rendering', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
-  })
+    vi.clearAllMocks();
+  });
 
   it('should render Home icon with default props', () => {
-    render(<Home data-testid="test-icon" />)
-    const icon = screen.getByTestId('test-icon')
-    
-    expect(icon).toBeDefined()
-    expect(icon.tagName).toBe('svg')
-  })
+    render(<Home data-testid="test-icon" />);
+    const icon = screen.getByTestId('test-icon');
+
+    expect(icon).toBeDefined();
+    expect(icon.tagName).toBe('svg');
+  });
 
   it('should render icon with custom size', () => {
-    render(<Home size={32} data-testid="test-icon" />)
-    const icon = screen.getByTestId('test-icon')
-    
-    expect(icon.getAttribute('width')).toBe('32')
-    expect(icon.getAttribute('height')).toBe('32')
-  })
+    render(<Home size={32} data-testid="test-icon" />);
+    const icon = screen.getByTestId('test-icon');
+
+    expect(icon.getAttribute('width')).toBe('32');
+    expect(icon.getAttribute('height')).toBe('32');
+  });
 
   it('should render icon with custom color', () => {
-    render(<Home color="#ff0000" data-testid="test-icon" />)
-    const icon = screen.getByTestId('test-icon')
-    
-    expect(icon.getAttribute('stroke')).toBe('#ff0000')
-  })
+    render(<Home color="#ff0000" data-testid="test-icon" />);
+    const icon = screen.getByTestId('test-icon');
+
+    expect(icon.getAttribute('stroke')).toBe('#ff0000');
+  });
 
   it('should render icon with custom strokeWidth', () => {
-    render(<Home strokeWidth={1} data-testid="test-icon" />)
-    const icon = screen.getByTestId('test-icon')
-    
-    expect(icon.getAttribute('stroke-width')).toBe('1')
-  })
+    render(<Home strokeWidth={1} data-testid="test-icon" />);
+    const icon = screen.getByTestId('test-icon');
+
+    expect(icon.getAttribute('stroke-width')).toBe('1');
+  });
 
   it('should render icon with custom className', () => {
-    render(<Home className="custom-class" data-testid="test-icon" />)
-    const icon = screen.getByTestId('test-icon')
-    
-    expect(icon.classList.contains('custom-class')).toBe(true)
-  })
+    render(<Home className="custom-class" data-testid="test-icon" />);
+    const icon = screen.getByTestId('test-icon');
+
+    expect(icon.classList.contains('custom-class')).toBe(true);
+  });
 
   it('should render icon with aria-label', () => {
-    render(<Home aria-label="Home" data-testid="test-icon" />)
-    const icon = screen.getByTestId('test-icon')
-    
-    expect(icon.getAttribute('aria-label')).toBe('Home')
-  })
+    render(<Home aria-label="Home" data-testid="test-icon" />);
+    const icon = screen.getByTestId('test-icon');
+
+    expect(icon.getAttribute('aria-label')).toBe('Home');
+  });
 
   it('should render icon with aria-label', () => {
-    render(<Home aria-label="Home Icon" data-testid="test-icon" />)
-    const icon = screen.getByTestId('test-icon')
-    
-    expect(icon.getAttribute('aria-label')).toBe('Home Icon')
-  })
+    render(<Home aria-label="Home Icon" data-testid="test-icon" />);
+    const icon = screen.getByTestId('test-icon');
+
+    expect(icon.getAttribute('aria-label')).toBe('Home Icon');
+  });
 
   it('should apply absoluteStrokeWidth prop', () => {
-    render(<Home absoluteStrokeWidth strokeWidth={2} data-testid="test-icon" />)
-    const icon = screen.getByTestId('test-icon')
-    
+    render(<Home absoluteStrokeWidth strokeWidth={2} data-testid="test-icon" />);
+    const icon = screen.getByTestId('test-icon');
+
     // When absoluteStrokeWidth is true, stroke-width should be calculated
-    expect(icon).toBeDefined()
-  })
+    expect(icon).toBeDefined();
+  });
 
   it('should render with ref', () => {
-    const ref = vi.fn()
-    render(<Home ref={ref} data-testid="test-icon" />)
-    
-    expect(ref).toHaveBeenCalled()
-  })
-})
+    const ref = vi.fn();
+    render(<Home ref={ref} data-testid="test-icon" />);
+
+    expect(ref).toHaveBeenCalled();
+  });
+});
 
 // ═════════════════════════════════════════════════════
 // Icon Accessibility Tests
@@ -282,43 +335,43 @@ describe('Icon Rendering', () => {
 
 describe('Icon Accessibility', () => {
   it('should have proper ARIA attributes with aria-label', () => {
-    render(<Home aria-label="Home" data-testid="test-icon" />)
-    const icon = screen.getByTestId('test-icon')
-    
-    expect(icon.getAttribute('aria-label')).toBe('Home')
-    expect(icon.getAttribute('aria-hidden')).toBeNull()
-  })
+    render(<Home aria-label="Home" data-testid="test-icon" />);
+    const icon = screen.getByTestId('test-icon');
+
+    expect(icon.getAttribute('aria-label')).toBe('Home');
+    expect(icon.getAttribute('aria-hidden')).toBeNull();
+  });
 
   it('should be hidden from screen readers with aria-hidden', () => {
-    render(<Home aria-hidden="true" data-testid="test-icon" />)
-    const icon = screen.getByTestId('test-icon')
-    
-    expect(icon.getAttribute('aria-hidden')).toBe('true')
-    expect(icon.getAttribute('aria-label')).toBeNull()
-  })
+    render(<Home aria-hidden="true" data-testid="test-icon" />);
+    const icon = screen.getByTestId('test-icon');
+
+    expect(icon.getAttribute('aria-hidden')).toBe('true');
+    expect(icon.getAttribute('aria-label')).toBeNull();
+  });
 
   it('should have focusable="false" by default', () => {
-    render(<Home data-testid="test-icon" />)
-    const icon = screen.getByTestId('test-icon')
-    
-    expect(icon).toBeDefined()
-  })
+    render(<Home data-testid="test-icon" />);
+    const icon = screen.getByTestId('test-icon');
+
+    expect(icon).toBeDefined();
+  });
 
   it('should be keyboard accessible when interactive', () => {
-    const handleClick = vi.fn()
+    const handleClick = vi.fn();
     render(
       <button aria-label="Home">
         <Home data-testid="test-icon" />
       </button>
-    )
-    
-    const button = screen.getByRole('button')
-    expect(button).toBeDefined()
-    
-    button.click()
-    expect(handleClick).not.toHaveBeenCalled() // Button needs onClick handler
-  })
-})
+    );
+
+    const button = screen.getByRole('button');
+    expect(button).toBeDefined();
+
+    button.click();
+    expect(handleClick).not.toHaveBeenCalled(); // Button needs onClick handler
+  });
+});
 
 // ═════════════════════════════════════════════════════
 // Icon Mapping Tests
@@ -363,31 +416,31 @@ describe('Icon Mapping', () => {
     info: Info,
     success: CheckCircle,
     loading: Loader2,
-  }
+  };
 
   it('should have all mapped icons defined', () => {
     Object.entries(iconMap).forEach(([_name, Icon]) => {
-      expect(Icon).toBeDefined()
-    })
-  })
+      expect(Icon).toBeDefined();
+    });
+  });
 
   it('should render mapped icons', () => {
     Object.entries(iconMap).forEach(([_name, Icon]) => {
-      render(<Icon data-testid={`icon-${_name}`} />)
-      const icon = screen.getByTestId(`icon-${_name}`)
-      expect(icon).toBeDefined()
-      expect(icon.tagName).toBe('svg')
-    })
-  })
+      render(<Icon data-testid={`icon-${_name}`} />);
+      const icon = screen.getByTestId(`icon-${_name}`);
+      expect(icon).toBeDefined();
+      expect(icon.tagName).toBe('svg');
+    });
+  });
 
   it('should handle unknown icon names gracefully', () => {
-    const getIcon = (name: string) => iconMap[name] || Home
-    
-    expect(getIcon('home')).toBe(Home)
-    expect(getIcon('unknown')).toBe(Home)
-    expect(getIcon('')).toBe(Home)
-  })
-})
+    const getIcon = (name: string) => iconMap[name] || Home;
+
+    expect(getIcon('home')).toBe(Home);
+    expect(getIcon('unknown')).toBe(Home);
+    expect(getIcon('')).toBe(Home);
+  });
+});
 
 // ═════════════════════════════════════════════════════
 // Icon Category Tests
@@ -407,31 +460,31 @@ describe('Icon Categories', () => {
     layout: [Grid, List, Layout, Maximize2, Minimize2],
     arrows: [ChevronLeft, ChevronRight, ChevronUp, ChevronDown],
     misc: [Zap, Flame, TrendingUp, TrendingDown],
-  }
+  };
 
   Object.entries(categories).forEach(([category, icons]) => {
     describe(`${category} icons`, () => {
       it(`should have ${icons.length} icons`, () => {
-        expect(icons).toHaveLength(icons.length)
-      })
+        expect(icons).toHaveLength(icons.length);
+      });
 
       it('should all be defined', () => {
         icons.forEach((Icon) => {
-          expect(Icon).toBeDefined()
-        })
-      })
+          expect(Icon).toBeDefined();
+        });
+      });
 
       it('should all render correctly', () => {
         icons.forEach((Icon: unknown, index: number) => {
-          const testId = `icon-${category}-${index}`
-          render(<Icon data-testid={testId} />)
-          const icon = screen.getByTestId(testId)
-          expect(icon.tagName).toBe('svg')
-        })
-      })
-    })
-  })
-})
+          const testId = `icon-${category}-${index}`;
+          render(<Icon data-testid={testId} />);
+          const icon = screen.getByTestId(testId);
+          expect(icon.tagName).toBe('svg');
+        });
+      });
+    });
+  });
+});
 
 // ═════════════════════════════════════════════════════
 // Icon Performance Tests
@@ -439,30 +492,30 @@ describe('Icon Categories', () => {
 
 describe('Icon Performance', () => {
   it('should render 100 icons quickly', () => {
-    const start = performance.now()
-    
+    const start = performance.now();
+
     for (let i = 0; i < 100; i++) {
-      render(<Home data-testid={`icon-${i}`} />)
+      render(<Home data-testid={`icon-${i}`} />);
     }
-    
-    const end = performance.now()
-    const duration = end - start
-    
+
+    const end = performance.now();
+    const duration = end - start;
+
     // Should render 100 icons in less than 100ms
-    expect(duration).toBeLessThan(100)
-  })
+    expect(duration).toBeLessThan(100);
+  });
 
   it('should handle rapid re-renders', () => {
-    const { rerender } = render(<Home size={16} data-testid="test-icon" />)
-    
+    const { rerender } = render(<Home size={16} data-testid="test-icon" />);
+
     for (let i = 0; i < 10; i++) {
-      rerender(<Home size={16 + i} data-testid="test-icon" />)
+      rerender(<Home size={16 + i} data-testid="test-icon" />);
     }
-    
-    const icon = screen.getByTestId('test-icon')
-    expect(icon.getAttribute('width')).toBe('25')
-  })
-})
+
+    const icon = screen.getByTestId('test-icon');
+    expect(icon.getAttribute('width')).toBe('25');
+  });
+});
 
 // ═════════════════════════════════════════════════════
 // Icon SVG Tests
@@ -470,65 +523,65 @@ describe('Icon Performance', () => {
 
 describe('Icon SVG Structure', () => {
   it('should have valid SVG structure', () => {
-    render(<Home data-testid="test-icon" />)
-    const icon = screen.getByTestId('test-icon')
-    
+    render(<Home data-testid="test-icon" />);
+    const icon = screen.getByTestId('test-icon');
+
     // Check SVG namespace
-    expect(icon.namespaceURI).toBe('http://www.w3.org/2000/svg')
-    
+    expect(icon.namespaceURI).toBe('http://www.w3.org/2000/svg');
+
     // Check default attributes
-    expect(icon.getAttribute('xmlns')).toBe('http://www.w3.org/2000/svg')
-    expect(icon.getAttribute('width')).toBe('24')
-    expect(icon.getAttribute('height')).toBe('24')
-    expect(icon.getAttribute('viewBox')).toBe('0 0 24 24')
-    expect(icon.getAttribute('fill')).toBe('none')
-    expect(icon.getAttribute('stroke')).toBe('currentColor')
-    expect(icon.getAttribute('stroke-width')).toBe('2')
-    expect(icon.getAttribute('stroke-linecap')).toBe('round')
-    expect(icon.getAttribute('stroke-linejoin')).toBe('round')
-  })
+    expect(icon.getAttribute('xmlns')).toBe('http://www.w3.org/2000/svg');
+    expect(icon.getAttribute('width')).toBe('24');
+    expect(icon.getAttribute('height')).toBe('24');
+    expect(icon.getAttribute('viewBox')).toBe('0 0 24 24');
+    expect(icon.getAttribute('fill')).toBe('none');
+    expect(icon.getAttribute('stroke')).toBe('currentColor');
+    expect(icon.getAttribute('stroke-width')).toBe('2');
+    expect(icon.getAttribute('stroke-linecap')).toBe('round');
+    expect(icon.getAttribute('stroke-linejoin')).toBe('round');
+  });
 
   it('should have path elements', () => {
-    render(<Home data-testid="test-icon" />)
-    const icon = screen.getByTestId('test-icon')
-    
-    const paths = icon.querySelectorAll('path')
-    expect(paths.length).toBeGreaterThan(0)
-  })
+    render(<Home data-testid="test-icon" />);
+    const icon = screen.getByTestId('test-icon');
+
+    const paths = icon.querySelectorAll('path');
+    expect(paths.length).toBeGreaterThan(0);
+  });
 
   it('should use currentColor for stroke', () => {
-    render(<Home color="currentColor" data-testid="test-icon" />)
-    const icon = screen.getByTestId('test-icon')
-    
-    expect(icon.getAttribute('stroke')).toBe('currentColor')
-  })
-})
+    render(<Home color="currentColor" data-testid="test-icon" />);
+    const icon = screen.getByTestId('test-icon');
+
+    expect(icon.getAttribute('stroke')).toBe('currentColor');
+  });
+});
 
 // ═════════════════════════════════════════════════════
 // Icon Size Tests
 // ═════════════════════════════════════════════════════
 
 describe('Icon Sizes', () => {
-  const sizes = [12, 16, 20, 24, 32, 48, 64]
+  const sizes = [12, 16, 20, 24, 32, 48, 64];
 
   sizes.forEach((size) => {
     it(`should render at ${size}px`, () => {
-      render(<Home size={size} data-testid="test-icon" />)
-      const icon = screen.getByTestId('test-icon')
-      
-      expect(icon.getAttribute('width')).toBe(size.toString())
-      expect(icon.getAttribute('height')).toBe(size.toString())
-    })
-  })
+      render(<Home size={size} data-testid="test-icon" />);
+      const icon = screen.getByTestId('test-icon');
+
+      expect(icon.getAttribute('width')).toBe(size.toString());
+      expect(icon.getAttribute('height')).toBe(size.toString());
+    });
+  });
 
   it('should handle string sizes', () => {
-    render(<Home size="2rem" data-testid="test-icon" />)
-    const icon = screen.getByTestId('test-icon')
-    
-    expect(icon.getAttribute('width')).toBe('2rem')
-    expect(icon.getAttribute('height')).toBe('2rem')
-  })
-})
+    render(<Home size="2rem" data-testid="test-icon" />);
+    const icon = screen.getByTestId('test-icon');
+
+    expect(icon.getAttribute('width')).toBe('2rem');
+    expect(icon.getAttribute('height')).toBe('2rem');
+  });
+});
 
 // ═════════════════════════════════════════════════════
 // Icon Color Tests
@@ -546,17 +599,17 @@ describe('Icon Colors', () => {
     'hsl(0, 100%, 50%)',
     'currentColor',
     'inherit',
-  ]
+  ];
 
   colors.forEach((color) => {
     it(`should render with color: ${color}`, () => {
-      render(<Home color={color} data-testid="test-icon" />)
-      const icon = screen.getByTestId('test-icon')
-      
-      expect(icon.getAttribute('stroke')).toBe(color)
-    })
-  })
-})
+      render(<Home color={color} data-testid="test-icon" />);
+      const icon = screen.getByTestId('test-icon');
+
+      expect(icon.getAttribute('stroke')).toBe(color);
+    });
+  });
+});
 
 // ═════════════════════════════════════════════════════
 // Icon Event Tests
@@ -564,52 +617,45 @@ describe('Icon Colors', () => {
 
 describe('Icon Events', () => {
   it('should handle click events', () => {
-    const handleClick = vi.fn()
-    render(<Home onClick={handleClick} data-testid="test-icon" />)
-    const icon = screen.getByTestId('test-icon')
-    
-    fireEvent.click(icon)
-    expect(handleClick).toHaveBeenCalledTimes(1)
-  })
+    const handleClick = vi.fn();
+    render(<Home onClick={handleClick} data-testid="test-icon" />);
+    const icon = screen.getByTestId('test-icon');
+
+    fireEvent.click(icon);
+    expect(handleClick).toHaveBeenCalledTimes(1);
+  });
 
   it('should handle mouse events', () => {
-    const handleMouseEnter = vi.fn()
-    const handleMouseLeave = vi.fn()
-    
+    const handleMouseEnter = vi.fn();
+    const handleMouseLeave = vi.fn();
+
     render(
       <Home
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         data-testid="test-icon"
       />
-    )
-    const icon = screen.getByTestId('test-icon')
-    
-    fireEvent.mouseEnter(icon)
-    expect(handleMouseEnter).toHaveBeenCalledTimes(1)
-    
-    fireEvent.mouseLeave(icon)
-    expect(handleMouseLeave).toHaveBeenCalledTimes(1)
-  })
+    );
+    const icon = screen.getByTestId('test-icon');
+
+    fireEvent.mouseEnter(icon);
+    expect(handleMouseEnter).toHaveBeenCalledTimes(1);
+
+    fireEvent.mouseLeave(icon);
+    expect(handleMouseLeave).toHaveBeenCalledTimes(1);
+  });
 
   it('should handle focus events', () => {
-    const handleFocus = vi.fn()
-    const handleBlur = vi.fn()
-    
-    render(
-      <Home
-        tabIndex={0}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
-        data-testid="test-icon"
-      />
-    )
-    const icon = screen.getByTestId('test-icon')
-    
-    icon.focus()
-    expect(handleFocus).toHaveBeenCalledTimes(1)
-    
-    icon.blur()
-    expect(handleBlur).toHaveBeenCalledTimes(1)
-  })
-})
+    const handleFocus = vi.fn();
+    const handleBlur = vi.fn();
+
+    render(<Home tabIndex={0} onFocus={handleFocus} onBlur={handleBlur} data-testid="test-icon" />);
+    const icon = screen.getByTestId('test-icon');
+
+    icon.focus();
+    expect(handleFocus).toHaveBeenCalledTimes(1);
+
+    icon.blur();
+    expect(handleBlur).toHaveBeenCalledTimes(1);
+  });
+});

@@ -15,24 +15,36 @@
  */
 
 import {
-  X, Palette, Download, Upload, RotateCcw, Check,
-  Sun, Moon, Eye, Type, Radius, Sparkles,
-  Copy, CheckCircle2, AlertCircle
-} from 'lucide-react'
-import React, { useState, useRef, useCallback, useEffect } from 'react'
+  X,
+  Palette,
+  Download,
+  Upload,
+  RotateCcw,
+  Check,
+  Sun,
+  Moon,
+  Eye,
+  Type,
+  Radius,
+  Sparkles,
+  Copy,
+  CheckCircle2,
+  AlertCircle,
+} from 'lucide-react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 
-import { useAppStore, type CustomThemeConfig } from '../store'
-import { getI18n, resolveKey } from '../utils/i18n'
-import { getThemeTokens, THEME_PRESETS, type ThemeMode } from '../utils/theme'
+import { useAppStore, type CustomThemeConfig } from '../store';
+import { getI18n, resolveKey } from '../utils/i18n';
+import { getThemeTokens, THEME_PRESETS, type ThemeMode } from '../utils/theme';
 
 // ── Design System Presets (from YYC3-theme-design-system.md) ──
 interface DesignPreset {
-  id: string
-  nameKey: string
-  nameEn: string
-  type: 'light' | 'dark'
-  colors: CustomThemeConfig['colors']
-  icon: string
+  id: string;
+  nameKey: string;
+  nameEn: string;
+  type: 'light' | 'dark';
+  colors: CustomThemeConfig['colors'];
+  icon: string;
 }
 
 const DESIGN_PRESETS: DesignPreset[] = [
@@ -41,7 +53,14 @@ const DESIGN_PRESETS: DesignPreset[] = [
     nameKey: 'tcPresetBase',
     nameEn: 'Basic Light',
     type: 'light',
-    colors: { primary: '#4f46e5', secondary: '#0ea5e9', accent: '#f97316', background: '#f8fafc', card: '#ffffff', border: '#cbd5e1' },
+    colors: {
+      primary: '#4f46e5',
+      secondary: '#0ea5e9',
+      accent: '#f97316',
+      background: '#f8fafc',
+      card: '#ffffff',
+      border: '#cbd5e1',
+    },
     icon: '🎨',
   },
   {
@@ -49,7 +68,14 @@ const DESIGN_PRESETS: DesignPreset[] = [
     nameKey: 'tcPresetCosmic',
     nameEn: 'Cosmic Night',
     type: 'dark',
-    colors: { primary: '#818cf8', secondary: '#38bdf8', accent: '#fb923c', background: '#0f172a', card: '#1e293b', border: '#334155' },
+    colors: {
+      primary: '#818cf8',
+      secondary: '#38bdf8',
+      accent: '#fb923c',
+      background: '#0f172a',
+      card: '#1e293b',
+      border: '#334155',
+    },
     icon: '🌌',
   },
   {
@@ -57,7 +83,14 @@ const DESIGN_PRESETS: DesignPreset[] = [
     nameKey: 'tcPresetPastel',
     nameEn: 'Soft Pop',
     type: 'light',
-    colors: { primary: '#e879f9', secondary: '#34d399', accent: '#fb923c', background: '#fdf4ff', card: '#ffffff', border: '#f0abfc' },
+    colors: {
+      primary: '#e879f9',
+      secondary: '#34d399',
+      accent: '#fb923c',
+      background: '#fdf4ff',
+      card: '#ffffff',
+      border: '#f0abfc',
+    },
     icon: '🩷',
   },
   {
@@ -65,7 +98,14 @@ const DESIGN_PRESETS: DesignPreset[] = [
     nameKey: 'tcPresetCyber',
     nameEn: 'Cyberpunk',
     type: 'dark',
-    colors: { primary: '#c084fc', secondary: '#22d3ee', accent: '#facc15', background: '#0c0a1d', card: '#1a1538', border: '#2e1065' },
+    colors: {
+      primary: '#c084fc',
+      secondary: '#22d3ee',
+      accent: '#facc15',
+      background: '#0c0a1d',
+      card: '#1a1538',
+      border: '#2e1065',
+    },
     icon: '🔮',
   },
   {
@@ -73,7 +113,14 @@ const DESIGN_PRESETS: DesignPreset[] = [
     nameKey: 'tcPresetMinimal',
     nameEn: 'Modern Minimal',
     type: 'light',
-    colors: { primary: '#18181b', secondary: '#71717a', accent: '#52525b', background: '#fafafa', card: '#ffffff', border: '#e4e4e7' },
+    colors: {
+      primary: '#18181b',
+      secondary: '#71717a',
+      accent: '#52525b',
+      background: '#fafafa',
+      card: '#ffffff',
+      border: '#e4e4e7',
+    },
     icon: '⬜',
   },
   {
@@ -81,10 +128,17 @@ const DESIGN_PRESETS: DesignPreset[] = [
     nameKey: 'tcPresetFuture',
     nameEn: 'Future Tech',
     type: 'dark',
-    colors: { primary: '#06b6d4', secondary: '#10b981', accent: '#8b5cf6', background: '#0a1628', card: '#162032', border: '#1e3a5f' },
+    colors: {
+      primary: '#06b6d4',
+      secondary: '#10b981',
+      accent: '#8b5cf6',
+      background: '#0a1628',
+      card: '#162032',
+      border: '#1e3a5f',
+    },
     icon: '🚀',
   },
-]
+];
 
 const COLOR_LABEL_KEYS: Record<keyof CustomThemeConfig['colors'], string> = {
   primary: 'tcColorPrimary',
@@ -93,21 +147,21 @@ const COLOR_LABEL_KEYS: Record<keyof CustomThemeConfig['colors'], string> = {
   background: 'tcColorBackground',
   card: 'tcColorCard',
   border: 'tcColorBorder',
-}
+};
 
 const FONT_OPTIONS = [
   { value: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif', labelKey: 'tcFontRecommended' },
   { value: "'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", label: 'Segoe UI' },
   { value: 'system-ui, -apple-system, sans-serif', label: 'System UI' },
   { value: 'Georgia, serif', label: 'Georgia (Serif)' },
-]
+];
 
 const MONO_FONT_OPTIONS = [
   { value: "'Fira Code', monospace", label: 'Fira Code' },
   { value: "'Consolas', 'Monaco', monospace", label: 'Consolas' },
   { value: "'Courier New', monospace", label: 'Courier New' },
   { value: "'JetBrains Mono', monospace", label: 'JetBrains Mono' },
-]
+];
 
 const RADIUS_OPTION_KEYS = [
   { labelKey: 'tcRadiusNone', sm: '0', md: '0', lg: '0' },
@@ -115,51 +169,63 @@ const RADIUS_OPTION_KEYS = [
   { labelKey: 'tcRadiusMd', sm: '8px', md: '12px', lg: '16px' },
   { labelKey: 'tcRadiusLg', sm: '12px', md: '16px', lg: '24px' },
   { labelKey: 'tcRadiusFull', sm: '9999px', md: '9999px', lg: '9999px' },
-]
+];
 
 export function ThemeCustomizer() {
   const {
-    theme, setTheme, language,
-    themeCustomizerOpen, closeThemeCustomizer,
-    customThemeConfig, updateCustomThemeConfig, updateCustomColors, resetCustomThemeConfig,
-    peelTransition, triggerPeelTransition,
-  } = useAppStore()
+    theme,
+    setTheme,
+    language,
+    themeCustomizerOpen,
+    closeThemeCustomizer,
+    customThemeConfig,
+    updateCustomThemeConfig,
+    updateCustomColors,
+    resetCustomThemeConfig,
+    peelTransition,
+    triggerPeelTransition,
+  } = useAppStore();
 
-  const t = getThemeTokens(theme)
-  const isDark = t.isDark
-  const i = getI18n(language)
+  const t = getThemeTokens(theme);
+  const isDark = t.isDark;
+  const i = getI18n(language);
 
-  const [activeTab, setActiveTab] = useState<'presets' | 'colors' | 'fonts' | 'layout' | 'brand' | 'export'>('presets')
-  const [exportCopied, setExportCopied] = useState(false)
-  const [importError, setImportError] = useState<string | null>(null)
-  const [importSuccess, setImportSuccess] = useState(false)
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [activeTab, setActiveTab] = useState<
+    'presets' | 'colors' | 'fonts' | 'layout' | 'brand' | 'export'
+  >('presets');
+  const [exportCopied, setExportCopied] = useState(false);
+  const [importError, setImportError] = useState<string | null>(null);
+  const [importSuccess, setImportSuccess] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // ── Peel/Reveal Transition Effect ──
-  const peelOverlayRef = useRef<HTMLDivElement>(null)
+  const peelOverlayRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (peelTransition?.active) {
       const timer = setTimeout(() => {
-        useAppStore.setState({ peelTransition: null })
-      }, 800)
-      return () => clearTimeout(timer)
+        useAppStore.setState({ peelTransition: null });
+      }, 800);
+      return () => clearTimeout(timer);
     }
-    return undefined
-  }, [peelTransition])
+    return undefined;
+  }, [peelTransition]);
 
-  const handleThemeSwitch = useCallback((newTheme: ThemeMode, e?: React.MouseEvent) => {
-    if (e) {
-      const rect = (e.target as HTMLElement).getBoundingClientRect()
-      triggerPeelTransition(rect.left + rect.width / 2, rect.top + rect.height / 2)
-      // Delay actual theme change for the peel animation
-      requestAnimationFrame(() => {
-        setTimeout(() => setTheme(newTheme), 50)
-      })
-    } else {
-      setTheme(newTheme)
-    }
-  }, [setTheme, triggerPeelTransition])
+  const handleThemeSwitch = useCallback(
+    (newTheme: ThemeMode, e?: React.MouseEvent) => {
+      if (e) {
+        const rect = (e.target as HTMLElement).getBoundingClientRect();
+        triggerPeelTransition(rect.left + rect.width / 2, rect.top + rect.height / 2);
+        // Delay actual theme change for the peel animation
+        requestAnimationFrame(() => {
+          setTimeout(() => setTheme(newTheme), 50);
+        });
+      } else {
+        setTheme(newTheme);
+      }
+    },
+    [setTheme, triggerPeelTransition]
+  );
 
   // ── Export ──
   const handleExport = useCallback(() => {
@@ -173,16 +239,16 @@ export function ThemeCustomizer() {
       fonts: customThemeConfig.fonts,
       layout: { radius: customThemeConfig.radius },
       branding: customThemeConfig.branding,
-    }
-    const json = JSON.stringify(exportData, null, 2)
-    const blob = new Blob([json], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `yyc3-theme-${customThemeConfig.name.replace(/\s+/g, '-').toLowerCase()}.json`
-    a.click()
-    URL.revokeObjectURL(url)
-  }, [customThemeConfig, theme])
+    };
+    const json = JSON.stringify(exportData, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `yyc3-theme-${customThemeConfig.name.replace(/\s+/g, '-').toLowerCase()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [customThemeConfig, theme]);
 
   const handleCopyJson = useCallback(() => {
     const exportData = {
@@ -195,58 +261,73 @@ export function ThemeCustomizer() {
       fonts: customThemeConfig.fonts,
       layout: { radius: customThemeConfig.radius },
       branding: customThemeConfig.branding,
-    }
-    navigator.clipboard.writeText(JSON.stringify(exportData, null, 2))
-    setExportCopied(true)
-    setTimeout(() => setExportCopied(false), 2000)
-  }, [customThemeConfig, theme])
+    };
+    navigator.clipboard.writeText(JSON.stringify(exportData, null, 2));
+    setExportCopied(true);
+    setTimeout(() => setExportCopied(false), 2000);
+  }, [customThemeConfig, theme]);
 
   // ── Import ──
-  const handleImport = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-    setImportError(null)
-    setImportSuccess(false)
+  const handleImport = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      setImportError(null);
+      setImportSuccess(false);
 
-    const reader = new FileReader()
-    reader.onload = (ev) => {
-      try {
-        const data = JSON.parse(ev.target?.result as string)
-        if (!data.colors || !data.name) {
-          throw new Error('Invalid theme file: missing required fields')
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        try {
+          const data = JSON.parse(ev.target?.result as string);
+          if (!data.colors || !data.name) {
+            throw new Error('Invalid theme file: missing required fields');
+          }
+          updateCustomThemeConfig({
+            name: data.name,
+            type: data.type || 'dark',
+            colors: { ...customThemeConfig.colors, ...data.colors },
+            fonts: data.fonts
+              ? { ...customThemeConfig.fonts, ...data.fonts }
+              : customThemeConfig.fonts,
+            radius: data.layout?.radius
+              ? { ...customThemeConfig.radius, ...data.layout.radius }
+              : customThemeConfig.radius,
+            branding: data.branding
+              ? { ...customThemeConfig.branding, ...data.branding }
+              : customThemeConfig.branding,
+          });
+          if (
+            data.activeTheme &&
+            ['light', 'dark', 'midnight', 'forest', 'sunset'].includes(data.activeTheme)
+          ) {
+            setTheme(data.activeTheme);
+          }
+          setImportSuccess(true);
+          setTimeout(() => setImportSuccess(false), 3000);
+        } catch (err: any) {
+          setImportError(err.message || i.tcParseError);
         }
-        updateCustomThemeConfig({
-          name: data.name,
-          type: data.type || 'dark',
-          colors: { ...customThemeConfig.colors, ...data.colors },
-          fonts: data.fonts ? { ...customThemeConfig.fonts, ...data.fonts } : customThemeConfig.fonts,
-          radius: data.layout?.radius ? { ...customThemeConfig.radius, ...data.layout.radius } : customThemeConfig.radius,
-          branding: data.branding ? { ...customThemeConfig.branding, ...data.branding } : customThemeConfig.branding,
-        })
-        if (data.activeTheme && ['light', 'dark', 'midnight', 'forest', 'sunset'].includes(data.activeTheme)) {
-          setTheme(data.activeTheme)
-        }
-        setImportSuccess(true)
-        setTimeout(() => setImportSuccess(false), 3000)
-      } catch (err: any) {
-        setImportError(err.message || i.tcParseError)
-      }
-    }
-    reader.readAsText(file)
-    // Reset input
-    if (fileInputRef.current) fileInputRef.current.value = ''
-  }, [customThemeConfig, updateCustomThemeConfig, setTheme, i])
+      };
+      reader.readAsText(file);
+      // Reset input
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    },
+    [customThemeConfig, updateCustomThemeConfig, setTheme, i]
+  );
 
-  const handleApplyPreset = useCallback((preset: DesignPreset) => {
-    const resolvedName = resolveKey(i, preset.nameKey)
-    updateCustomThemeConfig({
-      name: resolvedName,
-      type: preset.type,
-      colors: { ...preset.colors },
-    })
-  }, [updateCustomThemeConfig, i])
+  const handleApplyPreset = useCallback(
+    (preset: DesignPreset) => {
+      const resolvedName = resolveKey(i, preset.nameKey);
+      updateCustomThemeConfig({
+        name: resolvedName,
+        type: preset.type,
+        colors: { ...preset.colors },
+      });
+    },
+    [updateCustomThemeConfig, i]
+  );
 
-  if (!themeCustomizerOpen) return null
+  if (!themeCustomizerOpen) return null;
 
   const tabs = [
     { key: 'presets' as const, label: i.tcPresets, icon: Sparkles },
@@ -255,7 +336,7 @@ export function ThemeCustomizer() {
     { key: 'layout' as const, label: i.tcLayout, icon: Radius },
     { key: 'brand' as const, label: i.tcBrand, icon: Eye },
     { key: 'export' as const, label: i.tcImportExport, icon: Download },
-  ]
+  ];
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center">
@@ -294,12 +375,17 @@ export function ThemeCustomizer() {
         }}
       >
         {/* Header */}
-        <div className={`flex items-center gap-3 px-5 py-4 border-b ${isDark ? 'border-white/6' : 'border-slate-200/60'}`}>
+        <div
+          className={`flex items-center gap-3 px-5 py-4 border-b ${isDark ? 'border-white/6' : 'border-slate-200/60'}`}
+        >
           <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 border border-purple-500/20 flex items-center justify-center">
             <Palette className="w-4 h-4 text-purple-400" />
           </div>
           <div className="flex-1">
-            <div className={`text-[14px] ${isDark ? 'text-white/90' : 'text-slate-800'}`} style={{ fontWeight: 600 }}>
+            <div
+              className={`text-[14px] ${isDark ? 'text-white/90' : 'text-slate-800'}`}
+              style={{ fontWeight: 600 }}
+            >
               {i.tcTitle}
             </div>
             <div className={`text-[11px] ${isDark ? 'text-white/30' : 'text-slate-400'}`}>
@@ -315,8 +401,13 @@ export function ThemeCustomizer() {
         </div>
 
         {/* Quick Theme Switcher Bar */}
-        <div className={`flex items-center gap-2 px-5 py-2.5 border-b ${isDark ? 'border-white/6' : 'border-slate-200/40'}`}>
-          <span className={`text-[10px] uppercase tracking-wider ${isDark ? 'text-white/25' : 'text-slate-400'}`} style={{ fontWeight: 600 }}>
+        <div
+          className={`flex items-center gap-2 px-5 py-2.5 border-b ${isDark ? 'border-white/6' : 'border-slate-200/40'}`}
+        >
+          <span
+            className={`text-[10px] uppercase tracking-wider ${isDark ? 'text-white/25' : 'text-slate-400'}`}
+            style={{ fontWeight: 600 }}
+          >
             {i.tcActiveTheme}
           </span>
           <div className="flex gap-1 ml-2">
@@ -341,7 +432,9 @@ export function ThemeCustomizer() {
         </div>
 
         {/* Tabs */}
-        <div className={`flex gap-0.5 px-5 pt-2 pb-0 border-b overflow-x-auto ${isDark ? 'border-white/6' : 'border-slate-200/40'}`}>
+        <div
+          className={`flex gap-0.5 px-5 pt-2 pb-0 border-b overflow-x-auto ${isDark ? 'border-white/6' : 'border-slate-200/40'}`}
+        >
           {tabs.map(({ key, label, icon: Icon }) => (
             <button
               key={key}
@@ -363,11 +456,13 @@ export function ThemeCustomizer() {
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-5 min-h-0 custom-scrollbar">
-
           {/* ═══ Presets Tab ═══ */}
           {activeTab === 'presets' && (
             <div className="space-y-4">
-              <div className={`text-[10px] uppercase tracking-wider ${isDark ? 'text-white/25' : 'text-slate-400'}`} style={{ fontWeight: 600 }}>
+              <div
+                className={`text-[10px] uppercase tracking-wider ${isDark ? 'text-white/25' : 'text-slate-400'}`}
+                style={{ fontWeight: 600 }}
+              >
                 {i.tcDesignPresets}
               </div>
               <div className="grid grid-cols-3 gap-3">
@@ -387,17 +482,22 @@ export function ThemeCustomizer() {
                   >
                     {/* Color preview bar */}
                     <div className="flex gap-1 mb-3">
-                      {Object.values(preset.colors).slice(0, 4).map((color, i) => (
-                        <div
-                          key={i}
-                          className="h-4 flex-1 rounded-full"
-                          style={{ backgroundColor: color }}
-                        />
-                      ))}
+                      {Object.values(preset.colors)
+                        .slice(0, 4)
+                        .map((color, i) => (
+                          <div
+                            key={i}
+                            className="h-4 flex-1 rounded-full"
+                            style={{ backgroundColor: color }}
+                          />
+                        ))}
                     </div>
                     <div className="flex items-center gap-2 mb-1">
                       <span className="text-[14px]">{preset.icon}</span>
-                      <span className={`text-[12px] ${isDark ? 'text-white/80' : 'text-slate-700'}`} style={{ fontWeight: 500 }}>
+                      <span
+                        className={`text-[12px] ${isDark ? 'text-white/80' : 'text-slate-700'}`}
+                        style={{ fontWeight: 500 }}
+                      >
                         {resolveKey(i, preset.nameKey)}
                       </span>
                     </div>
@@ -414,8 +514,13 @@ export function ThemeCustomizer() {
               </div>
 
               {/* Live Preview */}
-              <div className={`rounded-xl border p-4 ${isDark ? 'border-white/6 bg-white/2' : 'border-slate-200/60 bg-white/60'}`}>
-                <div className={`text-[10px] uppercase tracking-wider mb-3 ${isDark ? 'text-white/25' : 'text-slate-400'}`} style={{ fontWeight: 600 }}>
+              <div
+                className={`rounded-xl border p-4 ${isDark ? 'border-white/6 bg-white/2' : 'border-slate-200/60 bg-white/60'}`}
+              >
+                <div
+                  className={`text-[10px] uppercase tracking-wider mb-3 ${isDark ? 'text-white/25' : 'text-slate-400'}`}
+                  style={{ fontWeight: 600 }}
+                >
                   {i.tcLivePreview}
                 </div>
                 <div
@@ -427,28 +532,65 @@ export function ThemeCustomizer() {
                 >
                   <div
                     className="rounded-lg p-3 mb-3"
-                    style={{ backgroundColor: customThemeConfig.colors.card, borderColor: customThemeConfig.colors.border, border: '1px solid' }}
+                    style={{
+                      backgroundColor: customThemeConfig.colors.card,
+                      borderColor: customThemeConfig.colors.border,
+                      border: '1px solid',
+                    }}
                   >
                     <div className="flex items-center gap-2 mb-2">
-                      <div className="w-6 h-6 rounded" style={{ backgroundColor: customThemeConfig.colors.primary }} />
-                      <span className="text-[11px]" style={{ color: customThemeConfig.type === 'dark' ? '#e2e8f0' : '#1e293b', fontWeight: 600 }}>
+                      <div
+                        className="w-6 h-6 rounded"
+                        style={{ backgroundColor: customThemeConfig.colors.primary }}
+                      />
+                      <span
+                        className="text-[11px]"
+                        style={{
+                          color: customThemeConfig.type === 'dark' ? '#e2e8f0' : '#1e293b',
+                          fontWeight: 600,
+                        }}
+                      >
                         {customThemeConfig.branding.appName}
                       </span>
                     </div>
                     <div className="flex gap-2">
-                      <div className="h-2 rounded-full flex-[3]" style={{ backgroundColor: customThemeConfig.colors.primary, opacity: 0.3 }} />
-                      <div className="h-2 rounded-full flex-[2]" style={{ backgroundColor: customThemeConfig.colors.secondary, opacity: 0.3 }} />
-                      <div className="h-2 rounded-full flex-[1]" style={{ backgroundColor: customThemeConfig.colors.accent, opacity: 0.3 }} />
+                      <div
+                        className="h-2 rounded-full flex-[3]"
+                        style={{ backgroundColor: customThemeConfig.colors.primary, opacity: 0.3 }}
+                      />
+                      <div
+                        className="h-2 rounded-full flex-[2]"
+                        style={{
+                          backgroundColor: customThemeConfig.colors.secondary,
+                          opacity: 0.3,
+                        }}
+                      />
+                      <div
+                        className="h-2 rounded-full flex-[1]"
+                        style={{ backgroundColor: customThemeConfig.colors.accent, opacity: 0.3 }}
+                      />
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <div className="px-3 py-1.5 rounded-lg text-[10px] text-white" style={{ backgroundColor: customThemeConfig.colors.primary, fontWeight: 500 }}>
+                    <div
+                      className="px-3 py-1.5 rounded-lg text-[10px] text-white"
+                      style={{ backgroundColor: customThemeConfig.colors.primary, fontWeight: 500 }}
+                    >
                       {i.tcPrimaryBtn}
                     </div>
-                    <div className="px-3 py-1.5 rounded-lg text-[10px] border" style={{ borderColor: customThemeConfig.colors.border, color: customThemeConfig.type === 'dark' ? '#94a3b8' : '#64748b' }}>
+                    <div
+                      className="px-3 py-1.5 rounded-lg text-[10px] border"
+                      style={{
+                        borderColor: customThemeConfig.colors.border,
+                        color: customThemeConfig.type === 'dark' ? '#94a3b8' : '#64748b',
+                      }}
+                    >
                       {i.tcSecondaryBtn}
                     </div>
-                    <div className="px-3 py-1.5 rounded-lg text-[10px] text-white" style={{ backgroundColor: customThemeConfig.colors.accent, fontWeight: 500 }}>
+                    <div
+                      className="px-3 py-1.5 rounded-lg text-[10px] text-white"
+                      style={{ backgroundColor: customThemeConfig.colors.accent, fontWeight: 500 }}
+                    >
                       {i.tcAccentBtn}
                     </div>
                   </div>
@@ -460,56 +602,69 @@ export function ThemeCustomizer() {
           {/* ═══ Colors Tab ═══ */}
           {activeTab === 'colors' && (
             <div className="space-y-4">
-              <div className={`text-[10px] uppercase tracking-wider ${isDark ? 'text-white/25' : 'text-slate-400'}`} style={{ fontWeight: 600 }}>
+              <div
+                className={`text-[10px] uppercase tracking-wider ${isDark ? 'text-white/25' : 'text-slate-400'}`}
+                style={{ fontWeight: 600 }}
+              >
                 {i.tcCustomColors}
               </div>
               <div className="grid grid-cols-2 gap-3">
-                {(Object.keys(COLOR_LABEL_KEYS) as Array<keyof typeof COLOR_LABEL_KEYS>).map((key) => (
-                  <div
-                    key={key}
-                    className={`rounded-xl border p-3 ${isDark ? 'border-white/6 bg-white/2' : 'border-slate-200/60 bg-white/60'}`}
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <span className={`text-[11px] ${isDark ? 'text-white/60' : 'text-slate-600'}`} style={{ fontWeight: 500 }}>
-                        {resolveKey(i, COLOR_LABEL_KEYS[key])}
-                      </span>
-                      <span className={`text-[10px] font-mono ${isDark ? 'text-white/25' : 'text-slate-400'}`}>
-                        {customThemeConfig.colors[key]}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <label className="relative cursor-pointer">
-                        <div
-                          className="w-10 h-10 rounded-lg border-2 shadow-sm"
-                          style={{
-                            backgroundColor: customThemeConfig.colors[key],
-                            borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
-                          }}
-                        />
+                {(Object.keys(COLOR_LABEL_KEYS) as Array<keyof typeof COLOR_LABEL_KEYS>).map(
+                  (key) => (
+                    <div
+                      key={key}
+                      className={`rounded-xl border p-3 ${isDark ? 'border-white/6 bg-white/2' : 'border-slate-200/60 bg-white/60'}`}
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span
+                          className={`text-[11px] ${isDark ? 'text-white/60' : 'text-slate-600'}`}
+                          style={{ fontWeight: 500 }}
+                        >
+                          {resolveKey(i, COLOR_LABEL_KEYS[key])}
+                        </span>
+                        <span
+                          className={`text-[10px] font-mono ${isDark ? 'text-white/25' : 'text-slate-400'}`}
+                        >
+                          {customThemeConfig.colors[key]}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <label className="relative cursor-pointer">
+                          <div
+                            className="w-10 h-10 rounded-lg border-2 shadow-sm"
+                            style={{
+                              backgroundColor: customThemeConfig.colors[key],
+                              borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
+                            }}
+                          />
+                          <input
+                            type="color"
+                            value={customThemeConfig.colors[key]}
+                            onChange={(e) => updateCustomColors({ [key]: e.target.value })}
+                            className="absolute inset-0 opacity-0 cursor-pointer"
+                          />
+                        </label>
                         <input
-                          type="color"
+                          type="text"
                           value={customThemeConfig.colors[key]}
                           onChange={(e) => updateCustomColors({ [key]: e.target.value })}
-                          className="absolute inset-0 opacity-0 cursor-pointer"
+                          className={`flex-1 px-2 py-1.5 rounded-lg text-[11px] font-mono ${
+                            isDark
+                              ? 'bg-white/4 border border-white/8 text-white/70 focus:border-purple-500/40'
+                              : 'bg-slate-50 border border-slate-200 text-slate-600 focus:border-purple-500/40'
+                          } focus:outline-none`}
                         />
-                      </label>
-                      <input
-                        type="text"
-                        value={customThemeConfig.colors[key]}
-                        onChange={(e) => updateCustomColors({ [key]: e.target.value })}
-                        className={`flex-1 px-2 py-1.5 rounded-lg text-[11px] font-mono ${
-                          isDark
-                            ? 'bg-white/4 border border-white/8 text-white/70 focus:border-purple-500/40'
-                            : 'bg-slate-50 border border-slate-200 text-slate-600 focus:border-purple-500/40'
-                        } focus:outline-none`}
-                      />
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  )
+                )}
               </div>
 
               <div className="flex items-center gap-2 mt-2">
-                <span className={`text-[10px] ${isDark ? 'text-white/20' : 'text-slate-400'}`} style={{ fontWeight: 500 }}>
+                <span
+                  className={`text-[10px] ${isDark ? 'text-white/20' : 'text-slate-400'}`}
+                  style={{ fontWeight: 500 }}
+                >
                   {i.tcThemeMode}
                 </span>
                 <div className="flex gap-1">
@@ -518,7 +673,9 @@ export function ThemeCustomizer() {
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] transition-all border ${
                       customThemeConfig.type === 'light'
                         ? 'border-amber-400/30 bg-amber-500/10 text-amber-500'
-                        : isDark ? 'border-white/8 text-white/30 hover:bg-white/5' : 'border-slate-200 text-slate-400 hover:bg-slate-50'
+                        : isDark
+                          ? 'border-white/8 text-white/30 hover:bg-white/5'
+                          : 'border-slate-200 text-slate-400 hover:bg-slate-50'
                     }`}
                   >
                     <Sun className="w-3.5 h-3.5" /> {i.tcLight}
@@ -528,7 +685,9 @@ export function ThemeCustomizer() {
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] transition-all border ${
                       customThemeConfig.type === 'dark'
                         ? 'border-indigo-400/30 bg-indigo-500/10 text-indigo-400'
-                        : isDark ? 'border-white/8 text-white/30 hover:bg-white/5' : 'border-slate-200 text-slate-400 hover:bg-slate-50'
+                        : isDark
+                          ? 'border-white/8 text-white/30 hover:bg-white/5'
+                          : 'border-slate-200 text-slate-400 hover:bg-slate-50'
                     }`}
                   >
                     <Moon className="w-3.5 h-3.5" /> {i.tcDark}
@@ -541,13 +700,21 @@ export function ThemeCustomizer() {
           {/* ═══ Fonts Tab ═══ */}
           {activeTab === 'fonts' && (
             <div className="space-y-4">
-              <div className={`text-[10px] uppercase tracking-wider ${isDark ? 'text-white/25' : 'text-slate-400'}`} style={{ fontWeight: 600 }}>
+              <div
+                className={`text-[10px] uppercase tracking-wider ${isDark ? 'text-white/25' : 'text-slate-400'}`}
+                style={{ fontWeight: 600 }}
+              >
                 {i.tcFontConfig}
               </div>
 
               {/* Sans-serif */}
-              <div className={`rounded-xl border p-4 ${isDark ? 'border-white/6 bg-white/2' : 'border-slate-200/60 bg-white/60'}`}>
-                <div className={`text-[11px] mb-2 ${isDark ? 'text-white/60' : 'text-slate-600'}`} style={{ fontWeight: 500 }}>
+              <div
+                className={`rounded-xl border p-4 ${isDark ? 'border-white/6 bg-white/2' : 'border-slate-200/60 bg-white/60'}`}
+              >
+                <div
+                  className={`text-[11px] mb-2 ${isDark ? 'text-white/60' : 'text-slate-600'}`}
+                  style={{ fontWeight: 500 }}
+                >
                   {i.tcSansSerif}
                 </div>
                 <div className={`text-[10px] mb-3 ${isDark ? 'text-white/20' : 'text-slate-400'}`}>
@@ -557,15 +724,28 @@ export function ThemeCustomizer() {
                   {FONT_OPTIONS.map((font) => (
                     <button
                       key={font.value}
-                      onClick={() => updateCustomThemeConfig({ fonts: { ...customThemeConfig.fonts, sans: font.value } })}
+                      onClick={() =>
+                        updateCustomThemeConfig({
+                          fonts: { ...customThemeConfig.fonts, sans: font.value },
+                        })
+                      }
                       className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-[12px] transition-all ${
                         customThemeConfig.fonts.sans === font.value
-                          ? isDark ? 'bg-purple-500/10 text-purple-300 border border-purple-500/20' : 'bg-purple-50 text-purple-600 border border-purple-200/40'
-                          : isDark ? 'text-white/50 hover:bg-white/5' : 'text-slate-500 hover:bg-slate-50'
+                          ? isDark
+                            ? 'bg-purple-500/10 text-purple-300 border border-purple-500/20'
+                            : 'bg-purple-50 text-purple-600 border border-purple-200/40'
+                          : isDark
+                            ? 'text-white/50 hover:bg-white/5'
+                            : 'text-slate-500 hover:bg-slate-50'
                       }`}
                     >
-                      <span style={{ fontFamily: font.value }}>{('labelKey' in font) ? resolveKey(i, font.labelKey || '') : font.label}</span>
-                      <span style={{ fontFamily: font.value }} className={`text-[11px] ${isDark ? 'text-white/20' : 'text-slate-300'}`}>
+                      <span style={{ fontFamily: font.value }}>
+                        {'labelKey' in font ? resolveKey(i, font.labelKey || '') : font.label}
+                      </span>
+                      <span
+                        style={{ fontFamily: font.value }}
+                        className={`text-[11px] ${isDark ? 'text-white/20' : 'text-slate-300'}`}
+                      >
                         Aa Bb Cc 0123
                       </span>
                     </button>
@@ -574,8 +754,13 @@ export function ThemeCustomizer() {
               </div>
 
               {/* Monospace */}
-              <div className={`rounded-xl border p-4 ${isDark ? 'border-white/6 bg-white/2' : 'border-slate-200/60 bg-white/60'}`}>
-                <div className={`text-[11px] mb-2 ${isDark ? 'text-white/60' : 'text-slate-600'}`} style={{ fontWeight: 500 }}>
+              <div
+                className={`rounded-xl border p-4 ${isDark ? 'border-white/6 bg-white/2' : 'border-slate-200/60 bg-white/60'}`}
+              >
+                <div
+                  className={`text-[11px] mb-2 ${isDark ? 'text-white/60' : 'text-slate-600'}`}
+                  style={{ fontWeight: 500 }}
+                >
                   {i.tcMonospace}
                 </div>
                 <div className={`text-[10px] mb-3 ${isDark ? 'text-white/20' : 'text-slate-400'}`}>
@@ -585,15 +770,26 @@ export function ThemeCustomizer() {
                   {MONO_FONT_OPTIONS.map((font) => (
                     <button
                       key={font.value}
-                      onClick={() => updateCustomThemeConfig({ fonts: { ...customThemeConfig.fonts, mono: font.value } })}
+                      onClick={() =>
+                        updateCustomThemeConfig({
+                          fonts: { ...customThemeConfig.fonts, mono: font.value },
+                        })
+                      }
                       className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-[12px] transition-all ${
                         customThemeConfig.fonts.mono === font.value
-                          ? isDark ? 'bg-purple-500/10 text-purple-300 border border-purple-500/20' : 'bg-purple-50 text-purple-600 border border-purple-200/40'
-                          : isDark ? 'text-white/50 hover:bg-white/5' : 'text-slate-500 hover:bg-slate-50'
+                          ? isDark
+                            ? 'bg-purple-500/10 text-purple-300 border border-purple-500/20'
+                            : 'bg-purple-50 text-purple-600 border border-purple-200/40'
+                          : isDark
+                            ? 'text-white/50 hover:bg-white/5'
+                            : 'text-slate-500 hover:bg-slate-50'
                       }`}
                     >
                       <span style={{ fontFamily: font.value }}>{font.label}</span>
-                      <span style={{ fontFamily: font.value }} className={`text-[11px] ${isDark ? 'text-white/20' : 'text-slate-300'}`}>
+                      <span
+                        style={{ fontFamily: font.value }}
+                        className={`text-[11px] ${isDark ? 'text-white/20' : 'text-slate-300'}`}
+                      >
                         {'const x = 42;'}
                       </span>
                     </button>
@@ -606,25 +802,41 @@ export function ThemeCustomizer() {
           {/* ═══ Layout Tab ═══ */}
           {activeTab === 'layout' && (
             <div className="space-y-4">
-              <div className={`text-[10px] uppercase tracking-wider ${isDark ? 'text-white/25' : 'text-slate-400'}`} style={{ fontWeight: 600 }}>
+              <div
+                className={`text-[10px] uppercase tracking-wider ${isDark ? 'text-white/25' : 'text-slate-400'}`}
+                style={{ fontWeight: 600 }}
+              >
                 {i.tcRadiusLayout}
               </div>
 
-              <div className={`rounded-xl border p-4 ${isDark ? 'border-white/6 bg-white/2' : 'border-slate-200/60 bg-white/60'}`}>
-                <div className={`text-[11px] mb-3 ${isDark ? 'text-white/60' : 'text-slate-600'}`} style={{ fontWeight: 500 }}>
+              <div
+                className={`rounded-xl border p-4 ${isDark ? 'border-white/6 bg-white/2' : 'border-slate-200/60 bg-white/60'}`}
+              >
+                <div
+                  className={`text-[11px] mb-3 ${isDark ? 'text-white/60' : 'text-slate-600'}`}
+                  style={{ fontWeight: 500 }}
+                >
                   {i.tcRadiusPresets}
                 </div>
                 <div className="grid grid-cols-5 gap-2">
                   {RADIUS_OPTION_KEYS.map((opt) => {
-                    const isActive = customThemeConfig.radius.md === opt.md
+                    const isActive = customThemeConfig.radius.md === opt.md;
                     return (
                       <button
                         key={opt.labelKey}
-                        onClick={() => updateCustomThemeConfig({ radius: { sm: opt.sm, md: opt.md, lg: opt.lg } })}
+                        onClick={() =>
+                          updateCustomThemeConfig({
+                            radius: { sm: opt.sm, md: opt.md, lg: opt.lg },
+                          })
+                        }
                         className={`flex flex-col items-center gap-2 p-3 rounded-xl border transition-all ${
                           isActive
-                            ? isDark ? 'border-purple-500/30 bg-purple-500/8' : 'border-purple-300/50 bg-purple-50/50'
-                            : isDark ? 'border-white/6 hover:border-white/12' : 'border-slate-200 hover:border-slate-300'
+                            ? isDark
+                              ? 'border-purple-500/30 bg-purple-500/8'
+                              : 'border-purple-300/50 bg-purple-50/50'
+                            : isDark
+                              ? 'border-white/6 hover:border-white/12'
+                              : 'border-slate-200 hover:border-slate-300'
                         }`}
                       >
                         <div
@@ -633,34 +845,51 @@ export function ThemeCustomizer() {
                             borderRadius: opt.md,
                             borderColor: isActive
                               ? customThemeConfig.colors.primary
-                              : isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.15)',
-                            backgroundColor: isActive ? customThemeConfig.colors.primary + '15' : 'transparent',
+                              : isDark
+                                ? 'rgba(255,255,255,0.15)'
+                                : 'rgba(0,0,0,0.15)',
+                            backgroundColor: isActive
+                              ? customThemeConfig.colors.primary + '15'
+                              : 'transparent',
                           }}
                         />
-                        <span className={`text-[10px] ${isActive ? (isDark ? 'text-purple-300' : 'text-purple-600') : isDark ? 'text-white/30' : 'text-slate-400'}`}>
+                        <span
+                          className={`text-[10px] ${isActive ? (isDark ? 'text-purple-300' : 'text-purple-600') : isDark ? 'text-white/30' : 'text-slate-400'}`}
+                        >
                           {resolveKey(i, opt.labelKey)}
                         </span>
                       </button>
-                    )
+                    );
                   })}
                 </div>
               </div>
 
               {/* Custom radius inputs */}
-              <div className={`rounded-xl border p-4 ${isDark ? 'border-white/6 bg-white/2' : 'border-slate-200/60 bg-white/60'}`}>
-                <div className={`text-[11px] mb-3 ${isDark ? 'text-white/60' : 'text-slate-600'}`} style={{ fontWeight: 500 }}>
+              <div
+                className={`rounded-xl border p-4 ${isDark ? 'border-white/6 bg-white/2' : 'border-slate-200/60 bg-white/60'}`}
+              >
+                <div
+                  className={`text-[11px] mb-3 ${isDark ? 'text-white/60' : 'text-slate-600'}`}
+                  style={{ fontWeight: 500 }}
+                >
                   {i.tcCustomRadius}
                 </div>
                 <div className="grid grid-cols-3 gap-3">
                   {(['sm', 'md', 'lg'] as const).map((size) => (
                     <div key={size}>
-                      <label className={`text-[10px] uppercase tracking-wider mb-1 block ${isDark ? 'text-white/25' : 'text-slate-400'}`}>
+                      <label
+                        className={`text-[10px] uppercase tracking-wider mb-1 block ${isDark ? 'text-white/25' : 'text-slate-400'}`}
+                      >
                         radius-{size}
                       </label>
                       <input
                         type="text"
                         value={customThemeConfig.radius[size]}
-                        onChange={(e) => updateCustomThemeConfig({ radius: { ...customThemeConfig.radius, [size]: e.target.value } })}
+                        onChange={(e) =>
+                          updateCustomThemeConfig({
+                            radius: { ...customThemeConfig.radius, [size]: e.target.value },
+                          })
+                        }
                         className={`w-full px-3 py-2 rounded-lg text-[11px] font-mono ${
                           isDark
                             ? 'bg-white/4 border border-white/8 text-white/70 focus:border-purple-500/40'
@@ -677,19 +906,30 @@ export function ThemeCustomizer() {
           {/* ═══ Brand Tab ═══ */}
           {activeTab === 'brand' && (
             <div className="space-y-4">
-              <div className={`text-[10px] uppercase tracking-wider ${isDark ? 'text-white/25' : 'text-slate-400'}`} style={{ fontWeight: 600 }}>
+              <div
+                className={`text-[10px] uppercase tracking-wider ${isDark ? 'text-white/25' : 'text-slate-400'}`}
+                style={{ fontWeight: 600 }}
+              >
                 {i.tcBrandCustomize}
               </div>
 
-              <div className={`rounded-xl border p-4 space-y-3 ${isDark ? 'border-white/6 bg-white/2' : 'border-slate-200/60 bg-white/60'}`}>
+              <div
+                className={`rounded-xl border p-4 space-y-3 ${isDark ? 'border-white/6 bg-white/2' : 'border-slate-200/60 bg-white/60'}`}
+              >
                 <div>
-                  <label className={`text-[10px] uppercase tracking-wider mb-1 block ${isDark ? 'text-white/25' : 'text-slate-400'}`}>
+                  <label
+                    className={`text-[10px] uppercase tracking-wider mb-1 block ${isDark ? 'text-white/25' : 'text-slate-400'}`}
+                  >
                     {i.tcAppName}
                   </label>
                   <input
                     type="text"
                     value={customThemeConfig.branding.appName}
-                    onChange={(e) => updateCustomThemeConfig({ branding: { ...customThemeConfig.branding, appName: e.target.value } })}
+                    onChange={(e) =>
+                      updateCustomThemeConfig({
+                        branding: { ...customThemeConfig.branding, appName: e.target.value },
+                      })
+                    }
                     maxLength={50}
                     className={`w-full px-3 py-2 rounded-lg text-[12px] ${
                       isDark
@@ -699,13 +939,22 @@ export function ThemeCustomizer() {
                   />
                 </div>
                 <div>
-                  <label className={`text-[10px] uppercase tracking-wider mb-1 block ${isDark ? 'text-white/25' : 'text-slate-400'}`}>
-                    {i.tcMainSlogan} <span className={isDark ? 'text-white/15' : 'text-slate-300'}>{i.tcMaxChars50}</span>
+                  <label
+                    className={`text-[10px] uppercase tracking-wider mb-1 block ${isDark ? 'text-white/25' : 'text-slate-400'}`}
+                  >
+                    {i.tcMainSlogan}{' '}
+                    <span className={isDark ? 'text-white/15' : 'text-slate-300'}>
+                      {i.tcMaxChars50}
+                    </span>
                   </label>
                   <input
                     type="text"
                     value={customThemeConfig.branding.slogan}
-                    onChange={(e) => updateCustomThemeConfig({ branding: { ...customThemeConfig.branding, slogan: e.target.value } })}
+                    onChange={(e) =>
+                      updateCustomThemeConfig({
+                        branding: { ...customThemeConfig.branding, slogan: e.target.value },
+                      })
+                    }
                     maxLength={50}
                     className={`w-full px-3 py-2 rounded-lg text-[12px] ${
                       isDark
@@ -715,13 +964,22 @@ export function ThemeCustomizer() {
                   />
                 </div>
                 <div>
-                  <label className={`text-[10px] uppercase tracking-wider mb-1 block ${isDark ? 'text-white/25' : 'text-slate-400'}`}>
-                    {i.tcSubSlogan} <span className={isDark ? 'text-white/15' : 'text-slate-300'}>{i.tcMaxChars100}</span>
+                  <label
+                    className={`text-[10px] uppercase tracking-wider mb-1 block ${isDark ? 'text-white/25' : 'text-slate-400'}`}
+                  >
+                    {i.tcSubSlogan}{' '}
+                    <span className={isDark ? 'text-white/15' : 'text-slate-300'}>
+                      {i.tcMaxChars100}
+                    </span>
                   </label>
                   <input
                     type="text"
                     value={customThemeConfig.branding.subSlogan}
-                    onChange={(e) => updateCustomThemeConfig({ branding: { ...customThemeConfig.branding, subSlogan: e.target.value } })}
+                    onChange={(e) =>
+                      updateCustomThemeConfig({
+                        branding: { ...customThemeConfig.branding, subSlogan: e.target.value },
+                      })
+                    }
                     maxLength={100}
                     className={`w-full px-3 py-2 rounded-lg text-[12px] ${
                       isDark
@@ -733,8 +991,13 @@ export function ThemeCustomizer() {
               </div>
 
               {/* Brand Preview Card */}
-              <div className={`rounded-xl border p-4 ${isDark ? 'border-white/6 bg-white/2' : 'border-slate-200/60 bg-white/60'}`}>
-                <div className={`text-[10px] uppercase tracking-wider mb-3 ${isDark ? 'text-white/25' : 'text-slate-400'}`} style={{ fontWeight: 600 }}>
+              <div
+                className={`rounded-xl border p-4 ${isDark ? 'border-white/6 bg-white/2' : 'border-slate-200/60 bg-white/60'}`}
+              >
+                <div
+                  className={`text-[10px] uppercase tracking-wider mb-3 ${isDark ? 'text-white/25' : 'text-slate-400'}`}
+                  style={{ fontWeight: 600 }}
+                >
                   {i.tcBrandPreview}
                 </div>
                 <div
@@ -746,7 +1009,10 @@ export function ThemeCustomizer() {
                   }}
                 >
                   <div className="flex items-center justify-center gap-2 mb-3">
-                    <div className="w-8 h-8 rounded-lg" style={{ backgroundColor: customThemeConfig.colors.primary }} />
+                    <div
+                      className="w-8 h-8 rounded-lg"
+                      style={{ backgroundColor: customThemeConfig.colors.primary }}
+                    />
                     <span
                       className="text-[16px]"
                       style={{
@@ -784,13 +1050,20 @@ export function ThemeCustomizer() {
           {/* ═══ Export/Import Tab ═══ */}
           {activeTab === 'export' && (
             <div className="space-y-4">
-              <div className={`text-[10px] uppercase tracking-wider ${isDark ? 'text-white/25' : 'text-slate-400'}`} style={{ fontWeight: 600 }}>
+              <div
+                className={`text-[10px] uppercase tracking-wider ${isDark ? 'text-white/25' : 'text-slate-400'}`}
+                style={{ fontWeight: 600 }}
+              >
                 {i.tcImportExport}
               </div>
 
               {/* Theme Name */}
-              <div className={`rounded-xl border p-4 ${isDark ? 'border-white/6 bg-white/2' : 'border-slate-200/60 bg-white/60'}`}>
-                <label className={`text-[10px] uppercase tracking-wider mb-1 block ${isDark ? 'text-white/25' : 'text-slate-400'}`}>
+              <div
+                className={`rounded-xl border p-4 ${isDark ? 'border-white/6 bg-white/2' : 'border-slate-200/60 bg-white/60'}`}
+              >
+                <label
+                  className={`text-[10px] uppercase tracking-wider mb-1 block ${isDark ? 'text-white/25' : 'text-slate-400'}`}
+                >
                   {i.tcThemeName}
                 </label>
                 <input
@@ -806,8 +1079,13 @@ export function ThemeCustomizer() {
               </div>
 
               {/* Export actions */}
-              <div className={`rounded-xl border p-4 space-y-3 ${isDark ? 'border-white/6 bg-white/2' : 'border-slate-200/60 bg-white/60'}`}>
-                <div className={`text-[11px] ${isDark ? 'text-white/60' : 'text-slate-600'}`} style={{ fontWeight: 500 }}>
+              <div
+                className={`rounded-xl border p-4 space-y-3 ${isDark ? 'border-white/6 bg-white/2' : 'border-slate-200/60 bg-white/60'}`}
+              >
+                <div
+                  className={`text-[11px] ${isDark ? 'text-white/60' : 'text-slate-600'}`}
+                  style={{ fontWeight: 500 }}
+                >
                   {i.tcExportConfig}
                 </div>
                 <div className="flex gap-2">
@@ -822,18 +1100,29 @@ export function ThemeCustomizer() {
                     className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-[11px] transition-all border ${
                       exportCopied
                         ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20'
-                        : isDark ? 'text-white/40 border-white/10 hover:bg-white/5' : 'text-slate-500 border-slate-200 hover:bg-slate-50'
+                        : isDark
+                          ? 'text-white/40 border-white/10 hover:bg-white/5'
+                          : 'text-slate-500 border-slate-200 hover:bg-slate-50'
                     }`}
                   >
-                    {exportCopied ? <CheckCircle2 className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                    {exportCopied ? (
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                    ) : (
+                      <Copy className="w-3.5 h-3.5" />
+                    )}
                     {exportCopied ? i.tcCopied : i.tcCopyJson}
                   </button>
                 </div>
               </div>
 
               {/* Import */}
-              <div className={`rounded-xl border p-4 space-y-3 ${isDark ? 'border-white/6 bg-white/2' : 'border-slate-200/60 bg-white/60'}`}>
-                <div className={`text-[11px] ${isDark ? 'text-white/60' : 'text-slate-600'}`} style={{ fontWeight: 500 }}>
+              <div
+                className={`rounded-xl border p-4 space-y-3 ${isDark ? 'border-white/6 bg-white/2' : 'border-slate-200/60 bg-white/60'}`}
+              >
+                <div
+                  className={`text-[11px] ${isDark ? 'text-white/60' : 'text-slate-600'}`}
+                  style={{ fontWeight: 500 }}
+                >
                   {i.tcImportConfig}
                 </div>
                 <input
@@ -854,33 +1143,48 @@ export function ThemeCustomizer() {
                   <Upload className="w-3.5 h-3.5" /> {i.tcSelectJsonFile}
                 </button>
                 {importError && (
-                  <div className={`flex items-center gap-2 px-3 py-2 rounded-lg text-[10px] ${isDark ? 'bg-red-500/8 text-red-300 border border-red-500/15' : 'bg-red-50 text-red-600 border border-red-200'}`}>
+                  <div
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg text-[10px] ${isDark ? 'bg-red-500/8 text-red-300 border border-red-500/15' : 'bg-red-50 text-red-600 border border-red-200'}`}
+                  >
                     <AlertCircle className="w-3.5 h-3.5" /> {importError}
                   </div>
                 )}
                 {importSuccess && (
-                  <div className={`flex items-center gap-2 px-3 py-2 rounded-lg text-[10px] ${isDark ? 'bg-emerald-500/8 text-emerald-300 border border-emerald-500/15' : 'bg-emerald-50 text-emerald-600 border border-emerald-200'}`}>
+                  <div
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg text-[10px] ${isDark ? 'bg-emerald-500/8 text-emerald-300 border border-emerald-500/15' : 'bg-emerald-50 text-emerald-600 border border-emerald-200'}`}
+                  >
                     <CheckCircle2 className="w-3.5 h-3.5" /> {i.tcImportSuccess}
                   </div>
                 )}
               </div>
 
               {/* JSON Preview */}
-              <div className={`rounded-xl border p-4 ${isDark ? 'border-white/6 bg-white/2' : 'border-slate-200/60 bg-white/60'}`}>
-                <div className={`text-[10px] uppercase tracking-wider mb-2 ${isDark ? 'text-white/25' : 'text-slate-400'}`} style={{ fontWeight: 600 }}>
+              <div
+                className={`rounded-xl border p-4 ${isDark ? 'border-white/6 bg-white/2' : 'border-slate-200/60 bg-white/60'}`}
+              >
+                <div
+                  className={`text-[10px] uppercase tracking-wider mb-2 ${isDark ? 'text-white/25' : 'text-slate-400'}`}
+                  style={{ fontWeight: 600 }}
+                >
                   {i.tcJsonPreview}
                 </div>
-                <pre className={`text-[10px] font-mono p-3 rounded-lg overflow-x-auto max-h-48 custom-scrollbar ${isDark ? 'bg-black/20 text-white/50' : 'bg-slate-50 text-slate-600'}`}>
-                  {JSON.stringify({
-                    version: '2.0.0',
-                    name: customThemeConfig.name,
-                    type: customThemeConfig.type,
-                    activeTheme: theme,
-                    colors: customThemeConfig.colors,
-                    fonts: customThemeConfig.fonts,
-                    layout: { radius: customThemeConfig.radius },
-                    branding: customThemeConfig.branding,
-                  }, null, 2)}
+                <pre
+                  className={`text-[10px] font-mono p-3 rounded-lg overflow-x-auto max-h-48 custom-scrollbar ${isDark ? 'bg-black/20 text-white/50' : 'bg-slate-50 text-slate-600'}`}
+                >
+                  {JSON.stringify(
+                    {
+                      version: '2.0.0',
+                      name: customThemeConfig.name,
+                      type: customThemeConfig.type,
+                      activeTheme: theme,
+                      colors: customThemeConfig.colors,
+                      fonts: customThemeConfig.fonts,
+                      layout: { radius: customThemeConfig.radius },
+                      branding: customThemeConfig.branding,
+                    },
+                    null,
+                    2
+                  )}
                 </pre>
               </div>
             </div>
@@ -888,7 +1192,9 @@ export function ThemeCustomizer() {
         </div>
 
         {/* Footer */}
-        <div className={`flex items-center justify-between px-5 py-3 border-t ${isDark ? 'border-white/6 bg-white/1' : 'border-slate-200/40 bg-slate-50/50'}`}>
+        <div
+          className={`flex items-center justify-between px-5 py-3 border-t ${isDark ? 'border-white/6 bg-white/1' : 'border-slate-200/40 bg-slate-50/50'}`}
+        >
           <button
             onClick={resetCustomThemeConfig}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] transition-all ${isDark ? 'text-white/30 hover:text-white/50 hover:bg-white/5' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100'}`}
@@ -905,13 +1211,17 @@ export function ThemeCustomizer() {
       </div>
 
       {/* Peel Reveal Animation Keyframes */}
-      <style dangerouslySetInnerHTML={{ __html: `
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
         @keyframes peelReveal {
           0% { clip-path: circle(0% at var(--peel-x, 50%) var(--peel-y, 50%)); opacity: 1; }
           60% { clip-path: circle(100% at var(--peel-x, 50%) var(--peel-y, 50%)); opacity: 0.8; }
           100% { clip-path: circle(150% at var(--peel-x, 50%) var(--peel-y, 50%)); opacity: 0; }
         }
-      `}} />
+      `,
+        }}
+      />
     </div>
-  )
+  );
 }

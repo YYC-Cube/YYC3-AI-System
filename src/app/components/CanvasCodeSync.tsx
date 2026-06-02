@@ -16,38 +16,46 @@
  */
 
 import {
-  RefreshCw, Check, AlertTriangle, Code,
-  ArrowRightLeft, ToggleLeft, ToggleRight, Copy,
-  ChevronDown, ChevronRight, Play
-} from 'lucide-react'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { toast } from 'sonner'
+  RefreshCw,
+  Check,
+  AlertTriangle,
+  Code,
+  ArrowRightLeft,
+  ToggleLeft,
+  ToggleRight,
+  Copy,
+  ChevronDown,
+  ChevronRight,
+  Play,
+} from 'lucide-react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { toast } from 'sonner';
 
-import { useAppStore } from '../store'
-import { getI18n } from '../utils/i18n'
-import { getThemeTokens } from '../utils/theme'
+import { useAppStore } from '../store';
+import { getI18n } from '../utils/i18n';
+import { getThemeTokens } from '../utils/theme';
 
 /* ── Canvas element type (shared with VisualCanvas) ── */
 export interface SyncCanvasElement {
-  id: string
-  type: string
-  x: number
-  y: number
-  w: number
-  h: number
-  label: string
+  id: string;
+  type: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  label: string;
   props: {
-    bgColor: string
-    borderRadius: number
-    padding: number
-    fontSize: number
-    textAlign: string
-  }
+    bgColor: string;
+    borderRadius: number;
+    padding: number;
+    fontSize: number;
+    textAlign: string;
+  };
 }
 
 /* ── Code generation from canvas ── */
 function generateJSX(elements: SyncCanvasElement[]): string {
-  if (elements.length === 0) return '// Empty canvas — drag components to start\n'
+  if (elements.length === 0) return '// Empty canvas — drag components to start\n';
 
   const lines: string[] = [
     'import React from "react"',
@@ -55,7 +63,7 @@ function generateJSX(elements: SyncCanvasElement[]): string {
     'export function CanvasLayout() {',
     '  return (',
     '    <div className="relative w-full h-full">',
-  ]
+  ];
 
   elements.forEach((el, _idx) => {
     const style = [
@@ -69,57 +77,64 @@ function generateJSX(elements: SyncCanvasElement[]): string {
       `padding: ${el.props.padding}`,
       `fontSize: ${el.props.fontSize}`,
       `textAlign: '${el.props.textAlign}'`,
-    ].join(', ')
+    ].join(', ');
 
     switch (el.type) {
       case 'button':
-        lines.push(`      <button style={{ ${style} }}>${el.label}</button>`)
-        break
+        lines.push(`      <button style={{ ${style} }}>${el.label}</button>`);
+        break;
       case 'input':
-        lines.push(`      <input style={{ ${style} }} placeholder="${el.label}" />`)
-        break
+        lines.push(`      <input style={{ ${style} }} placeholder="${el.label}" />`);
+        break;
       case 'text':
-        lines.push(`      <span style={{ ${style} }}>${el.label}</span>`)
-        break
+        lines.push(`      <span style={{ ${style} }}>${el.label}</span>`);
+        break;
       case 'image':
-        lines.push(`      <img style={{ ${style} }} alt="${el.label}" />`)
-        break
+        lines.push(`      <img style={{ ${style} }} alt="${el.label}" />`);
+        break;
       case 'divider':
-        lines.push(`      <hr style={{ ${style} }} />`)
-        break
+        lines.push(`      <hr style={{ ${style} }} />`);
+        break;
       default:
-        lines.push(`      <div style={{ ${style} }}>{/* ${el.type}: ${el.label} */}</div>`)
+        lines.push(`      <div style={{ ${style} }}>{/* ${el.type}: ${el.label} */}</div>`);
     }
-  })
+  });
 
-  lines.push('    </div>')
-  lines.push('  )')
-  lines.push('}')
+  lines.push('    </div>');
+  lines.push('  )');
+  lines.push('}');
 
-  return lines.join('\n')
+  return lines.join('\n');
 }
 
 /* ── Parse JSX back to elements (simplified regex parser) ── */
 function parseJSXToElements(code: string): { elements: SyncCanvasElement[]; error: string | null } {
-  const elements: SyncCanvasElement[] = []
-  const tagRegex = /<(button|input|span|img|hr|div)\s+style=\{\{([^}]+)\}\}[^>]*>([^<]*)<\/\1?>/g
-  let match
-  let id = 0
+  const elements: SyncCanvasElement[] = [];
+  const tagRegex = /<(button|input|span|img|hr|div)\s+style=\{\{([^}]+)\}\}[^>]*>([^<]*)<\/\1?>/g;
+  let match;
+  let id = 0;
 
   try {
     while ((match = tagRegex.exec(code)) !== null) {
-      const [, tag, styleStr, content] = match
-      const props: Record<string, string | number> = {}
+      const [, tag, styleStr, content] = match;
+      const props: Record<string, string | number> = {};
 
       // Parse style props
-      const propRegex = /(\w+):\s*(?:'([^']*)'|(\d+))/g
-      let pm
+      const propRegex = /(\w+):\s*(?:'([^']*)'|(\d+))/g;
+      let pm;
       while ((pm = propRegex.exec(styleStr)) !== null) {
-        const [, key, strVal, numVal] = pm
-        props[key] = numVal ? Number(numVal) : strVal || ''
+        const [, key, strVal, numVal] = pm;
+        props[key] = numVal ? Number(numVal) : strVal || '';
       }
 
-      const typeMap: Record<string, string> = { button: 'button', input: 'input', span: 'text', img: 'image', hr: 'divider', div: 'container' }
+      const typeMap: Record<string, string> = {
+        button: 'button',
+        input: 'input',
+        span: 'text',
+        img: 'image',
+        hr: 'divider',
+        div: 'container',
+      };
 
       elements.push({
         id: `parsed-${id++}`,
@@ -136,11 +151,11 @@ function parseJSXToElements(code: string): { elements: SyncCanvasElement[]; erro
           fontSize: Number(props.fontSize) || 14,
           textAlign: String(props.textAlign || 'center'),
         },
-      })
+      });
     }
-    return { elements, error: null }
+    return { elements, error: null };
   } catch (e) {
-    return { elements: [], error: String(e) }
+    return { elements: [], error: String(e) };
   }
 }
 
@@ -149,80 +164,84 @@ function parseJSXToElements(code: string): { elements: SyncCanvasElement[]; erro
 /* ══════════════════════════════════════════ */
 
 interface CanvasCodeSyncProps {
-  elements: SyncCanvasElement[]
-  onElementsUpdate: (elements: SyncCanvasElement[]) => void
+  elements: SyncCanvasElement[];
+  onElementsUpdate: (elements: SyncCanvasElement[]) => void;
 }
 
 export function CanvasCodeSync({ elements, onElementsUpdate }: CanvasCodeSyncProps) {
-  const { theme, language } = useAppStore()
-  const t = getThemeTokens(theme)
-  const i = getI18n(language)
+  const { theme, language } = useAppStore();
+  const t = getThemeTokens(theme);
+  const i = getI18n(language);
 
-  const [autoSync, setAutoSync] = useState(true)
-  const [syncStatus, setSyncStatus] = useState<'synced' | 'syncing' | 'error'>('synced')
-  const [lastSyncTime, setLastSyncTime] = useState<number>(Date.now())
-  const [editableCode, setEditableCode] = useState('')
-  const [codeExpanded, setCodeExpanded] = useState(true)
-  const [direction, setDirection] = useState<'canvas-to-code' | 'code-to-canvas'>('canvas-to-code')
-  const codeRef = useRef<HTMLTextAreaElement>(null)
+  const [autoSync, setAutoSync] = useState(true);
+  const [syncStatus, setSyncStatus] = useState<'synced' | 'syncing' | 'error'>('synced');
+  const [lastSyncTime, setLastSyncTime] = useState<number>(Date.now());
+  const [editableCode, setEditableCode] = useState('');
+  const [codeExpanded, setCodeExpanded] = useState(true);
+  const [direction, setDirection] = useState<'canvas-to-code' | 'code-to-canvas'>('canvas-to-code');
+  const codeRef = useRef<HTMLTextAreaElement>(null);
 
   // Generate code from canvas elements
-  const generatedCode = useMemo(() => generateJSX(elements), [elements])
+  const generatedCode = useMemo(() => generateJSX(elements), [elements]);
 
   // Auto-sync: update code when canvas changes
   useEffect(() => {
     if (autoSync && direction === 'canvas-to-code') {
-      setEditableCode(generatedCode)
-      setSyncStatus('synced')
-      setLastSyncTime(Date.now())
+      setEditableCode(generatedCode);
+      setSyncStatus('synced');
+      setLastSyncTime(Date.now());
     }
-  }, [generatedCode, autoSync, direction])
+  }, [generatedCode, autoSync, direction]);
 
   // Manual sync: canvas → code
   const syncCanvasToCode = useCallback(() => {
-    setSyncStatus('syncing')
+    setSyncStatus('syncing');
     setTimeout(() => {
-      setEditableCode(generatedCode)
-      setSyncStatus('synced')
-      setLastSyncTime(Date.now())
-      toast.success(i.bsCanvasToCode)
-    }, 300)
-  }, [generatedCode, i])
+      setEditableCode(generatedCode);
+      setSyncStatus('synced');
+      setLastSyncTime(Date.now());
+      toast.success(i.bsCanvasToCode);
+    }, 300);
+  }, [generatedCode, i]);
 
   // Manual sync: code → canvas
   const syncCodeToCanvas = useCallback(() => {
-    setSyncStatus('syncing')
+    setSyncStatus('syncing');
     setTimeout(() => {
-      const { elements: parsed, error } = parseJSXToElements(editableCode)
+      const { elements: parsed, error } = parseJSXToElements(editableCode);
       if (error) {
-        setSyncStatus('error')
-        toast.error(i.bsParseError)
+        setSyncStatus('error');
+        toast.error(i.bsParseError);
       } else {
-        onElementsUpdate(parsed)
-        setSyncStatus('synced')
-        setLastSyncTime(Date.now())
-        toast.success(i.bsCodeToCanvas)
+        onElementsUpdate(parsed);
+        setSyncStatus('synced');
+        setLastSyncTime(Date.now());
+        toast.success(i.bsCodeToCanvas);
       }
-    }, 400)
-  }, [editableCode, onElementsUpdate, i])
+    }, 400);
+  }, [editableCode, onElementsUpdate, i]);
 
   const handleCopyCode = useCallback(() => {
-    navigator.clipboard.writeText(editableCode || generatedCode)
-    toast.success(i.codeCopied)
-  }, [editableCode, generatedCode, i])
+    navigator.clipboard.writeText(editableCode || generatedCode);
+    toast.success(i.codeCopied);
+  }, [editableCode, generatedCode, i]);
 
   const formatTime = (ts: number) => {
-    const d = new Date(ts)
-    return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}:${d.getSeconds().toString().padStart(2, '0')}`
-  }
+    const d = new Date(ts);
+    return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}:${d.getSeconds().toString().padStart(2, '0')}`;
+  };
 
-  const statusIcon = syncStatus === 'synced'
-    ? <Check className="w-2.5 h-2.5 text-emerald-400" />
-    : syncStatus === 'syncing'
-      ? <RefreshCw className="w-2.5 h-2.5 animate-spin text-amber-400" />
-      : <AlertTriangle className="w-2.5 h-2.5 text-red-400" />
+  const statusIcon =
+    syncStatus === 'synced' ? (
+      <Check className="w-2.5 h-2.5 text-emerald-400" />
+    ) : syncStatus === 'syncing' ? (
+      <RefreshCw className="w-2.5 h-2.5 animate-spin text-amber-400" />
+    ) : (
+      <AlertTriangle className="w-2.5 h-2.5 text-red-400" />
+    );
 
-  const statusLabel = syncStatus === 'synced' ? i.bsSynced : syncStatus === 'syncing' ? i.bsSyncing : i.bsOutOfSync
+  const statusLabel =
+    syncStatus === 'synced' ? i.bsSynced : syncStatus === 'syncing' ? i.bsSyncing : i.bsOutOfSync;
 
   return (
     <div className={`flex flex-col h-full overflow-hidden border-t ${t.border.subtle}`}>
@@ -230,12 +249,24 @@ export function CanvasCodeSync({ elements, onElementsUpdate }: CanvasCodeSyncPro
       <div className={`flex items-center justify-between px-3 py-1.5 border-b ${t.border.subtle}`}>
         <div className="flex items-center gap-2">
           <ArrowRightLeft className={`w-3 h-3 ${t.isDark ? 'text-cyan-400' : 'text-cyan-500'}`} />
-          <span className={`text-[9px] ${t.text.secondary}`} style={{ fontWeight: 600 }}>{i.bsTitle}</span>
-          <span className={`flex items-center gap-0.5 text-[8px] px-1.5 py-0.5 rounded-full ${
-            syncStatus === 'synced' ? (t.isDark ? 'bg-emerald-500/15 text-emerald-400' : 'bg-emerald-50 text-emerald-600')
-            : syncStatus === 'error' ? (t.isDark ? 'bg-red-500/15 text-red-400' : 'bg-red-50 text-red-600')
-            : (t.isDark ? 'bg-amber-500/15 text-amber-400' : 'bg-amber-50 text-amber-600')
-          }`}>
+          <span className={`text-[9px] ${t.text.secondary}`} style={{ fontWeight: 600 }}>
+            {i.bsTitle}
+          </span>
+          <span
+            className={`flex items-center gap-0.5 text-[8px] px-1.5 py-0.5 rounded-full ${
+              syncStatus === 'synced'
+                ? t.isDark
+                  ? 'bg-emerald-500/15 text-emerald-400'
+                  : 'bg-emerald-50 text-emerald-600'
+                : syncStatus === 'error'
+                  ? t.isDark
+                    ? 'bg-red-500/15 text-red-400'
+                    : 'bg-red-50 text-red-600'
+                  : t.isDark
+                    ? 'bg-amber-500/15 text-amber-400'
+                    : 'bg-amber-50 text-amber-600'
+            }`}
+          >
             {statusIcon} {statusLabel}
           </span>
         </div>
@@ -251,7 +282,9 @@ export function CanvasCodeSync({ elements, onElementsUpdate }: CanvasCodeSyncPro
           </button>
           {/* Sync direction */}
           <button
-            onClick={() => setDirection(d => d === 'canvas-to-code' ? 'code-to-canvas' : 'canvas-to-code')}
+            onClick={() =>
+              setDirection((d) => (d === 'canvas-to-code' ? 'code-to-canvas' : 'canvas-to-code'))
+            }
             className={`px-1.5 py-0.5 rounded text-[7px] ${t.transition} ${t.interactive.iconBtn}`}
           >
             {direction === 'canvas-to-code' ? i.bsCanvasToCode : i.bsCodeToCanvas}
@@ -266,7 +299,10 @@ export function CanvasCodeSync({ elements, onElementsUpdate }: CanvasCodeSyncPro
               <Play className="w-2.5 h-2.5" /> {i.bsSyncNow}
             </button>
           )}
-          <button onClick={handleCopyCode} className={`p-0.5 rounded ${t.transition} ${t.interactive.iconBtn}`}>
+          <button
+            onClick={handleCopyCode}
+            className={`p-0.5 rounded ${t.transition} ${t.interactive.iconBtn}`}
+          >
             <Copy className="w-3 h-3" />
           </button>
         </div>
@@ -274,8 +310,12 @@ export function CanvasCodeSync({ elements, onElementsUpdate }: CanvasCodeSyncPro
 
       {/* Info bar */}
       <div className={`flex items-center justify-between px-3 py-1 text-[7px] ${t.text.dimmed}`}>
-        <span>{i.bsElementCount}: {elements.length}</span>
-        <span>{i.bsLastSync}: {formatTime(lastSyncTime)}</span>
+        <span>
+          {i.bsElementCount}: {elements.length}
+        </span>
+        <span>
+          {i.bsLastSync}: {formatTime(lastSyncTime)}
+        </span>
       </div>
 
       {/* Code panel */}
@@ -283,7 +323,11 @@ export function CanvasCodeSync({ elements, onElementsUpdate }: CanvasCodeSyncPro
         onClick={() => setCodeExpanded(!codeExpanded)}
         className={`flex items-center gap-1 px-3 py-1 text-[8px] ${t.text.muted} ${t.interactive.menuItem}`}
       >
-        {codeExpanded ? <ChevronDown className="w-2.5 h-2.5" /> : <ChevronRight className="w-2.5 h-2.5" />}
+        {codeExpanded ? (
+          <ChevronDown className="w-2.5 h-2.5" />
+        ) : (
+          <ChevronRight className="w-2.5 h-2.5" />
+        )}
         <Code className="w-2.5 h-2.5" />
         <span style={{ fontWeight: 500 }}>{i.bsCodePreview}</span>
       </button>
@@ -293,9 +337,9 @@ export function CanvasCodeSync({ elements, onElementsUpdate }: CanvasCodeSyncPro
           <textarea
             ref={codeRef}
             value={editableCode || generatedCode}
-            onChange={e => {
-              setEditableCode(e.target.value)
-              if (!autoSync) setSyncStatus('error') // Mark out of sync
+            onChange={(e) => {
+              setEditableCode(e.target.value);
+              if (!autoSync) setSyncStatus('error'); // Mark out of sync
             }}
             className={`w-full h-full font-mono text-[9px] p-2 rounded-lg outline-none resize-none ${
               t.isDark ? 'bg-[#0a0f1f] text-emerald-300/80' : 'bg-slate-50 text-slate-700'
@@ -305,5 +349,5 @@ export function CanvasCodeSync({ elements, onElementsUpdate }: CanvasCodeSyncPro
         </div>
       )}
     </div>
-  )
+  );
 }

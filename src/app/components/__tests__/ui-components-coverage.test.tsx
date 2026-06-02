@@ -12,10 +12,10 @@
  * @tags test,ui,components,shadcn,coverage
  */
 
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import '@testing-library/jest-dom'
-import React from 'react'
-import { describe, it, expect, vi } from 'vitest'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import React from 'react';
+import { describe, it, expect, vi } from 'vitest';
 
 // ═════════════════════════════════════════════════════
 // 1. Accordion Component Tests
@@ -23,8 +23,9 @@ import { describe, it, expect, vi } from 'vitest'
 
 describe('Accordion Component', () => {
   it('should render accordion', async () => {
-    const { Accordion, AccordionItem, AccordionTrigger, AccordionContent } = await import('../../components/ui/accordion')
-    
+    const { Accordion, AccordionItem, AccordionTrigger, AccordionContent } =
+      await import('../../components/ui/accordion');
+
     render(
       <Accordion type="single" collapsible>
         <AccordionItem value="item-1">
@@ -32,14 +33,15 @@ describe('Accordion Component', () => {
           <AccordionContent>Content 1</AccordionContent>
         </AccordionItem>
       </Accordion>
-    )
-    
-    expect(screen.getByText('Item 1')).toBeDefined()
-  })
+    );
+
+    expect(screen.getByText('Item 1')).toBeDefined();
+  });
 
   it('should expand/collapse on click', async () => {
-    const { Accordion, AccordionItem, AccordionTrigger, AccordionContent } = await import('../../components/ui/accordion')
-    
+    const { Accordion, AccordionItem, AccordionTrigger, AccordionContent } =
+      await import('../../components/ui/accordion');
+
     render(
       <Accordion type="single" collapsible>
         <AccordionItem value="item-1">
@@ -47,17 +49,18 @@ describe('Accordion Component', () => {
           <AccordionContent>Content 1</AccordionContent>
         </AccordionItem>
       </Accordion>
-    )
-    
-    fireEvent.click(screen.getByText('Item 1'))
-    
-    const content = await screen.findByText('Content 1')
-    expect(content).toBeDefined()
-  })
+    );
+
+    fireEvent.click(screen.getByText('Item 1'));
+
+    const content = await screen.findByText('Content 1');
+    expect(content).toBeDefined();
+  });
 
   it('should support multiple type', async () => {
-    const { Accordion, AccordionItem, AccordionTrigger, AccordionContent } = await import('../../components/ui/accordion')
-    
+    const { Accordion, AccordionItem, AccordionTrigger, AccordionContent } =
+      await import('../../components/ui/accordion');
+
     render(
       <Accordion type="multiple">
         <AccordionItem value="item-1">
@@ -69,12 +72,12 @@ describe('Accordion Component', () => {
           <AccordionContent>Content 2</AccordionContent>
         </AccordionItem>
       </Accordion>
-    )
-    
-    expect(screen.getByText('Item 1')).toBeDefined()
-    expect(screen.getByText('Item 2')).toBeDefined()
-  })
-})
+    );
+
+    expect(screen.getByText('Item 1')).toBeDefined();
+    expect(screen.getByText('Item 2')).toBeDefined();
+  });
+});
 
 // ═════════════════════════════════════════════════════
 // 2. Alert Dialog Component Tests
@@ -82,8 +85,18 @@ describe('Accordion Component', () => {
 
 describe('Alert Dialog Component', () => {
   it('should render alert dialog', async () => {
-    const { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogFooter, AlertDialogTitle, AlertDialogDescription, AlertDialogAction, AlertDialogCancel } = await import('../../components/ui/alert-dialog')
-    
+    const {
+      AlertDialog,
+      AlertDialogTrigger,
+      AlertDialogContent,
+      AlertDialogHeader,
+      AlertDialogFooter,
+      AlertDialogTitle,
+      AlertDialogDescription,
+      AlertDialogAction,
+      AlertDialogCancel,
+    } = await import('../../components/ui/alert-dialog');
+
     render(
       <AlertDialog>
         <AlertDialogTrigger>Open</AlertDialogTrigger>
@@ -98,14 +111,15 @@ describe('Alert Dialog Component', () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    )
-    
-    expect(screen.getByText('Open')).toBeDefined()
-  })
+    );
+
+    expect(screen.getByText('Open')).toBeDefined();
+  });
 
   it('should open dialog on trigger click', async () => {
-    const { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogTitle } = await import('../../components/ui/alert-dialog')
-    
+    const { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogTitle } =
+      await import('../../components/ui/alert-dialog');
+
     render(
       <AlertDialog>
         <AlertDialogTrigger>Open</AlertDialogTrigger>
@@ -113,18 +127,19 @@ describe('Alert Dialog Component', () => {
           <AlertDialogTitle>Alert</AlertDialogTitle>
         </AlertDialogContent>
       </AlertDialog>
-    )
-    
-    fireEvent.click(screen.getByText('Open'))
-    
-    const title = await screen.findByText('Alert')
-    expect(title).toBeDefined()
-  })
+    );
+
+    fireEvent.click(screen.getByText('Open'));
+
+    const title = await screen.findByText('Alert');
+    expect(title).toBeDefined();
+  });
 
   it('should handle action click', async () => {
-    const { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogAction } = await import('../../components/ui/alert-dialog')
-    const handleAction = vi.fn()
-    
+    const { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogAction } =
+      await import('../../components/ui/alert-dialog');
+    const handleAction = vi.fn();
+
     render(
       <AlertDialog>
         <AlertDialogTrigger>Open</AlertDialogTrigger>
@@ -132,16 +147,16 @@ describe('Alert Dialog Component', () => {
           <AlertDialogAction onClick={handleAction}>Continue</AlertDialogAction>
         </AlertDialogContent>
       </AlertDialog>
-    )
-    
-    fireEvent.click(screen.getByText('Open'))
-    
-    const action = await screen.findByText('Continue')
-    fireEvent.click(action)
-    
-    expect(handleAction).toHaveBeenCalledTimes(1)
-  })
-})
+    );
+
+    fireEvent.click(screen.getByText('Open'));
+
+    const action = await screen.findByText('Continue');
+    fireEvent.click(action);
+
+    expect(handleAction).toHaveBeenCalledTimes(1);
+  });
+});
 
 // ═════════════════════════════════════════════════════
 // 3. Alert Component Tests
@@ -149,40 +164,40 @@ describe('Alert Dialog Component', () => {
 
 describe('Alert Component', () => {
   it('should render alert', async () => {
-    const { Alert, AlertTitle, AlertDescription } = await import('../../components/ui/alert')
-    
+    const { Alert, AlertTitle, AlertDescription } = await import('../../components/ui/alert');
+
     render(
       <Alert>
         <AlertTitle>Alert Title</AlertTitle>
         <AlertDescription>Alert Description</AlertDescription>
       </Alert>
-    )
-    
-    expect(screen.getByText('Alert Title')).toBeDefined()
-    expect(screen.getByText('Alert Description')).toBeDefined()
-  })
+    );
+
+    expect(screen.getByText('Alert Title')).toBeDefined();
+    expect(screen.getByText('Alert Description')).toBeDefined();
+  });
 
   it('should support destructive variant', async () => {
-    const { Alert } = await import('../../components/ui/alert')
-    const { container } = render(<Alert variant="destructive">Destructive</Alert>)
-    
-    expect(container.firstChild).toBeDefined()
-  })
+    const { Alert } = await import('../../components/ui/alert');
+    const { container } = render(<Alert variant="destructive">Destructive</Alert>);
+
+    expect(container.firstChild).toBeDefined();
+  });
 
   it('should support custom icon', async () => {
-    const { Alert, AlertDescription } = await import('../../components/ui/alert')
-    const { CheckCircle } = await import('lucide-react')
-    
+    const { Alert, AlertDescription } = await import('../../components/ui/alert');
+    const { CheckCircle } = await import('lucide-react');
+
     render(
       <Alert>
         <CheckCircle className="h-4 w-4" />
         <AlertDescription>Success</AlertDescription>
       </Alert>
-    )
-    
-    expect(screen.getByText('Success')).toBeDefined()
-  })
-})
+    );
+
+    expect(screen.getByText('Success')).toBeDefined();
+  });
+});
 
 // ═════════════════════════════════════════════════════
 // 4. Aspect Ratio Component Tests
@@ -190,36 +205,36 @@ describe('Alert Component', () => {
 
 describe('Aspect Ratio Component', () => {
   it('should render aspect ratio container', async () => {
-    const { AspectRatio } = await import('../../components/ui/aspect-ratio')
-    
+    const { AspectRatio } = await import('../../components/ui/aspect-ratio');
+
     const { container } = render(
       <AspectRatio ratio={16 / 9}>
         <div>Content</div>
       </AspectRatio>
-    )
-    
-    expect(container.firstChild).toBeDefined()
-  })
+    );
+
+    expect(container.firstChild).toBeDefined();
+  });
 
   it('should support different ratios', async () => {
-    const { AspectRatio } = await import('../../components/ui/aspect-ratio')
-    
+    const { AspectRatio } = await import('../../components/ui/aspect-ratio');
+
     const { container: container1 } = render(
       <AspectRatio ratio={1}>
         <div>Square</div>
       </AspectRatio>
-    )
-    
+    );
+
     const { container: container2 } = render(
       <AspectRatio ratio={16 / 9}>
         <div>Widescreen</div>
       </AspectRatio>
-    )
-    
-    expect(container1.firstChild).toBeDefined()
-    expect(container2.firstChild).toBeDefined()
-  })
-})
+    );
+
+    expect(container1.firstChild).toBeDefined();
+    expect(container2.firstChild).toBeDefined();
+  });
+});
 
 // ═════════════════════════════════════════════════════
 // 5. Avatar Component Tests (Complete)
@@ -227,45 +242,45 @@ describe('Aspect Ratio Component', () => {
 
 describe('Avatar Component (Complete)', () => {
   it('should render avatar with image', async () => {
-    const { Avatar, AvatarImage, AvatarFallback } = await import('../../components/ui/avatar')
-    
+    const { Avatar, AvatarImage, AvatarFallback } = await import('../../components/ui/avatar');
+
     render(
       <Avatar>
         <AvatarImage src="https://via.placeholder.com/150" alt="User" />
         <AvatarFallback>U</AvatarFallback>
       </Avatar>
-    )
-    
-    const avatar = screen.getByAltText('User')
-    expect(avatar).toBeDefined()
-  })
+    );
+
+    const avatar = screen.getByAltText('User');
+    expect(avatar).toBeDefined();
+  });
 
   it('should show fallback when image fails', async () => {
-    const { Avatar, AvatarImage, AvatarFallback } = await import('../../components/ui/avatar')
-    
+    const { Avatar, AvatarImage, AvatarFallback } = await import('../../components/ui/avatar');
+
     render(
       <Avatar>
         <AvatarImage src="/invalid.jpg" />
         <AvatarFallback>FB</AvatarFallback>
       </Avatar>
-    )
-    
-    const fallback = await screen.findByText('FB')
-    expect(fallback).toBeDefined()
-  })
+    );
+
+    const fallback = await screen.findByText('FB');
+    expect(fallback).toBeDefined();
+  });
 
   it('should support different sizes', async () => {
-    const { Avatar, AvatarFallback } = await import('../../components/ui/avatar')
-    
+    const { Avatar, AvatarFallback } = await import('../../components/ui/avatar');
+
     const { container } = render(
       <Avatar className="h-10 w-10">
         <AvatarFallback>SM</AvatarFallback>
       </Avatar>
-    )
-    
-    expect(container.firstChild).toHaveClass('h-10')
-  })
-})
+    );
+
+    expect(container.firstChild).toHaveClass('h-10');
+  });
+});
 
 // ═════════════════════════════════════════════════════
 // 6. Badge Component Tests (Complete)
@@ -273,23 +288,23 @@ describe('Avatar Component (Complete)', () => {
 
 describe('Badge Component (Complete)', () => {
   it('should render badge', async () => {
-    const { Badge } = await import('../../components/ui/badge')
-    
-    render(<Badge>Badge</Badge>)
-    expect(screen.getByText('Badge')).toBeDefined()
-  })
+    const { Badge } = await import('../../components/ui/badge');
+
+    render(<Badge>Badge</Badge>);
+    expect(screen.getByText('Badge')).toBeDefined();
+  });
 
   it('should support all variants', async () => {
-    const { Badge } = await import('../../components/ui/badge')
-    
-    const variants = ['default', 'secondary', 'destructive', 'outline']
-    
-    variants.forEach(variant => {
-      const { container } = render(<Badge variant={variant as unknown}>{variant}</Badge>)
-      expect(container.firstChild).toBeDefined()
-    })
-  })
-})
+    const { Badge } = await import('../../components/ui/badge');
+
+    const variants = ['default', 'secondary', 'destructive', 'outline'];
+
+    variants.forEach((variant) => {
+      const { container } = render(<Badge variant={variant as unknown}>{variant}</Badge>);
+      expect(container.firstChild).toBeDefined();
+    });
+  });
+});
 
 // ═════════════════════════════════════════════════════
 // 7. Calendar Component Tests
@@ -297,42 +312,42 @@ describe('Badge Component (Complete)', () => {
 
 describe('Calendar Component', () => {
   it('should render calendar', async () => {
-    const { Calendar } = await import('../../components/ui/calendar')
-    
-    const date = new Date(2024, 0, 15)
-    render(<Calendar selected={date} onSelect={() => {}} />)
-    
-    expect(screen.getByText('January 2024')).toBeDefined()
-  })
+    const { Calendar } = await import('../../components/ui/calendar');
+
+    const date = new Date(2024, 0, 15);
+    render(<Calendar selected={date} onSelect={() => {}} />);
+
+    expect(screen.getByText('January 2024')).toBeDefined();
+  });
 
   it('should handle date selection', async () => {
-    const { Calendar } = await import('../../components/ui/calendar')
-    const handleSelect = vi.fn()
-    
-    const date = new Date(2024, 0, 15)
-    render(<Calendar selected={date} onSelect={handleSelect} />)
-    
+    const { Calendar } = await import('../../components/ui/calendar');
+    const handleSelect = vi.fn();
+
+    const date = new Date(2024, 0, 15);
+    render(<Calendar selected={date} onSelect={handleSelect} />);
+
     // Click on a date
-    const dayButton = screen.getByText('15')
-    fireEvent.click(dayButton)
-    
-    expect(handleSelect).toHaveBeenCalled()
-  })
+    const dayButton = screen.getByText('15');
+    fireEvent.click(dayButton);
+
+    expect(handleSelect).toHaveBeenCalled();
+  });
 
   it('should support range mode', async () => {
-    const { Calendar } = await import('../../components/ui/calendar')
-    
+    const { Calendar } = await import('../../components/ui/calendar');
+
     render(
       <Calendar
         mode="range"
         selected={{ from: new Date(2024, 0, 1), to: new Date(2024, 0, 15) }}
         onSelect={() => {}}
       />
-    )
-    
-    expect(screen.getByText('January 2024')).toBeDefined()
-  })
-})
+    );
+
+    expect(screen.getByText('January 2024')).toBeDefined();
+  });
+});
 
 // ═════════════════════════════════════════════════════
 // 8. Card Component Tests (Complete)
@@ -340,8 +355,9 @@ describe('Calendar Component', () => {
 
 describe('Card Component (Complete)', () => {
   it('should render complete card', async () => {
-    const { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } = await import('../../components/ui/card')
-    
+    const { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } =
+      await import('../../components/ui/card');
+
     render(
       <Card>
         <CardHeader>
@@ -351,14 +367,14 @@ describe('Card Component (Complete)', () => {
         <CardContent>Card Content</CardContent>
         <CardFooter>Card Footer</CardFooter>
       </Card>
-    )
-    
-    expect(screen.getByText('Card Title')).toBeDefined()
-    expect(screen.getByText('Card Description')).toBeDefined()
-    expect(screen.getByText('Card Content')).toBeDefined()
-    expect(screen.getByText('Card Footer')).toBeDefined()
-  })
-})
+    );
+
+    expect(screen.getByText('Card Title')).toBeDefined();
+    expect(screen.getByText('Card Description')).toBeDefined();
+    expect(screen.getByText('Card Content')).toBeDefined();
+    expect(screen.getByText('Card Footer')).toBeDefined();
+  });
+});
 
 // ═════════════════════════════════════════════════════
 // 9. Carousel Component Tests
@@ -366,8 +382,9 @@ describe('Card Component (Complete)', () => {
 
 describe('Carousel Component', () => {
   it('should render carousel', async () => {
-    const { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } = await import('../../components/ui/carousel')
-    
+    const { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } =
+      await import('../../components/ui/carousel');
+
     render(
       <Carousel>
         <CarouselContent>
@@ -378,14 +395,15 @@ describe('Carousel Component', () => {
         <CarouselPrevious />
         <CarouselNext />
       </Carousel>
-    )
-    
-    expect(screen.getByText('Item 1')).toBeDefined()
-  })
+    );
+
+    expect(screen.getByText('Item 1')).toBeDefined();
+  });
 
   it('should navigate with next/previous buttons', async () => {
-    const { Carousel, CarouselContent, CarouselItem, CarouselNext } = await import('../../components/ui/carousel')
-    
+    const { Carousel, CarouselContent, CarouselItem, CarouselNext } =
+      await import('../../components/ui/carousel');
+
     render(
       <Carousel>
         <CarouselContent>
@@ -394,12 +412,12 @@ describe('Carousel Component', () => {
         </CarouselContent>
         <CarouselNext />
       </Carousel>
-    )
-    
-    const nextButton = screen.getByRole('button', { name: /next/i })
-    expect(nextButton).toBeDefined()
-  })
-})
+    );
+
+    const nextButton = screen.getByRole('button', { name: /next/i });
+    expect(nextButton).toBeDefined();
+  });
+});
 
 // ═════════════════════════════════════════════════════
 // 10. Chart Component Tests
@@ -407,17 +425,17 @@ describe('Carousel Component', () => {
 
 describe('Chart Component', () => {
   it('should render chart container', async () => {
-    const { ChartContainer } = await import('../../components/ui/chart')
-    
+    const { ChartContainer } = await import('../../components/ui/chart');
+
     render(
       <ChartContainer config={{}}>
         <div>Chart Content</div>
       </ChartContainer>
-    )
-    
-    expect(screen.getByText('Chart Content')).toBeDefined()
-  })
-})
+    );
+
+    expect(screen.getByText('Chart Content')).toBeDefined();
+  });
+});
 
 // ═════════════════════════════════════════════════════
 // 11. Checkbox Component Tests (Complete)
@@ -425,34 +443,34 @@ describe('Chart Component', () => {
 
 describe('Checkbox Component (Complete)', () => {
   it('should render checkbox with label', async () => {
-    const { Checkbox } = await import('../../components/ui/checkbox')
-    
+    const { Checkbox } = await import('../../components/ui/checkbox');
+
     render(
       <div>
         <Checkbox id="terms" />
         <label htmlFor="terms">Accept terms</label>
       </div>
-    )
-    
-    expect(screen.getByLabelText('Accept terms')).toBeDefined()
-  })
+    );
+
+    expect(screen.getByLabelText('Accept terms')).toBeDefined();
+  });
 
   it('should handle checked state', async () => {
-    const { Checkbox } = await import('../../components/ui/checkbox')
-    
-    render(<Checkbox checked onChange={() => {}} />)
-    
-    expect(screen.getByRole('checkbox')).toBeChecked()
-  })
+    const { Checkbox } = await import('../../components/ui/checkbox');
+
+    render(<Checkbox checked onChange={() => {}} />);
+
+    expect(screen.getByRole('checkbox')).toBeChecked();
+  });
 
   it('should handle disabled state', async () => {
-    const { Checkbox } = await import('../../components/ui/checkbox')
-    
-    render(<Checkbox disabled />)
-    
-    expect(screen.getByRole('checkbox')).toBeDisabled()
-  })
-})
+    const { Checkbox } = await import('../../components/ui/checkbox');
+
+    render(<Checkbox disabled />);
+
+    expect(screen.getByRole('checkbox')).toBeDisabled();
+  });
+});
 
 // ═════════════════════════════════════════════════════
 // 12. Collapsible Component Tests
@@ -460,34 +478,36 @@ describe('Checkbox Component (Complete)', () => {
 
 describe('Collapsible Component', () => {
   it('should render collapsible', async () => {
-    const { Collapsible, CollapsibleContent, CollapsibleTrigger } = await import('../../components/ui/collapsible')
-    
+    const { Collapsible, CollapsibleContent, CollapsibleTrigger } =
+      await import('../../components/ui/collapsible');
+
     render(
       <Collapsible>
         <CollapsibleTrigger>Toggle</CollapsibleTrigger>
         <CollapsibleContent>Content</CollapsibleContent>
       </Collapsible>
-    )
-    
-    expect(screen.getByText('Toggle')).toBeDefined()
-  })
+    );
+
+    expect(screen.getByText('Toggle')).toBeDefined();
+  });
 
   it('should toggle content on trigger click', async () => {
-    const { Collapsible, CollapsibleContent, CollapsibleTrigger } = await import('../../components/ui/collapsible')
-    
+    const { Collapsible, CollapsibleContent, CollapsibleTrigger } =
+      await import('../../components/ui/collapsible');
+
     render(
       <Collapsible>
         <CollapsibleTrigger>Toggle</CollapsibleTrigger>
         <CollapsibleContent>Hidden Content</CollapsibleContent>
       </Collapsible>
-    )
-    
-    fireEvent.click(screen.getByText('Toggle'))
-    
-    const content = await screen.findByText('Hidden Content')
-    expect(content).toBeDefined()
-  })
-})
+    );
+
+    fireEvent.click(screen.getByText('Toggle'));
+
+    const content = await screen.findByText('Hidden Content');
+    expect(content).toBeDefined();
+  });
+});
 
 // ═════════════════════════════════════════════════════
 // 13. Command Component Tests
@@ -495,8 +515,9 @@ describe('Collapsible Component', () => {
 
 describe('Command Component', () => {
   it('should render command palette', async () => {
-    const { Command, CommandInput, CommandList, CommandItem } = await import('../../components/ui/command')
-    
+    const { Command, CommandInput, CommandList, CommandItem } =
+      await import('../../components/ui/command');
+
     render(
       <Command>
         <CommandInput placeholder="Search..." />
@@ -505,14 +526,15 @@ describe('Command Component', () => {
           <CommandItem>Item 2</CommandItem>
         </CommandList>
       </Command>
-    )
-    
-    expect(screen.getByPlaceholderText('Search...')).toBeDefined()
-  })
+    );
+
+    expect(screen.getByPlaceholderText('Search...')).toBeDefined();
+  });
 
   it('should filter items on search', async () => {
-    const { Command, CommandInput, CommandList, CommandItem } = await import('../../components/ui/command')
-    
+    const { Command, CommandInput, CommandList, CommandItem } =
+      await import('../../components/ui/command');
+
     render(
       <Command>
         <CommandInput placeholder="Search..." />
@@ -521,14 +543,14 @@ describe('Command Component', () => {
           <CommandItem>Banana</CommandItem>
         </CommandList>
       </Command>
-    )
-    
-    const input = screen.getByPlaceholderText('Search...')
-    fireEvent.change(input, { target: { value: 'app' } })
-    
-    expect(screen.getByText('Apple')).toBeDefined()
-  })
-})
+    );
+
+    const input = screen.getByPlaceholderText('Search...');
+    fireEvent.change(input, { target: { value: 'app' } });
+
+    expect(screen.getByText('Apple')).toBeDefined();
+  });
+});
 
 // ═════════════════════════════════════════════════════
 // 14. Context Menu Component Tests
@@ -536,8 +558,9 @@ describe('Command Component', () => {
 
 describe('Context Menu Component', () => {
   it('should render context menu trigger', async () => {
-    const { ContextMenu, ContextMenuTrigger, ContextMenuContent, ContextMenuItem } = await import('../../components/ui/context-menu')
-    
+    const { ContextMenu, ContextMenuTrigger, ContextMenuContent, ContextMenuItem } =
+      await import('../../components/ui/context-menu');
+
     render(
       <ContextMenu>
         <ContextMenuTrigger>Right Click Me</ContextMenuTrigger>
@@ -545,14 +568,15 @@ describe('Context Menu Component', () => {
           <ContextMenuItem>Item 1</ContextMenuItem>
         </ContextMenuContent>
       </ContextMenu>
-    )
-    
-    expect(screen.getByText('Right Click Me')).toBeDefined()
-  })
+    );
+
+    expect(screen.getByText('Right Click Me')).toBeDefined();
+  });
 
   it('should open on right click', async () => {
-    const { ContextMenu, ContextMenuTrigger, ContextMenuContent, ContextMenuItem } = await import('../../components/ui/context-menu')
-    
+    const { ContextMenu, ContextMenuTrigger, ContextMenuContent, ContextMenuItem } =
+      await import('../../components/ui/context-menu');
+
     render(
       <ContextMenu>
         <ContextMenuTrigger>Right Click</ContextMenuTrigger>
@@ -560,15 +584,15 @@ describe('Context Menu Component', () => {
           <ContextMenuItem>Menu Item</ContextMenuItem>
         </ContextMenuContent>
       </ContextMenu>
-    )
-    
-    const trigger = screen.getByText('Right Click')
-    fireEvent.contextMenu(trigger)
-    
-    const menuItem = await screen.findByText('Menu Item')
-    expect(menuItem).toBeDefined()
-  })
-})
+    );
+
+    const trigger = screen.getByText('Right Click');
+    fireEvent.contextMenu(trigger);
+
+    const menuItem = await screen.findByText('Menu Item');
+    expect(menuItem).toBeDefined();
+  });
+});
 
 // ═════════════════════════════════════════════════════
 // 15. Drawer Component Tests
@@ -576,34 +600,34 @@ describe('Context Menu Component', () => {
 
 describe('Drawer Component', () => {
   it('should render drawer', async () => {
-    const { Drawer, DrawerTrigger, DrawerContent } = await import('../../components/ui/drawer')
-    
+    const { Drawer, DrawerTrigger, DrawerContent } = await import('../../components/ui/drawer');
+
     render(
       <Drawer>
         <DrawerTrigger>Open Drawer</DrawerTrigger>
         <DrawerContent>Drawer Content</DrawerContent>
       </Drawer>
-    )
-    
-    expect(screen.getByText('Open Drawer')).toBeDefined()
-  })
+    );
+
+    expect(screen.getByText('Open Drawer')).toBeDefined();
+  });
 
   it('should open on trigger click', async () => {
-    const { Drawer, DrawerTrigger, DrawerContent } = await import('../../components/ui/drawer')
-    
+    const { Drawer, DrawerTrigger, DrawerContent } = await import('../../components/ui/drawer');
+
     render(
       <Drawer>
         <DrawerTrigger>Open</DrawerTrigger>
         <DrawerContent>Drawer</DrawerContent>
       </Drawer>
-    )
-    
-    fireEvent.click(screen.getByText('Open'))
-    
-    const drawer = await screen.findByText('Drawer')
-    expect(drawer).toBeDefined()
-  })
-})
+    );
+
+    fireEvent.click(screen.getByText('Open'));
+
+    const drawer = await screen.findByText('Drawer');
+    expect(drawer).toBeDefined();
+  });
+});
 
 // ═════════════════════════════════════════════════════
 // 16. Dropdown Menu Component Tests
@@ -611,8 +635,9 @@ describe('Drawer Component', () => {
 
 describe('Dropdown Menu Component', () => {
   it('should render dropdown menu', async () => {
-    const { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } = await import('../../components/ui/dropdown-menu')
-    
+    const { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } =
+      await import('../../components/ui/dropdown-menu');
+
     render(
       <DropdownMenu>
         <DropdownMenuTrigger>Open Menu</DropdownMenuTrigger>
@@ -621,14 +646,15 @@ describe('Dropdown Menu Component', () => {
           <DropdownMenuItem>Item 2</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-    )
-    
-    expect(screen.getByText('Open Menu')).toBeDefined()
-  })
+    );
+
+    expect(screen.getByText('Open Menu')).toBeDefined();
+  });
 
   it('should open on trigger click', async () => {
-    const { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } = await import('../../components/ui/dropdown-menu')
-    
+    const { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } =
+      await import('../../components/ui/dropdown-menu');
+
     render(
       <DropdownMenu>
         <DropdownMenuTrigger>Open</DropdownMenuTrigger>
@@ -636,19 +662,20 @@ describe('Dropdown Menu Component', () => {
           <DropdownMenuItem>Menu Item</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-    )
-    
-    fireEvent.click(screen.getByText('Open'))
-    
+    );
+
+    fireEvent.click(screen.getByText('Open'));
+
     await waitFor(() => {
-      expect(screen.getByText('Menu Item')).toBeDefined()
-    })
-  })
+      expect(screen.getByText('Menu Item')).toBeDefined();
+    });
+  });
 
   it('should handle item click', async () => {
-    const { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } = await import('../../components/ui/dropdown-menu')
-    const handleClick = vi.fn()
-    
+    const { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } =
+      await import('../../components/ui/dropdown-menu');
+    const handleClick = vi.fn();
+
     render(
       <DropdownMenu>
         <DropdownMenuTrigger>Open</DropdownMenuTrigger>
@@ -656,18 +683,18 @@ describe('Dropdown Menu Component', () => {
           <DropdownMenuItem onClick={handleClick}>Click Me</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-    )
-    
-    fireEvent.click(screen.getByText('Open'))
-    
+    );
+
+    fireEvent.click(screen.getByText('Open'));
+
     await waitFor(() => {
-      expect(screen.getByText('Click Me')).toBeDefined()
-    })
-    fireEvent.click(screen.getByText('Click Me'))
-    
-    expect(handleClick).toHaveBeenCalledTimes(1)
-  })
-})
+      expect(screen.getByText('Click Me')).toBeDefined();
+    });
+    fireEvent.click(screen.getByText('Click Me'));
+
+    expect(handleClick).toHaveBeenCalledTimes(1);
+  });
+});
 
 // ═════════════════════════════════════════════════════
 // 17. Form Component Tests
@@ -675,14 +702,15 @@ describe('Dropdown Menu Component', () => {
 
 describe('Form Component', () => {
   it('should render form', async () => {
-    const { useForm, FormProvider } = await import('react-hook-form')
-    const { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } = await import('../../components/ui/form')
-    const Form = FormProvider
-    
+    const { useForm, FormProvider } = await import('react-hook-form');
+    const { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage } =
+      await import('../../components/ui/form');
+    const Form = FormProvider;
+
     function TestForm() {
       const methods = useForm({
         defaultValues: { email: '' },
-      })
+      });
       return (
         <Form {...methods}>
           <form>
@@ -702,15 +730,15 @@ describe('Form Component', () => {
             />
           </form>
         </Form>
-      )
+      );
     }
-    
-    render(<TestForm />)
-    
-    expect(screen.getByText('Email')).toBeDefined()
-    expect(screen.getByText('Your email address')).toBeDefined()
-  })
-})
+
+    render(<TestForm />);
+
+    expect(screen.getByText('Email')).toBeDefined();
+    expect(screen.getByText('Your email address')).toBeDefined();
+  });
+});
 
 // ═════════════════════════════════════════════════════
 // 18. Hover Card Component Tests
@@ -718,35 +746,37 @@ describe('Form Component', () => {
 
 describe('Hover Card Component', () => {
   it('should render hover card', async () => {
-    const { HoverCard, HoverCardTrigger, HoverCardContent } = await import('../../components/ui/hover-card')
-    
+    const { HoverCard, HoverCardTrigger, HoverCardContent } =
+      await import('../../components/ui/hover-card');
+
     render(
       <HoverCard>
         <HoverCardTrigger>Hover Me</HoverCardTrigger>
         <HoverCardContent>Card Content</HoverCardContent>
       </HoverCard>
-    )
-    
-    expect(screen.getByText('Hover Me')).toBeDefined()
-  })
+    );
+
+    expect(screen.getByText('Hover Me')).toBeDefined();
+  });
 
   it('should show content on hover', async () => {
-    const { HoverCard, HoverCardTrigger, HoverCardContent } = await import('../../components/ui/hover-card')
-    
+    const { HoverCard, HoverCardTrigger, HoverCardContent } =
+      await import('../../components/ui/hover-card');
+
     render(
       <HoverCard>
         <HoverCardTrigger>Hover</HoverCardTrigger>
         <HoverCardContent>Content</HoverCardContent>
       </HoverCard>
-    )
-    
-    fireEvent.mouseEnter(screen.getByText('Hover'))
-    
+    );
+
+    fireEvent.mouseEnter(screen.getByText('Hover'));
+
     await waitFor(() => {
-      expect(screen.getByText('Content')).toBeDefined()
-    })
-  })
-})
+      expect(screen.getByText('Content')).toBeDefined();
+    });
+  });
+});
 
 // ═════════════════════════════════════════════════════
 // 19. Input OTP Component Tests
@@ -754,8 +784,9 @@ describe('Hover Card Component', () => {
 
 describe('Input OTP Component', () => {
   it('should render OTP input', async () => {
-    const { InputOTP, InputOTPGroup, InputOTPSlot, InputOTPSeparator } = await import('../../components/ui/input-otp')
-    
+    const { InputOTP, InputOTPGroup, InputOTPSlot, InputOTPSeparator } =
+      await import('../../components/ui/input-otp');
+
     render(
       <InputOTP maxLength={4}>
         <InputOTPGroup>
@@ -768,28 +799,28 @@ describe('Input OTP Component', () => {
           <InputOTPSlot index={3} />
         </InputOTPGroup>
       </InputOTP>
-    )
-    
+    );
+
     // InputOTPSlot renders div elements with data-slot="input-otp-slot"
-    const slots = document.querySelectorAll('[data-slot="input-otp-slot"]')
-    expect(slots.length).toBe(4)
-  })
+    const slots = document.querySelectorAll('[data-slot="input-otp-slot"]');
+    expect(slots.length).toBe(4);
+  });
 
   it('should handle OTP input', async () => {
-    const { InputOTP, InputOTPGroup, InputOTPSlot } = await import('../../components/ui/input-otp')
-    
+    const { InputOTP, InputOTPGroup, InputOTPSlot } = await import('../../components/ui/input-otp');
+
     const { container } = render(
       <InputOTP maxLength={4}>
         <InputOTPGroup>
           <InputOTPSlot index={0} />
         </InputOTPGroup>
       </InputOTP>
-    )
-    
+    );
+
     // OTP component renders correctly
-    expect(container.querySelector('[data-slot="input-otp"]')).toBeDefined()
-  })
-})
+    expect(container.querySelector('[data-slot="input-otp"]')).toBeDefined();
+  });
+});
 
 // ═════════════════════════════════════════════════════
 // 20. Label Component Tests
@@ -797,22 +828,22 @@ describe('Input OTP Component', () => {
 
 describe('Label Component', () => {
   it('should render label', async () => {
-    const { Label } = await import('../../components/ui/label')
-    
-    render(<Label htmlFor="input">Label Text</Label>)
-    
-    expect(screen.getByText('Label Text')).toBeDefined()
-  })
+    const { Label } = await import('../../components/ui/label');
+
+    render(<Label htmlFor="input">Label Text</Label>);
+
+    expect(screen.getByText('Label Text')).toBeDefined();
+  });
 
   it('should support custom className', async () => {
-    const { Label } = await import('../../components/ui/label')
-    
-    const { container } = render(<Label className="custom-class">Custom Label</Label>)
-    
-    expect(screen.getByText('Custom Label')).toBeDefined()
-    expect(container.firstChild).toHaveClass('custom-class')
-  })
-})
+    const { Label } = await import('../../components/ui/label');
+
+    const { container } = render(<Label className="custom-class">Custom Label</Label>);
+
+    expect(screen.getByText('Custom Label')).toBeDefined();
+    expect(container.firstChild).toHaveClass('custom-class');
+  });
+});
 
 // Continue with remaining 21 components...
 // (menubar, navigation-menu, pagination, popover, radio-group,

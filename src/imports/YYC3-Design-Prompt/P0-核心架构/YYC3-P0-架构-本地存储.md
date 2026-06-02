@@ -17,20 +17,22 @@ tags: p0,architecture,storage,database,encryption
 
 ## 技术栈
 
-| 技术 | 版本 | 用途 |
-|------|------|------|
-| Dexie.js | 3.2.4 | IndexedDB ORM |
-| Web Crypto API | Browser | 数据加密 |
+| 技术           | 版本    | 用途          |
+| -------------- | ------- | ------------- |
+| Dexie.js       | 3.2.4   | IndexedDB ORM |
+| Web Crypto API | Browser | 数据加密      |
 
 ## 数据库设计 (AppDB extends Dexie)
 
 ### Tables
+
 - **notes**: id, title, content, encryptedContent?, tags?, isEncrypted, syncStatus, version, createdAt, updatedAt
 - **projects**: id, name, description, settings, createdAt, updatedAt
 - **files**: id, name, path, content, size, type, createdAt, updatedAt
 - **syncRecords**: id, entityType, entityId, action, timestamp, status, errorMessage?
 
 ### 版本迁移
+
 - v1: 初始结构
 - v2: 添加加密支持 (isEncrypted index)
 - v3: 添加版本控制 (version field)
@@ -65,10 +67,10 @@ tags: p0,architecture,storage,database,encryption
 
 ## 性能目标
 
-| 指标 | 目标值 |
-|------|--------|
-| 单条读取 | < 10ms |
-| 单条写入 | < 20ms |
+| 指标           | 目标值  |
+| -------------- | ------- |
+| 单条读取       | < 10ms  |
+| 单条写入       | < 20ms  |
 | 批量读取 100条 | < 100ms |
-| 搜索 1000条 | < 50ms |
-| 缓存命中率 | > 80% |
+| 搜索 1000条    | < 50ms  |
+| 缓存命中率     | > 80%   |

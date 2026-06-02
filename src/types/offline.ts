@@ -80,31 +80,31 @@ export enum OfflineOperationType {
  */
 export interface OfflineConfig {
   /** 是否启用离线模式 */
-  enabled: boolean
+  enabled: boolean;
   /** 是否自动检测在线状态 */
-  autoDetectOnline: boolean
+  autoDetectOnline: boolean;
   /** 在线检测间隔（毫秒） */
-  onlineCheckInterval: number
+  onlineCheckInterval: number;
   /** 离线操作队列最大长度 */
-  maxQueueSize: number
+  maxQueueSize: number;
   /** 操作重试次数 */
-  maxRetryCount: number
+  maxRetryCount: number;
   /** 操作重试间隔（毫秒） */
-  retryInterval: number
+  retryInterval: number;
   /** 是否启用自动同步 */
-  autoSyncEnabled: boolean
+  autoSyncEnabled: boolean;
   /** 自动同步间隔（毫秒） */
-  autoSyncInterval: number
+  autoSyncInterval: number;
   /** 默认降级策略 */
-  defaultDegradationStrategy: DegradationStrategy
+  defaultDegradationStrategy: DegradationStrategy;
   /** 功能降级策略映射 */
-  featureStrategies: Record<string, DegradationStrategy>
+  featureStrategies: Record<string, DegradationStrategy>;
   /** 是否显示离线通知 */
-  showOfflineNotification: boolean
+  showOfflineNotification: boolean;
   /** 通知显示时长（毫秒） */
-  notificationDuration: number
+  notificationDuration: number;
   /** 是否记录离线日志 */
-  enableLogging: boolean
+  enableLogging: boolean;
 }
 
 /**
@@ -112,31 +112,31 @@ export interface OfflineConfig {
  */
 export interface OfflineOperation {
   /** 操作ID */
-  id: string
+  id: string;
   /** 操作类型 */
-  type: OfflineOperationType
+  type: OfflineOperationType;
   /** 资源类型 */
-  resource: string
+  resource: string;
   /** 资源ID */
-  resourceId?: string
+  resourceId?: string;
   /** 操作数据 */
-  data: unknown
+  data: unknown;
   /** 优先级 */
-  priority: number
+  priority: number;
   /** 重试次数 */
-  retryCount: number
+  retryCount: number;
   /** 最大重试次数 */
-  maxRetryCount: number
+  maxRetryCount: number;
   /** 创建时间 */
-  createdAt: number
+  createdAt: number;
   /** 最后执行时间 */
-  lastExecutedAt?: number
+  lastExecutedAt?: number;
   /** 状态 */
-  status: OfflineOperationStatus
+  status: OfflineOperationStatus;
   /** 错误信息 */
-  error?: string
+  error?: string;
   /** 降级策略 */
-  strategy: DegradationStrategy
+  strategy: DegradationStrategy;
 }
 
 /**
@@ -160,23 +160,23 @@ export enum OfflineOperationStatus {
  */
 export interface OfflineStatus {
   /** 当前离线状态 */
-  state: OfflineState
+  state: OfflineState;
   /** 在线状态 */
-  isOnline: boolean
+  isOnline: boolean;
   /** 网络延迟（毫秒） */
-  latency?: number
+  latency?: number;
   /** 网络质量 */
-  networkQuality?: NetworkQuality
+  networkQuality?: NetworkQuality;
   /** 队列中的操作数量 */
-  queuedOperations: number
+  queuedOperations: number;
   /** 成功的操作数量 */
-  succeededOperations: number
+  succeededOperations: number;
   /** 失败的操作数量 */
-  failedOperations: number
+  failedOperations: number;
   /** 最后更新时间 */
-  lastUpdated: number
+  lastUpdated: number;
   /** 下次在线检测时间 */
-  nextOnlineCheck?: number
+  nextOnlineCheck?: number;
 }
 
 /**
@@ -200,19 +200,19 @@ export enum NetworkQuality {
  */
 export interface FeatureStatus {
   /** 功能名称 */
-  name: string
+  name: string;
   /** 功能ID */
-  id: string
+  id: string;
   /** 可用性 */
-  availability: FeatureAvailability
+  availability: FeatureAvailability;
   /** 降级策略 */
-  strategy: DegradationStrategy
+  strategy: DegradationStrategy;
   /** 最后检查时间 */
-  lastChecked: number
+  lastChecked: number;
   /** 离线是否可用 */
-  availableOffline: boolean
+  availableOffline: boolean;
   /** 本地缓存状态 */
-  cacheStatus?: CacheStatus
+  cacheStatus?: CacheStatus;
 }
 
 /**
@@ -220,13 +220,13 @@ export interface FeatureStatus {
  */
 export interface CacheStatus {
   /** 是否有缓存 */
-  hasCache: boolean
+  hasCache: boolean;
   /** 缓存大小（字节） */
-  cacheSize: number
+  cacheSize: number;
   /** 缓存时间 */
-  cachedAt?: number
+  cachedAt?: number;
   /** 是否过期 */
-  isExpired: boolean
+  isExpired: boolean;
 }
 
 /**
@@ -234,27 +234,27 @@ export interface CacheStatus {
  */
 export interface OfflineStatistics {
   /** 总离线时长（毫秒） */
-  totalOfflineTime: number
+  totalOfflineTime: number;
   /** 总离线次数 */
-  totalOfflineCount: number
+  totalOfflineCount: number;
   /** 总队列操作数 */
-  totalQueueOperations: number
+  totalQueueOperations: number;
   /** 成功操作数 */
-  successOperations: number
+  successOperations: number;
   /** 失败操作数 */
-  failedOperations: number
+  failedOperations: number;
   /** 平均队列大小 */
-  averageQueueSize: number
+  averageQueueSize: number;
   /** 最大队列大小 */
-  maxQueueSize: number
+  maxQueueSize: number;
   /** 当前队列大小 */
-  currentQueueSize: number
+  currentQueueSize: number;
   /** 最后离线时间 */
-  lastOfflineTime?: number
+  lastOfflineTime?: number;
   /** 最后在线时间 */
-  lastOnlineTime?: number
+  lastOnlineTime?: number;
   /** 最后同步时间 */
-  lastSyncTime?: number
+  lastSyncTime?: number;
 }
 
 /**
@@ -290,48 +290,48 @@ export enum OfflineEventType {
  */
 export interface OfflineEventData {
   /** 事件类型 */
-  type: OfflineEventType
+  type: OfflineEventType;
   /** 时间戳 */
-  timestamp: number
+  timestamp: number;
   /** 旧状态 */
-  oldState?: OfflineState
+  oldState?: OfflineState;
   /** 新状态 */
-  newState?: OfflineState
+  newState?: OfflineState;
   /** 操作ID */
-  operationId?: string
+  operationId?: string;
   /** 操作类型 */
-  operationType?: OfflineOperationType
+  operationType?: OfflineOperationType;
   /** 错误信息 */
-  error?: unknown
+  error?: unknown;
   /** 网络质量 */
-  networkQuality?: NetworkQuality
+  networkQuality?: NetworkQuality;
   /** 额外数据 */
-  data?: any
+  data?: any;
 }
 
 /**
  * 离线事件监听器类型
  */
-export type OfflineEventListener = (data: OfflineEventData) => void
+export type OfflineEventListener = (data: OfflineEventData) => void;
 
 /**
  * 离线降级结果接口
  */
 export interface OfflineDegradationResult {
   /** 是否成功 */
-  success: boolean
+  success: boolean;
   /** 是否降级 */
-  degraded: boolean
+  degraded: boolean;
   /** 降级策略 */
-  strategy: DegradationStrategy
+  strategy: DegradationStrategy;
   /** 操作是否已入队 */
-  queued: boolean
+  queued: boolean;
   /** 操作ID */
-  operationId?: string
+  operationId?: string;
   /** 错误信息 */
-  error?: unknown
+  error?: unknown;
   /** 本地数据 */
-  localData?: unknown
+  localData?: unknown;
   /** 额外信息 */
-  meta?: unknown
+  meta?: unknown;
 }

@@ -30,17 +30,17 @@ describe('AuthContext', () => {
       // 抑制 console.error
       const consoleError = console.error;
       console.error = vi.fn();
-      
+
       expect(() => {
         renderHook(() => useAuth());
       }).toThrow('useAuth must be used within an AuthProvider');
-      
+
       console.error = consoleError;
     });
 
     it('应该正确初始化', () => {
       const { result } = renderHook(() => useAuth(), { wrapper });
-      
+
       expect(result.current.user).toBeNull();
       expect(result.current.isAuthenticated).toBe(false);
     });
@@ -49,16 +49,16 @@ describe('AuthContext', () => {
   describe('login', () => {
     it('应该成功登录演示账号', async () => {
       const { result } = renderHook(() => useAuth(), { wrapper });
-      
+
       const loginData: LoginFormData = {
         email: 'demo@example.com',
         password: 'password123',
-        rememberMe: true
+        rememberMe: true,
       };
 
       await act(async () => {
         const response = await result.current.login(loginData);
-        
+
         expect(response.success).toBe(true);
         expect(response.user).toBeDefined();
         expect(response.user?.email).toBe('demo@example.com');
@@ -71,16 +71,16 @@ describe('AuthContext', () => {
 
     it('应该失败于错误的凭据', async () => {
       const { result } = renderHook(() => useAuth(), { wrapper });
-      
+
       const loginData: LoginFormData = {
         email: 'wrong@example.com',
         password: 'wrongpassword',
-        rememberMe: false
+        rememberMe: false,
       };
 
       await act(async () => {
         const response = await result.current.login(loginData);
-        
+
         expect(response.success).toBe(false);
         expect(response.error).toBeDefined();
       });
@@ -91,10 +91,10 @@ describe('AuthContext', () => {
 
     it('应该设置加载状态', async () => {
       const { result } = renderHook(() => useAuth(), { wrapper });
-      
+
       const loginData: LoginFormData = {
         email: 'demo@example.com',
-        password: 'password123'
+        password: 'password123',
       };
 
       // 开始登录
@@ -117,18 +117,18 @@ describe('AuthContext', () => {
   describe('register', () => {
     it('应该成功注册新用户', async () => {
       const { result } = renderHook(() => useAuth(), { wrapper });
-      
+
       const registerData: RegisterFormData = {
         email: 'newuser@example.com',
         username: 'newuser',
         password: 'password123',
         confirmPassword: 'password123',
-        agreeToTerms: true
+        agreeToTerms: true,
       };
 
       await act(async () => {
         const response = await result.current.register(registerData);
-        
+
         expect(response.success).toBe(true);
         expect(response.user).toBeDefined();
         expect(response.user?.email).toBe('newuser@example.com');
@@ -140,18 +140,18 @@ describe('AuthContext', () => {
 
     it('应该失败于密码不匹配', async () => {
       const { result } = renderHook(() => useAuth(), { wrapper });
-      
+
       const registerData: RegisterFormData = {
         email: 'newuser@example.com',
         username: 'newuser',
         password: 'password123',
         confirmPassword: 'different123',
-        agreeToTerms: true
+        agreeToTerms: true,
       };
 
       await act(async () => {
         const response = await result.current.register(registerData);
-        
+
         expect(response.success).toBe(false);
         expect(response.error).toContain('密码');
       });
@@ -161,12 +161,12 @@ describe('AuthContext', () => {
   describe('logout', () => {
     it('应该成功登出', async () => {
       const { result } = renderHook(() => useAuth(), { wrapper });
-      
+
       // 先登录
       await act(async () => {
         await result.current.login({
           email: 'demo@example.com',
-          password: 'password123'
+          password: 'password123',
         });
       });
 
@@ -185,12 +185,12 @@ describe('AuthContext', () => {
   describe('updateUser', () => {
     it('应该更新用户信息', async () => {
       const { result } = renderHook(() => useAuth(), { wrapper });
-      
+
       // 先登录
       await act(async () => {
         await result.current.login({
           email: 'demo@example.com',
-          password: 'password123'
+          password: 'password123',
         });
       });
 
@@ -199,7 +199,7 @@ describe('AuthContext', () => {
       // 更新用户名
       await act(async () => {
         await result.current.updateUser({
-          username: 'updateduser'
+          username: 'updateduser',
         });
       });
 
@@ -209,11 +209,11 @@ describe('AuthContext', () => {
 
     it('不应该在没有用户时更新', async () => {
       const { result } = renderHook(() => useAuth(), { wrapper });
-      
+
       // 尝试在没有用户时更新
       await act(async () => {
         await result.current.updateUser({
-          username: 'updateduser'
+          username: 'updateduser',
         });
       });
 
@@ -225,11 +225,11 @@ describe('AuthContext', () => {
   describe('持久化', () => {
     it('应该将用户数据保存到 localStorage', async () => {
       const { result } = renderHook(() => useAuth(), { wrapper });
-      
+
       const loginData: LoginFormData = {
         email: 'demo@example.com',
         password: 'password123',
-        rememberMe: true
+        rememberMe: true,
       };
 
       await act(async () => {
@@ -241,21 +241,21 @@ describe('AuthContext', () => {
 
       expect(storedUser).toBeDefined();
       expect(storedToken).toBeDefined();
-      
+
       const parsedUser = JSON.parse(storedUser!);
       expect(parsedUser.email).toBe('demo@example.com');
     });
 
     it('应该从 localStorage 加载用户数据', async () => {
       const { result } = renderHook(() => useAuth(), { wrapper });
-      
+
       const user = {
         id: '1',
         email: 'demo@example.com',
         username: 'Demo User',
         role: 'user' as const,
         createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
       };
       const token = 'test-token';
 
@@ -274,13 +274,13 @@ describe('AuthContext', () => {
 
     it('登出时应该清除 localStorage', async () => {
       const { result } = renderHook(() => useAuth(), { wrapper });
-      
+
       // 先登录
       await act(async () => {
         await result.current.login({
           email: 'demo@example.com',
           password: 'password123',
-          rememberMe: true
+          rememberMe: true,
         });
       });
 
@@ -299,12 +299,12 @@ describe('AuthContext', () => {
   describe('forgotPassword', () => {
     it('应该发送重置密码邮件', async () => {
       const { result } = renderHook(() => useAuth(), { wrapper });
-      
+
       await act(async () => {
         const response = await result.current.forgotPassword({
-          email: 'demo@example.com'
+          email: 'demo@example.com',
         });
-        
+
         expect(response.success).toBe(true);
         expect(response.message).toContain('邮件');
       });
@@ -314,14 +314,14 @@ describe('AuthContext', () => {
   describe('resetPassword', () => {
     it('应该成功重置密码', async () => {
       const { result } = renderHook(() => useAuth(), { wrapper });
-      
+
       await act(async () => {
         const response = await result.current.resetPassword({
           token: 'test-token',
           newPassword: 'newpassword123',
-          confirmPassword: 'newpassword123'
+          confirmPassword: 'newpassword123',
         });
-        
+
         expect(response.success).toBe(true);
         expect(response.message).toContain('成功');
       });
@@ -329,14 +329,14 @@ describe('AuthContext', () => {
 
     it('应该失败于密码不匹配', async () => {
       const { result } = renderHook(() => useAuth(), { wrapper });
-      
+
       await act(async () => {
         const response = await result.current.resetPassword({
           token: 'test-token',
           newPassword: 'newpassword123',
-          confirmPassword: 'different'
+          confirmPassword: 'different',
         });
-        
+
         expect(response.success).toBe(false);
         expect(response.error).toContain('密码');
       });

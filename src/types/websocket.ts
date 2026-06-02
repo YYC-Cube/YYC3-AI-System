@@ -56,19 +56,19 @@ export enum WebSocketMessageType {
  */
 export interface WebSocketMessage<T = unknown> {
   /** 消息类型 */
-  type: WebSocketMessageType
+  type: WebSocketMessageType;
   /** 消息ID */
-  id?: string
+  id?: string;
   /** 发送者ID */
-  sender?: string
+  sender?: string;
   /** 接收者ID */
-  receiver?: string
+  receiver?: string;
   /** 消息数据 */
-  data?: T
+  data?: T;
   /** 时间戳 */
-  timestamp: number
+  timestamp: number;
   /** 元数据 */
-  meta?: Record<string, unknown>
+  meta?: Record<string, unknown>;
 }
 
 /**
@@ -76,31 +76,31 @@ export interface WebSocketMessage<T = unknown> {
  */
 export interface WebSocketConfig {
   /** WebSocket服务器URL */
-  url: string
+  url: string;
   /** 是否自动连接 */
-  autoConnect?: boolean
+  autoConnect?: boolean;
   /** 是否自动重连 */
-  autoReconnect?: boolean
+  autoReconnect?: boolean;
   /** 最大重试次数 */
-  maxRetries?: number
+  maxRetries?: number;
   /** 初始重试间隔（毫秒） */
-  initialRetryInterval?: number
+  initialRetryInterval?: number;
   /** 最大重试间隔（毫秒） */
-  maxRetryInterval?: number
+  maxRetryInterval?: number;
   /** 重试退避因子 */
-  retryBackoffFactor?: number
+  retryBackoffFactor?: number;
   /** 心跳间隔（毫秒） */
-  heartbeatInterval?: number
+  heartbeatInterval?: number;
   /** 心跳超时（毫秒） */
-  heartbeatTimeout?: number
+  heartbeatTimeout?: number;
   /** 连接超时（毫秒） */
-  connectionTimeout?: number
+  connectionTimeout?: number;
   /** 是否启用消息队列 */
-  enableMessageQueue?: boolean
+  enableMessageQueue?: boolean;
   /** 消息队列最大长度 */
-  maxMessageQueueSize?: number
+  maxMessageQueueSize?: number;
   /** 是否启用压缩 */
-  enableCompression?: boolean
+  enableCompression?: boolean;
 }
 
 /**
@@ -137,10 +137,10 @@ export enum WebSocketEventType {
  * WebSocket事件数据
  */
 export interface WebSocketEventData {
-  type: WebSocketEventType
-  timestamp: number
-  state?: WebSocketConnectionState
-  data?: Record<string, unknown>
+  type: WebSocketEventType;
+  timestamp: number;
+  state?: WebSocketConnectionState;
+  data?: Record<string, unknown>;
 }
 
 /**
@@ -148,27 +148,27 @@ export interface WebSocketEventData {
  */
 export interface WebSocketStatistics {
   /** 连接时间 */
-  connectionTime: number
+  connectionTime: number;
   /** 最后连接时间 */
-  lastConnectedTime: number
+  lastConnectedTime: number;
   /** 断开连接次数 */
-  disconnectCount: number
+  disconnectCount: number;
   /** 重连次数 */
-  reconnectCount: number
+  reconnectCount: number;
   /** 发送消息数 */
-  messagesSent: number
+  messagesSent: number;
   /** 接收消息数 */
-  messagesReceived: number
+  messagesReceived: number;
   /** 发送字节数 */
-  bytesSent: number
+  bytesSent: number;
   /** 接收字节数 */
-  bytesReceived: number
+  bytesReceived: number;
   /** 平均消息大小（字节） */
-  averageMessageSize: number
+  averageMessageSize: number;
   /** 错误次数 */
-  errorCount: number
+  errorCount: number;
   /** 最后错误时间 */
-  lastErrorTime: number
+  lastErrorTime: number;
 }
 
 /**
@@ -176,22 +176,22 @@ export interface WebSocketStatistics {
  */
 export interface RetryStrategy {
   /** 当前重试次数 */
-  currentAttempt: number
+  currentAttempt: number;
   /** 下次重试时间 */
-  nextRetryTime: number
+  nextRetryTime: number;
   /** 重试间隔 */
-  retryInterval: number
+  retryInterval: number;
   /** 是否应该重试 */
-  shouldRetry: boolean
+  shouldRetry: boolean;
 }
 
 /**
  * 消息队列项
  */
 export interface MessageQueueItem {
-  id: string
-  message: WebSocketMessage
-  timestamp: number
-  retryCount: number
-  priority: number
+  id: string;
+  message: WebSocketMessage;
+  timestamp: number;
+  retryCount: number;
+  priority: number;
 }

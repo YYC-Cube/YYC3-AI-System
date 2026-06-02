@@ -11,14 +11,17 @@ tags: p1,frontend,sync,storage,ui
 # YYC³ P1-前端-本地存储同步
 
 ## 组件架构
+
 SyncProvider (Context) -> SyncStatusIndicator, SyncButton, SyncHistory, ConflictResolver, OfflineMode, SyncProgress
 
 ## SyncContext
+
 - status: idle|syncing|success|error|offline
 - lastSyncTime, pendingChanges, conflicts[], isOnline
 - Actions: sync(), resolveConflict(id, 'local'|'remote'), clearHistory()
 
 ## 功能
+
 - 在线/离线自动检测 (navigator.onLine + online/offline events)
 - 离线恢复后自动同步
 - 冲突解决 UI (本地版本 vs 远程版本并排对比)

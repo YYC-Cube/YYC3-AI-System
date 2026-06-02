@@ -12,7 +12,7 @@
  * @tags test,core,integration,components
  */
 
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 
 // Mock stores and services
 vi.mock('../store', () => ({
@@ -29,7 +29,7 @@ vi.mock('../store', () => ({
     setState: vi.fn(),
     subscribe: vi.fn(),
   },
-}))
+}));
 
 vi.mock('../settingsStore', () => ({
   useSettingsStore: {
@@ -40,7 +40,7 @@ vi.mock('../settingsStore', () => ({
       removeMcp: vi.fn(),
     })),
   },
-}))
+}));
 
 vi.mock('sonner', () => ({
   toast: {
@@ -49,7 +49,7 @@ vi.mock('sonner', () => ({
     warning: vi.fn(),
     info: vi.fn(),
   },
-}))
+}));
 
 // ═════════════════════════════════════════════════════
 // Component Import Tests
@@ -67,63 +67,63 @@ describe('Core Component Imports', () => {
       import('../TaskBoard'),
       import('../MCPPanel'),
       import('../MVPGenerator'),
-    ])
+    ]);
 
-    expect(components.length).toBe(8)
-    
+    expect(components.length).toBe(8);
+
     components.forEach((module) => {
-      expect(module).toBeDefined()
-    })
-  })
+      expect(module).toBeDefined();
+    });
+  });
 
   it('should export ChatInterface component', async () => {
-    const { ChatInterface } = await import('../ChatInterface')
-    expect(ChatInterface).toBeDefined()
-    expect(typeof ChatInterface).toBe('function')
-  })
+    const { ChatInterface } = await import('../ChatInterface');
+    expect(ChatInterface).toBeDefined();
+    expect(typeof ChatInterface).toBe('function');
+  });
 
   it('should export CodeEditor component', async () => {
-    const { CodeEditor } = await import('../CodeEditor')
-    expect(CodeEditor).toBeDefined()
-    expect(typeof CodeEditor).toBe('function')
-  })
+    const { CodeEditor } = await import('../CodeEditor');
+    expect(CodeEditor).toBeDefined();
+    expect(typeof CodeEditor).toBe('function');
+  });
 
   it('should export FileManager component', async () => {
-    const { FileManager } = await import('../FileManager')
-    expect(FileManager).toBeDefined()
-    expect(typeof FileManager).toBe('function')
-  })
+    const { FileManager } = await import('../FileManager');
+    expect(FileManager).toBeDefined();
+    expect(typeof FileManager).toBe('function');
+  });
 
   it('should export PreviewPanel component', async () => {
-    const { PreviewPanel } = await import('../PreviewPanel')
-    expect(PreviewPanel).toBeDefined()
-    expect(typeof PreviewPanel).toBe('function')
-  })
+    const { PreviewPanel } = await import('../PreviewPanel');
+    expect(PreviewPanel).toBeDefined();
+    expect(typeof PreviewPanel).toBe('function');
+  });
 
   it('should export SettingsPage component', async () => {
-    const { SettingsPage } = await import('../SettingsPage')
-    expect(SettingsPage).toBeDefined()
-    expect(typeof SettingsPage).toBe('function')
-  })
+    const { SettingsPage } = await import('../SettingsPage');
+    expect(SettingsPage).toBeDefined();
+    expect(typeof SettingsPage).toBe('function');
+  });
 
   it('should export TaskBoard component', async () => {
-    const { TaskBoard } = await import('../TaskBoard')
-    expect(TaskBoard).toBeDefined()
-    expect(typeof TaskBoard).toBe('function')
-  })
+    const { TaskBoard } = await import('../TaskBoard');
+    expect(TaskBoard).toBeDefined();
+    expect(typeof TaskBoard).toBe('function');
+  });
 
   it('should export MCPPanel component', async () => {
-    const { MCPPanel } = await import('../MCPPanel')
-    expect(MCPPanel).toBeDefined()
-    expect(typeof MCPPanel).toBe('function')
-  })
+    const { MCPPanel } = await import('../MCPPanel');
+    expect(MCPPanel).toBeDefined();
+    expect(typeof MCPPanel).toBe('function');
+  });
 
   it('should export MVPGenerator component', async () => {
-    const { MVPGenerator } = await import('../MVPGenerator')
-    expect(MVPGenerator).toBeDefined()
-    expect(typeof MVPGenerator).toBe('function')
-  })
-})
+    const { MVPGenerator } = await import('../MVPGenerator');
+    expect(MVPGenerator).toBeDefined();
+    expect(typeof MVPGenerator).toBe('function');
+  });
+});
 
 // ═════════════════════════════════════════════════════
 // Service Import Tests
@@ -139,62 +139,62 @@ describe('Core Service Imports', () => {
       import('../../services/device-simulator'),
       import('../../services/storage-service'),
       import('../../services/task-store'),
-    ])
+    ]);
 
-    expect(services.length).toBe(7)
-    
+    expect(services.length).toBe(7);
+
     services.forEach((module) => {
-      expect(module).toBeDefined()
-    })
-  })
+      expect(module).toBeDefined();
+    });
+  });
 
   it('should export aiProviderService', async () => {
-    const { aiProviderService } = await import('../../services/ai-provider')
-    expect(aiProviderService).toBeDefined()
-    expect(aiProviderService.listProviders).toBeDefined()
-    expect(typeof aiProviderService.listProviders).toBe('function')
-  })
+    const { aiProviderService } = await import('../../services/ai-provider');
+    expect(aiProviderService).toBeDefined();
+    expect(aiProviderService.listProviders).toBeDefined();
+    expect(typeof aiProviderService.listProviders).toBe('function');
+  });
 
   it('should export mcpService', async () => {
-    const { mcpService } = await import('../../services/mcp-service')
-    expect(mcpService).toBeDefined()
-    expect(mcpService.initialize).toBeDefined()
-    expect(typeof mcpService.initialize).toBe('function')
-  })
+    const { mcpService } = await import('../../services/mcp-service');
+    expect(mcpService).toBeDefined();
+    expect(mcpService.initialize).toBeDefined();
+    expect(typeof mcpService.initialize).toBe('function');
+  });
 
   it('should export mvpService', async () => {
-    const { mvpService } = await import('../../services/mvp-service')
-    expect(mvpService).toBeDefined()
-    expect(mvpService.generate).toBeDefined()
-    expect(typeof mvpService.generate).toBe('function')
-  })
+    const { mvpService } = await import('../../services/mvp-service');
+    expect(mvpService).toBeDefined();
+    expect(mvpService.generate).toBeDefined();
+    expect(typeof mvpService.generate).toBe('function');
+  });
 
   it('should export previewSandbox', async () => {
-    const { previewSandbox } = await import('../../services/preview-sandbox')
-    expect(previewSandbox).toBeDefined()
-    expect(previewSandbox.createSandbox).toBeDefined()
-    expect(typeof previewSandbox.createSandbox).toBe('function')
-  })
+    const { previewSandbox } = await import('../../services/preview-sandbox');
+    expect(previewSandbox).toBeDefined();
+    expect(previewSandbox.createSandbox).toBeDefined();
+    expect(typeof previewSandbox.createSandbox).toBe('function');
+  });
 
   it('should export deviceSimulator', async () => {
-    const { deviceSimulator } = await import('../../services/device-simulator')
-    expect(deviceSimulator).toBeDefined()
-    expect(deviceSimulator.getPresets).toBeDefined()
-    expect(typeof deviceSimulator.getPresets).toBe('function')
-  })
+    const { deviceSimulator } = await import('../../services/device-simulator');
+    expect(deviceSimulator).toBeDefined();
+    expect(deviceSimulator.getPresets).toBeDefined();
+    expect(typeof deviceSimulator.getPresets).toBe('function');
+  });
 
   it('should export storageService', async () => {
-    const { storageService } = await import('../../services/storage-service')
-    expect(storageService).toBeDefined()
-    expect(storageService.get).toBeDefined()
-    expect(typeof storageService.get).toBe('function')
-  })
+    const { storageService } = await import('../../services/storage-service');
+    expect(storageService).toBeDefined();
+    expect(storageService.get).toBeDefined();
+    expect(typeof storageService.get).toBe('function');
+  });
 
   it('should export useTaskStore', async () => {
-    const { useTaskStore } = await import('../../services/task-store')
-    expect(useTaskStore).toBeDefined()
-  })
-})
+    const { useTaskStore } = await import('../../services/task-store');
+    expect(useTaskStore).toBeDefined();
+  });
+});
 
 // ═════════════════════════════════════════════════════
 // Utility Import Tests
@@ -208,47 +208,48 @@ describe('Core Utility Imports', () => {
       import('../../utils/storage-keys'),
       import('../../utils/storage-monitor'),
       import('../../utils/storage-cleanup'),
-    ])
+    ]);
 
-    expect(utils.length).toBe(5)
-  })
+    expect(utils.length).toBe(5);
+  });
 
   it('should export theme utilities', async () => {
-    const { getThemeTokens, THEME_PRESETS, nextTheme } = await import('../../utils/theme')
-    expect(getThemeTokens).toBeDefined()
-    expect(THEME_PRESETS).toBeDefined()
-    expect(nextTheme).toBeDefined()
-    expect(Array.isArray(THEME_PRESETS)).toBe(true)
-  })
+    const { getThemeTokens, THEME_PRESETS, nextTheme } = await import('../../utils/theme');
+    expect(getThemeTokens).toBeDefined();
+    expect(THEME_PRESETS).toBeDefined();
+    expect(nextTheme).toBeDefined();
+    expect(Array.isArray(THEME_PRESETS)).toBe(true);
+  });
 
   it('should export i18n utilities', async () => {
-    const { getI18n, resolveKey } = await import('../../utils/i18n')
-    expect(getI18n).toBeDefined()
-    expect(resolveKey).toBeDefined()
-    expect(typeof getI18n).toBe('function')
-  })
+    const { getI18n, resolveKey } = await import('../../utils/i18n');
+    expect(getI18n).toBeDefined();
+    expect(resolveKey).toBeDefined();
+    expect(typeof getI18n).toBe('function');
+  });
 
   it('should export storage keys', async () => {
-    const { APP_STORE_KEY, SETTINGS_STORE_KEY, getAllStorageKeys } = await import('../../utils/storage-keys')
-    expect(APP_STORE_KEY).toBe('yyc3-storage')
-    expect(SETTINGS_STORE_KEY).toBe('yyc3-settings')
-    expect(getAllStorageKeys).toBeDefined()
-  })
+    const { APP_STORE_KEY, SETTINGS_STORE_KEY, getAllStorageKeys } =
+      await import('../../utils/storage-keys');
+    expect(APP_STORE_KEY).toBe('yyc3-storage');
+    expect(SETTINGS_STORE_KEY).toBe('yyc3-settings');
+    expect(getAllStorageKeys).toBeDefined();
+  });
 
   it('should export storage monitor', async () => {
-    const { storageMonitor } = await import('../../utils/storage-monitor')
-    expect(storageMonitor).toBeDefined()
-    expect(storageMonitor.getLocalStorageUsage).toBeDefined()
-    expect(storageMonitor.logStorageReport).toBeDefined()
-  })
+    const { storageMonitor } = await import('../../utils/storage-monitor');
+    expect(storageMonitor).toBeDefined();
+    expect(storageMonitor.getLocalStorageUsage).toBeDefined();
+    expect(storageMonitor.logStorageReport).toBeDefined();
+  });
 
   it('should export storage cleanup', async () => {
-    const { storageCleanup } = await import('../../utils/storage-cleanup')
-    expect(storageCleanup).toBeDefined()
-    expect(storageCleanup.cleanup).toBeDefined()
-    expect(storageCleanup.autoCleanupIfNeeded).toBeDefined()
-  })
-})
+    const { storageCleanup } = await import('../../utils/storage-cleanup');
+    expect(storageCleanup).toBeDefined();
+    expect(storageCleanup.cleanup).toBeDefined();
+    expect(storageCleanup.autoCleanupIfNeeded).toBeDefined();
+  });
+});
 
 // ═════════════════════════════════════════════════════
 // Integration Tests
@@ -256,39 +257,39 @@ describe('Core Utility Imports', () => {
 
 describe('Component Integration', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
-  })
+    vi.clearAllMocks();
+  });
 
   afterEach(() => {
-    vi.resetAllMocks()
-  })
+    vi.resetAllMocks();
+  });
 
   it('should integrate ChatInterface with store', async () => {
-    const { ChatInterface } = await import('../ChatInterface')
-    
+    const { ChatInterface } = await import('../ChatInterface');
+
     // Render should not throw
     expect(() => {
       // Can't actually render without full React context in tests
-      expect(ChatInterface).toBeDefined()
-    }).not.toThrow()
-  })
+      expect(ChatInterface).toBeDefined();
+    }).not.toThrow();
+  });
 
   it('should integrate MCPPanel with settings store', async () => {
-    const { MCPPanel } = await import('../MCPPanel')
-    
+    const { MCPPanel } = await import('../MCPPanel');
+
     expect(() => {
-      expect(MCPPanel).toBeDefined()
-    }).not.toThrow()
-  })
+      expect(MCPPanel).toBeDefined();
+    }).not.toThrow();
+  });
 
   it('should integrate MVPGenerator with app store', async () => {
-    const { MVPGenerator } = await import('../MVPGenerator')
-    
+    const { MVPGenerator } = await import('../MVPGenerator');
+
     expect(() => {
-      expect(MVPGenerator).toBeDefined()
-    }).not.toThrow()
-  })
-})
+      expect(MVPGenerator).toBeDefined();
+    }).not.toThrow();
+  });
+});
 
 // ═════════════════════════════════════════════════════
 // API Surface Tests
@@ -296,24 +297,24 @@ describe('Component Integration', () => {
 
 describe('API Surface', () => {
   it('should have consistent API across services', async () => {
-    const { aiProviderService } = await import('../../services/ai-provider')
-    const { mcpService } = await import('../../services/mcp-service')
-    const { mvpService } = await import('../../services/mvp-service')
+    const { aiProviderService } = await import('../../services/ai-provider');
+    const { mcpService } = await import('../../services/mcp-service');
+    const { mvpService } = await import('../../services/mvp-service');
 
     // All services should have initialize method
-    expect(aiProviderService.chat).toBeDefined()
-    expect(mcpService.initialize).toBeDefined()
-    expect(mvpService.generate).toBeDefined()
-  })
+    expect(aiProviderService.chat).toBeDefined();
+    expect(mcpService.initialize).toBeDefined();
+    expect(mvpService.generate).toBeDefined();
+  });
 
   it('should export types correctly', async () => {
-    const types = await import('../../types')
-    
-    expect(types).toBeDefined()
+    const types = await import('../../types');
+
+    expect(types).toBeDefined();
     // Check that type exports exist (they're erased at runtime, but module should exist)
-    expect(Object.keys(types).length).toBeGreaterThan(0)
-  })
-})
+    expect(Object.keys(types).length).toBeGreaterThan(0);
+  });
+});
 
 // ═════════════════════════════════════════════════════
 // Error Handling Tests
@@ -321,25 +322,23 @@ describe('API Surface', () => {
 
 describe('Error Handling', () => {
   it('should handle missing store gracefully', async () => {
-    const { ChatInterface } = await import('../ChatInterface')
-    
+    const { ChatInterface } = await import('../ChatInterface');
+
     // Mock store to return undefined
-    vi.mocked(require('../../store').useAppStore.getState).mockReturnValue({} as unknown)
-    
+    vi.mocked(require('../../store').useAppStore.getState).mockReturnValue({} as unknown);
+
     expect(() => {
-      expect(ChatInterface).toBeDefined()
-    }).not.toThrow()
-  })
+      expect(ChatInterface).toBeDefined();
+    }).not.toThrow();
+  });
 
   it('should handle service errors', async () => {
-    const { mvpService } = await import('../../services/mvp-service')
-    
+    const { mvpService } = await import('../../services/mvp-service');
+
     // Call without AI provider configured
-    await expect(mvpService.generate({ description: 'test' }))
-      .rejects
-      .toThrow()
-  })
-})
+    await expect(mvpService.generate({ description: 'test' })).rejects.toThrow();
+  });
+});
 
 // ═════════════════════════════════════════════════════
 // Performance Tests
@@ -347,39 +346,39 @@ describe('Error Handling', () => {
 
 describe('Performance', () => {
   it('should import components quickly', async () => {
-    const start = performance.now()
-    
+    const start = performance.now();
+
     await Promise.all([
       import('../../components/ChatInterface'),
       import('../../components/CodeEditor'),
       import('../../components/FileManager'),
       import('../../components/PreviewPanel'),
-    ])
-    
-    const end = performance.now()
-    const duration = end - start
-    
+    ]);
+
+    const end = performance.now();
+    const duration = end - start;
+
     // Should import all components in less than 500ms
-    expect(duration).toBeLessThan(500)
-  })
+    expect(duration).toBeLessThan(500);
+  });
 
   it('should import services quickly', async () => {
-    const start = performance.now()
-    
+    const start = performance.now();
+
     await Promise.all([
       import('../../services/ai-provider'),
       import('../../services/mcp-service'),
       import('../../services/mvp-service'),
       import('../../services/preview-sandbox'),
-    ])
-    
-    const end = performance.now()
-    const duration = end - start
-    
+    ]);
+
+    const end = performance.now();
+    const duration = end - start;
+
     // Should import all services in less than 300ms
-    expect(duration).toBeLessThan(300)
-  })
-})
+    expect(duration).toBeLessThan(300);
+  });
+});
 
 // ═════════════════════════════════════════════════════
 // Module Structure Tests
@@ -391,23 +390,23 @@ describe('Module Structure', () => {
       import('../../services/ai-provider'),
       import('../../services/mcp-service'),
       import('../../services/mvp-service'),
-    ])
+    ]);
 
     modules.forEach((module) => {
       // Each module should export a default or named service
-      const hasDefault = 'default' in module
+      const hasDefault = 'default' in module;
       const hasNamed = Object.keys(module).some(
-        key => key.toLowerCase().includes('service') || key.toLowerCase().includes('sandbox')
-      )
-      
-      expect(hasDefault || hasNamed).toBe(true)
-    })
-  })
+        (key) => key.toLowerCase().includes('service') || key.toLowerCase().includes('sandbox')
+      );
+
+      expect(hasDefault || hasNamed).toBe(true);
+    });
+  });
 
   it('should not have circular dependencies', async () => {
     // If there were circular dependencies, imports would fail
-    await expect(import('../../services/ai-provider')).resolves.toBeDefined()
-    await expect(import('../../services/mcp-service')).resolves.toBeDefined()
-    await expect(import('../../services/mvp-service')).resolves.toBeDefined()
-  })
-})
+    await expect(import('../../services/ai-provider')).resolves.toBeDefined();
+    await expect(import('../../services/mcp-service')).resolves.toBeDefined();
+    await expect(import('../../services/mvp-service')).resolves.toBeDefined();
+  });
+});

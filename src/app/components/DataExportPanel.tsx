@@ -11,18 +11,35 @@
  * @tags [component],[export],[import],[data-sovereignty],[backup]
  */
 
-'use client'
+'use client';
 
-import { Download, Upload, Shield, CheckCircle, AlertTriangle, Trash2, RefreshCw, FileJson, Archive } from 'lucide-react'
-import React, { useState, useCallback, useEffect } from 'react'
+import {
+  Download,
+  Upload,
+  Shield,
+  CheckCircle,
+  AlertTriangle,
+  Trash2,
+  RefreshCw,
+  FileJson,
+  Archive,
+} from 'lucide-react';
+import React, { useState, useCallback, useEffect } from 'react';
 
-import { dataExportService, type ExportOptions, type ImportResult } from '../services/data-export-service'
-import { dataIntegrityService, type IntegrityCheckResult } from '../services/data-integrity-service'
-import { storageOptimizer, type StorageStats } from '../services/storage-service'
-import { useAppStore } from '../store'
+import {
+  dataExportService,
+  type ExportOptions,
+  type ImportResult,
+} from '../services/data-export-service';
+import {
+  dataIntegrityService,
+  type IntegrityCheckResult,
+} from '../services/data-integrity-service';
+import { storageOptimizer, type StorageStats } from '../services/storage-service';
+import { useAppStore } from '../store';
 
 interface DataExportPanelProps {
-  onClose?: () => void
+  onClose?: () => void;
 }
 
 const i18n = {
@@ -124,24 +141,27 @@ const i18n = {
     deletedVersions: 'Deleted Versions',
     freedSpace: 'Freed Space',
     exportFailed: 'Export Failed',
-    dataSovereigntyNote: 'Your data is completely under your control, all data is stored locally in your browser.',
+    dataSovereigntyNote:
+      'Your data is completely under your control, all data is stored locally in your browser.',
   },
-}
+};
 
-type Language = 'zh' | 'en' | 'ja' | 'ko'
+type Language = 'zh' | 'en' | 'ja' | 'ko';
 
 export const DataExportPanel: React.FC<DataExportPanelProps> = ({ onClose }) => {
-  const { theme, language } = useAppStore()
-  const t = i18n[(language as Language) === 'zh' ? 'zh' : 'en']
+  const { theme, language } = useAppStore();
+  const t = i18n[(language as Language) === 'zh' ? 'zh' : 'en'];
 
-  const [activeTab, setActiveTab] = useState<'export' | 'import' | 'integrity' | 'storage'>('export')
-  const [isExporting, setIsExporting] = useState(false)
-  const [isImporting, setIsImporting] = useState(false)
-  const [isChecking, setIsChecking] = useState(false)
-  const [exportFormat, setExportFormat] = useState<'json' | 'zip'>('json')
-  const [storageStats, setStorageStats] = useState<StorageStats | null>(null)
-  const [integrityResult, setIntegrityResult] = useState<IntegrityCheckResult | null>(null)
-  const [importResult, setImportResult] = useState<ImportResult | null>(null)
+  const [activeTab, setActiveTab] = useState<'export' | 'import' | 'integrity' | 'storage'>(
+    'export'
+  );
+  const [isExporting, setIsExporting] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
+  const [isChecking, setIsChecking] = useState(false);
+  const [exportFormat, setExportFormat] = useState<'json' | 'zip'>('json');
+  const [storageStats, setStorageStats] = useState<StorageStats | null>(null);
+  const [integrityResult, setIntegrityResult] = useState<IntegrityCheckResult | null>(null);
+  const [importResult, setImportResult] = useState<ImportResult | null>(null);
 
   const [exportOptions, setExportOptions] = useState<ExportOptions>({
     format: 'json',
@@ -152,114 +172,128 @@ export const DataExportPanel: React.FC<DataExportPanelProps> = ({ onClose }) => 
     includeSettings: true,
     includeMessages: true,
     includeProjects: true,
-  })
+  });
 
   useEffect(() => {
-    loadStorageStats()
-  }, [])
+    loadStorageStats();
+  }, []);
 
   const loadStorageStats = async () => {
     try {
-      const stats = await storageOptimizer.getStorageStats()
-      setStorageStats(stats)
+      const stats = await storageOptimizer.getStorageStats();
+      setStorageStats(stats);
     } catch (error) {
-      console.error('加载存储统计失败:', error)
+      console.error('加载存储统计失败:', error);
     }
-  }
+  };
 
   const handleExport = useCallback(async () => {
-    setIsExporting(true)
+    setIsExporting(true);
     try {
-      const options = { ...exportOptions, format: exportFormat }
-      const blob = await dataExportService.exportData(options)
-      const filename = dataExportService.generateExportFilename(exportFormat)
-      dataExportService.downloadExport(blob, filename)
+      const options = { ...exportOptions, format: exportFormat };
+      const blob = await dataExportService.exportData(options);
+      const filename = dataExportService.generateExportFilename(exportFormat);
+      dataExportService.downloadExport(blob, filename);
     } catch (error) {
-      console.error('导出失败:', error)
-      alert(t.exportFailed)
+      console.error('导出失败:', error);
+      alert(t.exportFailed);
     } finally {
-      setIsExporting(false)
+      setIsExporting(false);
     }
-  }, [exportOptions, exportFormat, t])
+  }, [exportOptions, exportFormat, t]);
 
   const handleImport = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (!file) return
+    const file = event.target.files?.[0];
+    if (!file) return;
 
-    setIsImporting(true)
-    setImportResult(null)
+    setIsImporting(true);
+    setImportResult(null);
 
     try {
       const result = await dataExportService.importData(file, {
         mergeStrategy: 'merge',
         validateChecksum: true,
         skipIncompatible: false,
-      })
-      setImportResult(result)
+      });
+      setImportResult(result);
 
       if (result.success) {
-        loadStorageStats()
+        loadStorageStats();
       }
     } catch (error) {
-      console.error('导入失败:', error)
+      console.error('导入失败:', error);
       setImportResult({
         success: false,
-        importedItems: { files: 0, versions: 0, snapshots: 0, dbProfiles: 0, settings: 0, messages: 0, projects: 0 },
+        importedItems: {
+          files: 0,
+          versions: 0,
+          snapshots: 0,
+          dbProfiles: 0,
+          settings: 0,
+          messages: 0,
+          projects: 0,
+        },
         errors: [error instanceof Error ? error.message : '导入失败'],
         warnings: [],
         skippedItems: [],
-      })
+      });
     } finally {
-      setIsImporting(false)
-      event.target.value = ''
+      setIsImporting(false);
+      event.target.value = '';
     }
-  }, [])
+  }, []);
 
   const handleIntegrityCheck = useCallback(async () => {
-    setIsChecking(true)
+    setIsChecking(true);
     try {
-      const result = await dataIntegrityService.performFullCheck()
-      setIntegrityResult(result)
+      const result = await dataIntegrityService.performFullCheck();
+      setIntegrityResult(result);
     } catch (error) {
-      console.error('完整性检查失败:', error)
+      console.error('完整性检查失败:', error);
     } finally {
-      setIsChecking(false)
+      setIsChecking(false);
     }
-  }, [])
+  }, []);
 
   const handleCleanup = useCallback(async () => {
-    if (!confirm(t.confirmCleanup)) return
+    if (!confirm(t.confirmCleanup)) return;
 
     try {
       const result = await storageOptimizer.cleanupOldData({
         maxAge: 30 * 24 * 60 * 60 * 1000,
         maxVersions: 10,
         keepLatest: true,
-      })
-      alert(`${t.cleanupComplete}: ${t.deletedVersions} ${result.deletedVersions}, ${t.freedSpace} ${(result.freedBytes / 1024).toFixed(2)} KB`)
-      loadStorageStats()
+      });
+      alert(
+        `${t.cleanupComplete}: ${t.deletedVersions} ${result.deletedVersions}, ${t.freedSpace} ${(result.freedBytes / 1024).toFixed(2)} KB`
+      );
+      loadStorageStats();
     } catch (error) {
-      console.error('清理失败:', error)
+      console.error('清理失败:', error);
     }
-  }, [t])
+  }, [t]);
 
   const formatBytes = (bytes: number): string => {
-    if (bytes === 0) return '0 B'
-    const k = 1024
-    const sizes = ['B', 'KB', 'MB', 'GB']
-    const i = Math.floor(Math.log(bytes) / Math.log(k))
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
-  }
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
 
   const formatDate = (timestamp: number): string => {
-    return new Date(timestamp).toLocaleString(language === 'zh' ? 'zh-CN' : 'en-US')
-  }
+    return new Date(timestamp).toLocaleString(language === 'zh' ? 'zh-CN' : 'en-US');
+  };
 
-  const isDark = theme === 'dark' || theme === 'midnight'
+  const isDark = theme === 'dark' || theme === 'midnight';
 
   return (
-    <div className={`fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm`}>
-      <div className={`w-full max-w-3xl max-h-[90vh] overflow-hidden rounded-2xl shadow-2xl ${isDark ? 'bg-slate-900 text-white' : 'bg-white text-slate-900'}`}>
+    <div
+      className={`fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm`}
+    >
+      <div
+        className={`w-full max-w-3xl max-h-[90vh] overflow-hidden rounded-2xl shadow-2xl ${isDark ? 'bg-slate-900 text-white' : 'bg-white text-slate-900'}`}
+      >
         <div className={`p-6 border-b ${isDark ? 'border-slate-700' : 'border-slate-200'}`}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -288,8 +322,8 @@ export const DataExportPanel: React.FC<DataExportPanelProps> = ({ onClose }) => 
                   activeTab === tab.id
                     ? 'bg-indigo-500 text-white'
                     : isDark
-                    ? 'hover:bg-slate-800'
-                    : 'hover:bg-slate-100'
+                      ? 'hover:bg-slate-800'
+                      : 'hover:bg-slate-100'
                 }`}
               >
                 <tab.icon className="w-4 h-4" />
@@ -400,14 +434,24 @@ export const DataExportPanel: React.FC<DataExportPanelProps> = ({ onClose }) => 
               </div>
 
               {importResult && (
-                <div className={`p-4 rounded-lg ${importResult.success ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'}`}>
-                  <h3 className={`font-medium mb-2 ${importResult.success ? 'text-green-500' : 'text-red-500'}`}>
+                <div
+                  className={`p-4 rounded-lg ${importResult.success ? 'bg-green-500/10 border border-green-500/20' : 'bg-red-500/10 border border-red-500/20'}`}
+                >
+                  <h3
+                    className={`font-medium mb-2 ${importResult.success ? 'text-green-500' : 'text-red-500'}`}
+                  >
                     {importResult.success ? t.importSuccess : t.importFailed}
                   </h3>
                   <div className="text-sm space-y-1">
-                    <p>{t.importedFiles}: {importResult.importedItems.files}</p>
-                    <p>{t.importedVersions}: {importResult.importedItems.versions}</p>
-                    <p>{t.importedSettings}: {importResult.importedItems.settings}</p>
+                    <p>
+                      {t.importedFiles}: {importResult.importedItems.files}
+                    </p>
+                    <p>
+                      {t.importedVersions}: {importResult.importedItems.versions}
+                    </p>
+                    <p>
+                      {t.importedSettings}: {importResult.importedItems.settings}
+                    </p>
                     {importResult.errors.length > 0 && (
                       <div className="mt-2 text-red-500">
                         {importResult.errors.map((err, i) => (
@@ -442,7 +486,9 @@ export const DataExportPanel: React.FC<DataExportPanelProps> = ({ onClose }) => 
               </button>
 
               {integrityResult && (
-                <div className={`p-4 rounded-lg ${integrityResult.isHealthy ? 'bg-green-500/10 border border-green-500/20' : 'bg-amber-500/10 border border-amber-500/20'}`}>
+                <div
+                  className={`p-4 rounded-lg ${integrityResult.isHealthy ? 'bg-green-500/10 border border-green-500/20' : 'bg-amber-500/10 border border-amber-500/20'}`}
+                >
                   <div className="flex items-center gap-2 mb-3">
                     {integrityResult.isHealthy ? (
                       <CheckCircle className="w-5 h-5 text-green-500" />
@@ -455,17 +501,28 @@ export const DataExportPanel: React.FC<DataExportPanelProps> = ({ onClose }) => 
                   </div>
 
                   <div className="grid grid-cols-2 gap-4 text-sm mb-4">
-                    <p>{t.totalItems}: {integrityResult.summary.totalItems}</p>
-                    <p>{t.healthyItems}: {integrityResult.summary.healthyItems}</p>
-                    <p>{t.corruptedItems}: {integrityResult.summary.corruptedItems}</p>
-                    <p>{t.orphanedItems}: {integrityResult.summary.orphanedItems}</p>
+                    <p>
+                      {t.totalItems}: {integrityResult.summary.totalItems}
+                    </p>
+                    <p>
+                      {t.healthyItems}: {integrityResult.summary.healthyItems}
+                    </p>
+                    <p>
+                      {t.corruptedItems}: {integrityResult.summary.corruptedItems}
+                    </p>
+                    <p>
+                      {t.orphanedItems}: {integrityResult.summary.orphanedItems}
+                    </p>
                   </div>
 
                   {integrityResult.details.length > 0 && (
                     <div className="space-y-2">
                       <h4 className="font-medium text-sm">{t.issues}</h4>
                       {integrityResult.details.slice(0, 5).map((issue, i) => (
-                        <div key={i} className={`p-2 rounded text-sm ${isDark ? 'bg-slate-800' : 'bg-slate-100'}`}>
+                        <div
+                          key={i}
+                          className={`p-2 rounded text-sm ${isDark ? 'bg-slate-800' : 'bg-slate-100'}`}
+                        >
                           <p className="font-medium">{issue.description}</p>
                           <p className="text-xs text-slate-400">{issue.location}</p>
                         </div>
@@ -477,7 +534,9 @@ export const DataExportPanel: React.FC<DataExportPanelProps> = ({ onClose }) => 
                     <div className="mt-4 space-y-1">
                       <h4 className="font-medium text-sm">{t.recommendations}</h4>
                       {integrityResult.recommendations.map((rec, i) => (
-                        <p key={i} className="text-sm text-slate-400">• {rec}</p>
+                        <p key={i} className="text-sm text-slate-400">
+                          • {rec}
+                        </p>
                       ))}
                     </div>
                   )}
@@ -493,16 +552,20 @@ export const DataExportPanel: React.FC<DataExportPanelProps> = ({ onClose }) => 
                 <div className="mb-4">
                   <div className="flex justify-between text-sm mb-1">
                     <span>{t.usedSpace}</span>
-                    <span>{formatBytes(storageStats.usedBytes)} / {formatBytes(storageStats.totalBytes)}</span>
+                    <span>
+                      {formatBytes(storageStats.usedBytes)} / {formatBytes(storageStats.totalBytes)}
+                    </span>
                   </div>
-                  <div className={`h-2 rounded-full overflow-hidden ${isDark ? 'bg-slate-700' : 'bg-slate-200'}`}>
+                  <div
+                    className={`h-2 rounded-full overflow-hidden ${isDark ? 'bg-slate-700' : 'bg-slate-200'}`}
+                  >
                     <div
                       className={`h-full rounded-full transition-all ${
                         storageStats.usedPercentage > 80
                           ? 'bg-red-500'
                           : storageStats.usedPercentage > 60
-                          ? 'bg-amber-500'
-                          : 'bg-green-500'
+                            ? 'bg-amber-500'
+                            : 'bg-green-500'
                       }`}
                       style={{ width: `${Math.min(storageStats.usedPercentage, 100)}%` }}
                     />
@@ -510,18 +573,32 @@ export const DataExportPanel: React.FC<DataExportPanelProps> = ({ onClose }) => 
                 </div>
 
                 <div className="grid grid-cols-2 gap-4 text-sm">
-                  <p>{t.files}: {storageStats.filesCount}</p>
-                  <p>{t.versions}: {storageStats.versionsCount}</p>
-                  <p>{t.snapshots}: {storageStats.snapshotsCount}</p>
-                  <p>{t.dbProfiles}: {storageStats.dbProfilesCount}</p>
+                  <p>
+                    {t.files}: {storageStats.filesCount}
+                  </p>
+                  <p>
+                    {t.versions}: {storageStats.versionsCount}
+                  </p>
+                  <p>
+                    {t.snapshots}: {storageStats.snapshotsCount}
+                  </p>
+                  <p>
+                    {t.dbProfiles}: {storageStats.dbProfilesCount}
+                  </p>
                 </div>
               </div>
 
               <div className={`p-4 rounded-lg ${isDark ? 'bg-slate-800' : 'bg-slate-50'}`}>
                 <h3 className="font-medium mb-3">{t.dataRange}</h3>
                 <div className="text-sm space-y-1">
-                  <p>{t.oldestData}: {storageStats.oldestData > 0 ? formatDate(storageStats.oldestData) : '-'}</p>
-                  <p>{t.newestData}: {storageStats.newestData > 0 ? formatDate(storageStats.newestData) : '-'}</p>
+                  <p>
+                    {t.oldestData}:{' '}
+                    {storageStats.oldestData > 0 ? formatDate(storageStats.oldestData) : '-'}
+                  </p>
+                  <p>
+                    {t.newestData}:{' '}
+                    {storageStats.newestData > 0 ? formatDate(storageStats.newestData) : '-'}
+                  </p>
                 </div>
               </div>
 
@@ -543,7 +620,7 @@ export const DataExportPanel: React.FC<DataExportPanelProps> = ({ onClose }) => 
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default DataExportPanel
+export default DataExportPanel;

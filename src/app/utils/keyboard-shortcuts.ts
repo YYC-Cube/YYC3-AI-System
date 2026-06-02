@@ -13,30 +13,30 @@
  */
 
 export interface ShortcutDefinition {
-  id: string
-  name: string
-  description: string
-  category: 'navigation' | 'editor' | 'file' | 'ai' | 'terminal' | 'ui' | 'system'
-  defaultKey: string
-  currentKey?: string
-  action: () => void
-  when?: () => boolean
-  icon?: string
+  id: string;
+  name: string;
+  description: string;
+  category: 'navigation' | 'editor' | 'file' | 'ai' | 'terminal' | 'ui' | 'system';
+  defaultKey: string;
+  currentKey?: string;
+  action: () => void;
+  when?: () => boolean;
+  icon?: string;
 }
 
 export interface ShortcutBinding {
-  key: string
-  ctrl?: boolean
-  alt?: boolean
-  shift?: boolean
-  meta?: boolean
+  key: string;
+  ctrl?: boolean;
+  alt?: boolean;
+  shift?: boolean;
+  meta?: boolean;
 }
 
 export interface ShortcutCategory {
-  id: string
-  name: string
-  description: string
-  icon: string
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
 }
 
 export const SHORTCUT_CATEGORIES: ShortcutCategory[] = [
@@ -47,272 +47,272 @@ export const SHORTCUT_CATEGORIES: ShortcutCategory[] = [
   { id: 'terminal', name: '终端', description: '终端操作快捷键', icon: '💻' },
   { id: 'ui', name: '界面', description: '界面控制快捷键', icon: '🎨' },
   { id: 'system', name: '系统', description: '系统级快捷键', icon: '⚙️' },
-]
+];
 
-const isMac = typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.platform)
-const _META_KEY = isMac ? 'metaKey' : 'ctrlKey'
-void _META_KEY
+const isMac = typeof navigator !== 'undefined' && /Mac|iPod|iPhone|iPad/.test(navigator.platform);
+const _META_KEY = isMac ? 'metaKey' : 'ctrlKey';
+void _META_KEY;
 
 function parseKeyBinding(binding: string): ShortcutBinding {
-  const parts = binding.toLowerCase().split('+')
-  const result: ShortcutBinding = { key: '' }
+  const parts = binding.toLowerCase().split('+');
+  const result: ShortcutBinding = { key: '' };
 
   for (const part of parts) {
     switch (part) {
       case 'ctrl':
       case 'cmd':
       case 'command':
-        result.ctrl = true
-        result.meta = isMac
-        break
+        result.ctrl = true;
+        result.meta = isMac;
+        break;
       case 'alt':
       case 'option':
-        result.alt = true
-        break
+        result.alt = true;
+        break;
       case 'shift':
-        result.shift = true
-        break
+        result.shift = true;
+        break;
       default:
-        result.key = part
+        result.key = part;
     }
   }
 
-  return result
+  return result;
 }
 
 function formatKeyBinding(binding: ShortcutBinding): string {
-  const parts: string[] = []
+  const parts: string[] = [];
 
   if (binding.ctrl || binding.meta) {
-    parts.push(isMac ? '⌘' : 'Ctrl')
+    parts.push(isMac ? '⌘' : 'Ctrl');
   }
   if (binding.alt) {
-    parts.push(isMac ? '⌥' : 'Alt')
+    parts.push(isMac ? '⌥' : 'Alt');
   }
   if (binding.shift) {
-    parts.push(isMac ? '⇧' : 'Shift')
+    parts.push(isMac ? '⇧' : 'Shift');
   }
 
   const keyMap: Record<string, string> = {
-    'enter': '↵',
-    'escape': 'Esc',
-    'space': '␣',
-    'arrowup': '↑',
-    'arrowdown': '↓',
-    'arrowleft': '←',
-    'arrowright': '→',
-    'backspace': '⌫',
-    'delete': '⌦',
-    'tab': '⇥',
-  }
+    enter: '↵',
+    escape: 'Esc',
+    space: '␣',
+    arrowup: '↑',
+    arrowdown: '↓',
+    arrowleft: '←',
+    arrowright: '→',
+    backspace: '⌫',
+    delete: '⌦',
+    tab: '⇥',
+  };
 
-  parts.push(keyMap[binding.key.toLowerCase()] || binding.key.toUpperCase())
+  parts.push(keyMap[binding.key.toLowerCase()] || binding.key.toUpperCase());
 
-  return parts.join(isMac ? '' : '+')
+  return parts.join(isMac ? '' : '+');
 }
 
 class KeyboardShortcutsManager {
-  private shortcuts: Map<string, ShortcutDefinition> = new Map()
-  private keyBindings: Map<string, string> = new Map()
-  private enabled = true
-  private listeners: Set<(event: KeyboardEvent) => void> = new Set()
+  private shortcuts: Map<string, ShortcutDefinition> = new Map();
+  private keyBindings: Map<string, string> = new Map();
+  private enabled = true;
+  private listeners: Set<(event: KeyboardEvent) => void> = new Set();
 
   constructor() {
     if (typeof window !== 'undefined') {
-      window.addEventListener('keydown', this.handleKeyDown.bind(this))
+      window.addEventListener('keydown', this.handleKeyDown.bind(this));
     }
   }
 
   register(shortcut: ShortcutDefinition): void {
-    this.shortcuts.set(shortcut.id, shortcut)
-    const key = shortcut.currentKey || shortcut.defaultKey
-    this.keyBindings.set(this.normalizeKey(key), shortcut.id)
+    this.shortcuts.set(shortcut.id, shortcut);
+    const key = shortcut.currentKey || shortcut.defaultKey;
+    this.keyBindings.set(this.normalizeKey(key), shortcut.id);
   }
 
   unregister(id: string): void {
-    const shortcut = this.shortcuts.get(id)
+    const shortcut = this.shortcuts.get(id);
     if (shortcut) {
-      const key = shortcut.currentKey || shortcut.defaultKey
-      this.keyBindings.delete(this.normalizeKey(key))
-      this.shortcuts.delete(id)
+      const key = shortcut.currentKey || shortcut.defaultKey;
+      this.keyBindings.delete(this.normalizeKey(key));
+      this.shortcuts.delete(id);
     }
   }
 
   updateBinding(id: string, newKey: string): boolean {
-    const shortcut = this.shortcuts.get(id)
-    if (!shortcut) return false
+    const shortcut = this.shortcuts.get(id);
+    if (!shortcut) return false;
 
-    const oldKey = shortcut.currentKey || shortcut.defaultKey
-    this.keyBindings.delete(this.normalizeKey(oldKey))
+    const oldKey = shortcut.currentKey || shortcut.defaultKey;
+    this.keyBindings.delete(this.normalizeKey(oldKey));
 
-    const conflictId = this.keyBindings.get(this.normalizeKey(newKey))
+    const conflictId = this.keyBindings.get(this.normalizeKey(newKey));
     if (conflictId && conflictId !== id) {
-      return false
+      return false;
     }
 
-    shortcut.currentKey = newKey
-    this.keyBindings.set(this.normalizeKey(newKey), id)
-    this.saveToStorage()
+    shortcut.currentKey = newKey;
+    this.keyBindings.set(this.normalizeKey(newKey), id);
+    this.saveToStorage();
 
-    return true
+    return true;
   }
 
   resetBinding(id: string): void {
-    const shortcut = this.shortcuts.get(id)
+    const shortcut = this.shortcuts.get(id);
     if (shortcut) {
-      const currentKey = shortcut.currentKey || shortcut.defaultKey
-      this.keyBindings.delete(this.normalizeKey(currentKey))
-      shortcut.currentKey = undefined
-      this.keyBindings.set(this.normalizeKey(shortcut.defaultKey), id)
-      this.saveToStorage()
+      const currentKey = shortcut.currentKey || shortcut.defaultKey;
+      this.keyBindings.delete(this.normalizeKey(currentKey));
+      shortcut.currentKey = undefined;
+      this.keyBindings.set(this.normalizeKey(shortcut.defaultKey), id);
+      this.saveToStorage();
     }
   }
 
   resetAll(): void {
     this.shortcuts.forEach((shortcut, id) => {
-      const currentKey = shortcut.currentKey || shortcut.defaultKey
-      this.keyBindings.delete(this.normalizeKey(currentKey))
-      shortcut.currentKey = undefined
-      this.keyBindings.set(this.normalizeKey(shortcut.defaultKey), id)
-    })
-    this.saveToStorage()
+      const currentKey = shortcut.currentKey || shortcut.defaultKey;
+      this.keyBindings.delete(this.normalizeKey(currentKey));
+      shortcut.currentKey = undefined;
+      this.keyBindings.set(this.normalizeKey(shortcut.defaultKey), id);
+    });
+    this.saveToStorage();
   }
 
   getShortcut(id: string): ShortcutDefinition | undefined {
-    return this.shortcuts.get(id)
+    return this.shortcuts.get(id);
   }
 
   getAllShortcuts(): ShortcutDefinition[] {
-    return Array.from(this.shortcuts.values())
+    return Array.from(this.shortcuts.values());
   }
 
   getShortcutsByCategory(category: string): ShortcutDefinition[] {
-    return this.getAllShortcuts().filter(s => s.category === category)
+    return this.getAllShortcuts().filter((s) => s.category === category);
   }
 
   getFormattedKey(id: string): string {
-    const shortcut = this.shortcuts.get(id)
-    if (!shortcut) return ''
+    const shortcut = this.shortcuts.get(id);
+    if (!shortcut) return '';
 
-    const binding = parseKeyBinding(shortcut.currentKey || shortcut.defaultKey)
-    return formatKeyBinding(binding)
+    const binding = parseKeyBinding(shortcut.currentKey || shortcut.defaultKey);
+    return formatKeyBinding(binding);
   }
 
   setEnabled(enabled: boolean): void {
-    this.enabled = enabled
+    this.enabled = enabled;
   }
 
   isEnabled(): boolean {
-    return this.enabled
+    return this.enabled;
   }
 
   addListener(listener: (event: KeyboardEvent) => void): () => void {
-    this.listeners.add(listener)
-    return () => this.listeners.delete(listener)
+    this.listeners.add(listener);
+    return () => this.listeners.delete(listener);
   }
 
   private handleKeyDown(event: KeyboardEvent): void {
-    if (!this.enabled) return
+    if (!this.enabled) return;
 
     if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
-      return
+      return;
     }
 
-    const key = this.eventToKey(event)
-    const shortcutId = this.keyBindings.get(key)
+    const key = this.eventToKey(event);
+    const shortcutId = this.keyBindings.get(key);
 
     if (shortcutId) {
-      const shortcut = this.shortcuts.get(shortcutId)
+      const shortcut = this.shortcuts.get(shortcutId);
       if (shortcut && (!shortcut.when || shortcut.when())) {
-        event.preventDefault()
-        event.stopPropagation()
-        shortcut.action()
+        event.preventDefault();
+        event.stopPropagation();
+        shortcut.action();
 
-        this.listeners.forEach(listener => listener(event))
+        this.listeners.forEach((listener) => listener(event));
       }
     }
   }
 
   private eventToKey(event: KeyboardEvent): string {
-    const parts: string[] = []
+    const parts: string[] = [];
 
-    if (event.ctrlKey || event.metaKey) parts.push('ctrl')
-    if (event.altKey) parts.push('alt')
-    if (event.shiftKey) parts.push('shift')
+    if (event.ctrlKey || event.metaKey) parts.push('ctrl');
+    if (event.altKey) parts.push('alt');
+    if (event.shiftKey) parts.push('shift');
 
-    parts.push(event.key.toLowerCase())
+    parts.push(event.key.toLowerCase());
 
-    return parts.join('+')
+    return parts.join('+');
   }
 
   private normalizeKey(binding: string): string {
-    const parsed = parseKeyBinding(binding)
-    const parts: string[] = []
+    const parsed = parseKeyBinding(binding);
+    const parts: string[] = [];
 
-    if (parsed.ctrl || parsed.meta) parts.push('ctrl')
-    if (parsed.alt) parts.push('alt')
-    if (parsed.shift) parts.push('shift')
-    parts.push(parsed.key.toLowerCase())
+    if (parsed.ctrl || parsed.meta) parts.push('ctrl');
+    if (parsed.alt) parts.push('alt');
+    if (parsed.shift) parts.push('shift');
+    parts.push(parsed.key.toLowerCase());
 
-    return parts.join('+')
+    return parts.join('+');
   }
 
   private saveToStorage(): void {
-    if (typeof localStorage === 'undefined') return
+    if (typeof localStorage === 'undefined') return;
 
-    const bindings: Record<string, string> = {}
+    const bindings: Record<string, string> = {};
     this.shortcuts.forEach((shortcut, id) => {
       if (shortcut.currentKey) {
-        bindings[id] = shortcut.currentKey
+        bindings[id] = shortcut.currentKey;
       }
-    })
+    });
 
-    localStorage.setItem('yyc3-shortcuts', JSON.stringify(bindings))
+    localStorage.setItem('yyc3-shortcuts', JSON.stringify(bindings));
   }
 
   loadFromStorage(): void {
-    if (typeof localStorage === 'undefined') return
+    if (typeof localStorage === 'undefined') return;
 
     try {
-      const stored = localStorage.getItem('yyc3-shortcuts')
+      const stored = localStorage.getItem('yyc3-shortcuts');
       if (stored) {
-        const bindings: Record<string, string> = JSON.parse(stored)
+        const bindings: Record<string, string> = JSON.parse(stored);
         Object.entries(bindings).forEach(([id, key]) => {
-          const shortcut = this.shortcuts.get(id)
+          const shortcut = this.shortcuts.get(id);
           if (shortcut) {
-            const oldKey = shortcut.currentKey || shortcut.defaultKey
-            this.keyBindings.delete(this.normalizeKey(oldKey))
-            shortcut.currentKey = key
-            this.keyBindings.set(this.normalizeKey(key), id)
+            const oldKey = shortcut.currentKey || shortcut.defaultKey;
+            this.keyBindings.delete(this.normalizeKey(oldKey));
+            shortcut.currentKey = key;
+            this.keyBindings.set(this.normalizeKey(key), id);
           }
-        })
+        });
       }
     } catch (e) {
-      console.warn('[KeyboardShortcuts] Failed to load shortcuts from storage:', e)
+      console.warn('[KeyboardShortcuts] Failed to load shortcuts from storage:', e);
     }
   }
 
   exportBindings(): string {
-    const bindings: Record<string, string> = {}
+    const bindings: Record<string, string> = {};
     this.shortcuts.forEach((shortcut, id) => {
-      bindings[id] = shortcut.currentKey || shortcut.defaultKey
-    })
-    return JSON.stringify(bindings, null, 2)
+      bindings[id] = shortcut.currentKey || shortcut.defaultKey;
+    });
+    return JSON.stringify(bindings, null, 2);
   }
 
   importBindings(json: string): void {
     try {
-      const bindings: Record<string, string> = JSON.parse(json)
+      const bindings: Record<string, string> = JSON.parse(json);
       Object.entries(bindings).forEach(([id, key]) => {
-        this.updateBinding(id, key)
-      })
+        this.updateBinding(id, key);
+      });
     } catch (e) {
-      console.warn('[KeyboardShortcuts] Failed to import bindings:', e)
+      console.warn('[KeyboardShortcuts] Failed to import bindings:', e);
     }
   }
 }
 
-export const keyboardShortcuts = new KeyboardShortcutsManager()
+export const keyboardShortcuts = new KeyboardShortcutsManager();
 
 export function initializeDefaultShortcuts(): void {
   const defaultShortcuts: ShortcutDefinition[] = [
@@ -323,8 +323,8 @@ export function initializeDefaultShortcuts(): void {
       category: 'navigation',
       defaultKey: 'ctrl+shift+p',
       action: () => {
-        const store = require('../store').useAppStore.getState()
-        store.setCommandPaletteOpen(true)
+        const store = require('../store').useAppStore.getState();
+        store.setCommandPaletteOpen(true);
       },
     },
     {
@@ -334,8 +334,8 @@ export function initializeDefaultShortcuts(): void {
       category: 'navigation',
       defaultKey: 'ctrl+p',
       action: () => {
-        const store = require('../store').useAppStore.getState()
-        store.setSearchPanelOpen(true)
+        const store = require('../store').useAppStore.getState();
+        store.setSearchPanelOpen(true);
       },
     },
     {
@@ -345,8 +345,8 @@ export function initializeDefaultShortcuts(): void {
       category: 'terminal',
       defaultKey: 'ctrl+`',
       action: () => {
-        const store = require('../store').useAppStore.getState()
-        store.toggleTerminal()
+        const store = require('../store').useAppStore.getState();
+        store.toggleTerminal();
       },
     },
     {
@@ -356,7 +356,7 @@ export function initializeDefaultShortcuts(): void {
       category: 'ui',
       defaultKey: 'ctrl+b',
       action: () => {
-        console.log('Toggle sidebar')
+        console.log('Toggle sidebar');
       },
     },
     {
@@ -366,7 +366,7 @@ export function initializeDefaultShortcuts(): void {
       category: 'file',
       defaultKey: 'ctrl+n',
       action: () => {
-        console.log('New file')
+        console.log('New file');
       },
     },
     {
@@ -376,7 +376,7 @@ export function initializeDefaultShortcuts(): void {
       category: 'file',
       defaultKey: 'ctrl+s',
       action: () => {
-        console.log('Save file')
+        console.log('Save file');
       },
     },
     {
@@ -386,7 +386,7 @@ export function initializeDefaultShortcuts(): void {
       category: 'file',
       defaultKey: 'ctrl+shift+s',
       action: () => {
-        console.log('Save all')
+        console.log('Save all');
       },
     },
     {
@@ -396,7 +396,7 @@ export function initializeDefaultShortcuts(): void {
       category: 'ui',
       defaultKey: 'ctrl+w',
       action: () => {
-        console.log('Close tab')
+        console.log('Close tab');
       },
     },
     {
@@ -406,7 +406,7 @@ export function initializeDefaultShortcuts(): void {
       category: 'editor',
       defaultKey: 'alt+shift+f',
       action: () => {
-        console.log('Format code')
+        console.log('Format code');
       },
     },
     {
@@ -416,7 +416,7 @@ export function initializeDefaultShortcuts(): void {
       category: 'ai',
       defaultKey: 'ctrl+i',
       action: () => {
-        console.log('AI assist')
+        console.log('AI assist');
       },
     },
     {
@@ -426,7 +426,7 @@ export function initializeDefaultShortcuts(): void {
       category: 'ai',
       defaultKey: 'alt+\\',
       action: () => {
-        console.log('AI code complete')
+        console.log('AI code complete');
       },
     },
     {
@@ -436,7 +436,7 @@ export function initializeDefaultShortcuts(): void {
       category: 'navigation',
       defaultKey: 'f12',
       action: () => {
-        console.log('Go to definition')
+        console.log('Go to definition');
       },
     },
     {
@@ -446,7 +446,7 @@ export function initializeDefaultShortcuts(): void {
       category: 'navigation',
       defaultKey: 'ctrl+g',
       action: () => {
-        console.log('Go to line')
+        console.log('Go to line');
       },
     },
     {
@@ -456,7 +456,7 @@ export function initializeDefaultShortcuts(): void {
       category: 'editor',
       defaultKey: 'ctrl+f',
       action: () => {
-        console.log('Find')
+        console.log('Find');
       },
     },
     {
@@ -466,7 +466,7 @@ export function initializeDefaultShortcuts(): void {
       category: 'editor',
       defaultKey: 'ctrl+h',
       action: () => {
-        console.log('Find and replace')
+        console.log('Find and replace');
       },
     },
     {
@@ -476,8 +476,8 @@ export function initializeDefaultShortcuts(): void {
       category: 'editor',
       defaultKey: 'ctrl+shift+f',
       action: () => {
-        const store = require('../store').useAppStore.getState()
-        store.setSearchPanelOpen(true)
+        const store = require('../store').useAppStore.getState();
+        store.setSearchPanelOpen(true);
       },
     },
     {
@@ -487,8 +487,8 @@ export function initializeDefaultShortcuts(): void {
       category: 'ui',
       defaultKey: 'ctrl+shift+t',
       action: () => {
-        const store = require('../store').useAppStore.getState()
-        store.toggleTheme()
+        const store = require('../store').useAppStore.getState();
+        store.toggleTheme();
       },
     },
     {
@@ -498,7 +498,7 @@ export function initializeDefaultShortcuts(): void {
       category: 'system',
       defaultKey: 'ctrl+,',
       action: () => {
-        window.location.href = '/settings'
+        window.location.href = '/settings';
       },
     },
     {
@@ -508,19 +508,19 @@ export function initializeDefaultShortcuts(): void {
       category: 'system',
       defaultKey: 'f1',
       action: () => {
-        const store = require('../store').useAppStore.getState()
-        store.setShortcutsDialogOpen(true)
+        const store = require('../store').useAppStore.getState();
+        store.setShortcutsDialogOpen(true);
       },
     },
-  ]
+  ];
 
-  defaultShortcuts.forEach(shortcut => {
-    keyboardShortcuts.register(shortcut)
-  })
+  defaultShortcuts.forEach((shortcut) => {
+    keyboardShortcuts.register(shortcut);
+  });
 
-  keyboardShortcuts.loadFromStorage()
+  keyboardShortcuts.loadFromStorage();
 }
 
 if (typeof window !== 'undefined') {
-  initializeDefaultShortcuts()
+  initializeDefaultShortcuts();
 }

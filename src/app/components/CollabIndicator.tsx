@@ -15,56 +15,70 @@
  */
 
 import {
-  Users, Wifi, WifiOff, Loader2, Circle, Eye,
-  MousePointer, Edit3, Clock, UserPlus, Copy
-} from 'lucide-react'
-import { motion, AnimatePresence } from 'motion/react'
-import { useState, useEffect, useCallback, useMemo } from 'react'
-import { toast } from 'sonner'
+  Users,
+  Wifi,
+  WifiOff,
+  Loader2,
+  Circle,
+  Eye,
+  MousePointer,
+  Edit3,
+  Clock,
+  UserPlus,
+  Copy,
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { toast } from 'sonner';
 
-import { collabService, ConnectionStatus, CollabUser, UserPresence } from '../services/collab-service'
-import { useAppStore } from '../store'
-import { getI18n } from '../utils/i18n'
-import { getThemeTokens } from '../utils/theme'
+import {
+  collabService,
+  ConnectionStatus,
+  CollabUser,
+  UserPresence,
+} from '../services/collab-service';
+import { useAppStore } from '../store';
+import { getI18n } from '../utils/i18n';
+import { getThemeTokens } from '../utils/theme';
 
 interface CollabIndicatorProps {
-  showUsers?: boolean
-  showStatus?: boolean
-  compact?: boolean
-  onInvite?: () => void
+  showUsers?: boolean;
+  showStatus?: boolean;
+  compact?: boolean;
+  onInvite?: () => void;
 }
 
 export function CollabIndicator({
   showUsers = true,
   showStatus = true,
   compact = false,
-  onInvite
+  onInvite,
 }: CollabIndicatorProps) {
-  const t = getThemeTokens(useAppStore(s => s.theme))
-  const i = getI18n(useAppStore(s => s.language))
+  const t = getThemeTokens(useAppStore((s) => s.theme));
+  const i = getI18n(useAppStore((s) => s.language));
 
-  const [status, setStatus] = useState<ConnectionStatus>('disconnected')
-  const [users, setUsers] = useState<CollabUser[]>([])
-  const [showUserList, setShowUserList] = useState(false)
+  const [status, setStatus] = useState<ConnectionStatus>('disconnected');
+  const [users, setUsers] = useState<CollabUser[]>([]);
+  const [showUserList, setShowUserList] = useState(false);
 
   useEffect(() => {
     const unsubscribe = collabService.onConnectionChange((newStatus) => {
-      setStatus(newStatus)
-    })
-    
-    const checkStatus = () => {
-      setStatus(collabService.getStatus())
-      setUsers(collabService.getConnectedUsers())
-    }
+      setStatus(newStatus);
+    });
 
-    checkStatus()
-    const interval = setInterval(checkStatus, 1000)
+    const checkStatus = () => {
+      setStatus(collabService.getStatus());
+      setUsers(collabService.getConnectedUsers());
+    };
+
+    checkStatus();
+    const interval = setInterval(checkStatus, 1000);
 
     return () => {
-      clearInterval(interval)
-      unsubscribe()
-    }
-  }, [])
+      clearInterval(interval);
+      unsubscribe();
+    };
+  }, []);
 
   const statusConfig = useMemo(() => {
     switch (status) {
@@ -74,8 +88,8 @@ export function CollabIndicator({
           color: 'text-emerald-400',
           bg: 'bg-emerald-500/10',
           label: i.collabOnline || 'Online',
-          pulse: false
-        }
+          pulse: false,
+        };
       case 'connecting':
       case 'syncing':
         return {
@@ -83,60 +97,62 @@ export function CollabIndicator({
           color: 'text-amber-400',
           bg: 'bg-amber-500/10',
           label: i.collabSyncing || 'Syncing',
-          pulse: true
-        }
+          pulse: true,
+        };
       case 'error':
         return {
           icon: <WifiOff className="w-3.5 h-3.5" />,
           color: 'text-red-400',
           bg: 'bg-red-500/10',
           label: 'Error',
-          pulse: false
-        }
+          pulse: false,
+        };
       default:
         return {
           icon: <WifiOff className="w-3.5 h-3.5" />,
           color: 'text-slate-400',
           bg: 'bg-slate-500/10',
           label: i.collabOffline || 'Offline',
-          pulse: false
-        }
+          pulse: false,
+        };
     }
-  }, [status, i])
+  }, [status, i]);
 
   const presenceIcon = useCallback((presence: UserPresence) => {
     switch (presence) {
       case 'typing':
-        return <Edit3 className="w-3 h-3 text-green-400" />
+        return <Edit3 className="w-3 h-3 text-green-400" />;
       case 'viewing':
-        return <Eye className="w-3 h-3 text-blue-400" />
+        return <Eye className="w-3 h-3 text-blue-400" />;
       case 'idle':
-        return <Clock className="w-3 h-3 text-amber-400" />
+        return <Clock className="w-3 h-3 text-amber-400" />;
       default:
-        return <Circle className="w-3 h-3 text-emerald-400 fill-current" />
+        return <Circle className="w-3 h-3 text-emerald-400 fill-current" />;
     }
-  }, [])
+  }, []);
 
   const handleInvite = useCallback(() => {
-    const roomName = collabService.getRoomName()
+    const roomName = collabService.getRoomName();
     if (roomName) {
-      const inviteLink = `${window.location.origin}?room=${roomName}`
-      navigator.clipboard.writeText(inviteLink)
-      toast.success(i.collabInviteSent || 'Invite link copied')
+      const inviteLink = `${window.location.origin}?room=${roomName}`;
+      navigator.clipboard.writeText(inviteLink);
+      toast.success(i.collabInviteSent || 'Invite link copied');
     }
-    onInvite?.()
-  }, [i, onInvite])
+    onInvite?.();
+  }, [i, onInvite]);
 
   if (compact) {
     return (
       <div className="flex items-center gap-2">
-        <div className={`flex items-center gap-1 px-2 py-1 rounded-lg ${statusConfig.bg} ${statusConfig.color}`}>
+        <div
+          className={`flex items-center gap-1 px-2 py-1 rounded-lg ${statusConfig.bg} ${statusConfig.color}`}
+        >
           {statusConfig.icon}
           {!showStatus && <span className="text-[10px]">{users.length}</span>}
         </div>
         {showUsers && users.length > 0 && (
           <div className="flex -space-x-2">
-            {users.slice(0, 3).map(user => (
+            {users.slice(0, 3).map((user) => (
               <div
                 key={user.id}
                 className="w-6 h-6 rounded-full border-2 border-slate-900 flex items-center justify-center text-[10px] text-white"
@@ -147,19 +163,23 @@ export function CollabIndicator({
               </div>
             ))}
             {users.length > 3 && (
-              <div className={`w-6 h-6 rounded-full border-2 border-slate-900 flex items-center justify-center text-[10px] ${t.isDark ? 'bg-slate-700 text-white' : 'bg-slate-300 text-slate-700'}`}>
-                  +{users.length - 3}
-                </div>
+              <div
+                className={`w-6 h-6 rounded-full border-2 border-slate-900 flex items-center justify-center text-[10px] ${t.isDark ? 'bg-slate-700 text-white' : 'bg-slate-300 text-slate-700'}`}
+              >
+                +{users.length - 3}
+              </div>
             )}
           </div>
         )}
       </div>
-    )
+    );
   }
 
   return (
     <div className="relative">
-      <div className={`flex items-center gap-3 px-3 py-2 rounded-xl ${t.isDark ? 'bg-white/[0.04] border border-white/[0.06]' : 'bg-white border border-slate-200'}`}>
+      <div
+        className={`flex items-center gap-3 px-3 py-2 rounded-xl ${t.isDark ? 'bg-white/[0.04] border border-white/[0.06]' : 'bg-white border border-slate-200'}`}
+      >
         {showStatus && (
           <div className="flex items-center gap-2">
             <div className={`relative ${statusConfig.color}`}>
@@ -184,7 +204,7 @@ export function CollabIndicator({
             </button>
 
             <div className="flex -space-x-2">
-              {users.slice(0, 4).map(user => (
+              {users.slice(0, 4).map((user) => (
                 <motion.div
                   key={user.id}
                   initial={{ scale: 0 }}
@@ -224,12 +244,18 @@ export function CollabIndicator({
             exit={{ opacity: 0, y: -10 }}
             className={`absolute top-full right-0 mt-2 w-64 rounded-xl overflow-hidden ${t.isDark ? 'bg-slate-800 border border-white/10' : 'bg-white border border-slate-200'} shadow-xl z-50`}
           >
-            <div className={`px-4 py-3 border-b ${t.isDark ? 'border-white/10' : 'border-slate-200'}`}>
-              <h3 className="text-[13px]" style={{ fontWeight: 600 }}>{i.collabUsers || 'Users'} ({users.length + 1})</h3>
+            <div
+              className={`px-4 py-3 border-b ${t.isDark ? 'border-white/10' : 'border-slate-200'}`}
+            >
+              <h3 className="text-[13px]" style={{ fontWeight: 600 }}>
+                {i.collabUsers || 'Users'} ({users.length + 1})
+              </h3>
             </div>
 
             <div className="max-h-64 overflow-y-auto">
-              <div className={`flex items-center gap-3 px-4 py-2 ${t.isDark ? 'bg-indigo-500/10' : 'bg-indigo-50'}`}>
+              <div
+                className={`flex items-center gap-3 px-4 py-2 ${t.isDark ? 'bg-indigo-500/10' : 'bg-indigo-50'}`}
+              >
                 <div
                   className="w-8 h-8 rounded-full flex items-center justify-center text-[12px] text-white"
                   style={{ backgroundColor: collabService.getCurrentUser()?.color || '#6366f1' }}
@@ -239,15 +265,19 @@ export function CollabIndicator({
                 <div className="flex-1 min-w-0">
                   <div className="text-[12px]" style={{ fontWeight: 500 }}>
                     {collabService.getCurrentUser()?.name || 'You'}
-                    <span className={`ml-1.5 text-[9px] px-1 py-0.5 rounded ${t.isDark ? 'bg-indigo-500/20 text-indigo-400' : 'bg-indigo-100 text-indigo-600'}`}>
+                    <span
+                      className={`ml-1.5 text-[9px] px-1 py-0.5 rounded ${t.isDark ? 'bg-indigo-500/20 text-indigo-400' : 'bg-indigo-100 text-indigo-600'}`}
+                    >
                       {i.collabOwner || 'You'}
                     </span>
                   </div>
-                  <div className={`text-[10px] ${t.text.muted}`}>{i.collabEditing || 'Editing'}</div>
+                  <div className={`text-[10px] ${t.text.muted}`}>
+                    {i.collabEditing || 'Editing'}
+                  </div>
                 </div>
               </div>
 
-              {users.map(user => (
+              {users.map((user) => (
                 <div
                   key={user.id}
                   className={`flex items-center gap-3 px-4 py-2 hover:${t.isDark ? 'bg-white/[0.04]' : 'bg-slate-50'} transition-colors`}
@@ -264,7 +294,9 @@ export function CollabIndicator({
                     </div>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-[12px]" style={{ fontWeight: 500 }}>{user.name}</div>
+                    <div className="text-[12px]" style={{ fontWeight: 500 }}>
+                      {user.name}
+                    </div>
                     <div className={`text-[10px] ${t.text.muted} flex items-center gap-1`}>
                       {user.currentFile ? (
                         <span className="truncate">{user.currentFile}</span>
@@ -290,7 +322,9 @@ export function CollabIndicator({
               )}
             </div>
 
-            <div className={`px-4 py-2 border-t ${t.isDark ? 'border-white/10' : 'border-slate-200'}`}>
+            <div
+              className={`px-4 py-2 border-t ${t.isDark ? 'border-white/10' : 'border-slate-200'}`}
+            >
               <button
                 onClick={handleInvite}
                 className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[12px] transition-colors"
@@ -303,7 +337,7 @@ export function CollabIndicator({
         )}
       </AnimatePresence>
     </div>
-  )
+  );
 }
 
-export default CollabIndicator
+export default CollabIndicator;

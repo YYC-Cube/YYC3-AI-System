@@ -12,57 +12,57 @@
  * @tags test,component,core
  */
 
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect } from 'vitest';
 
 describe('Core Components Coverage', () => {
   it('should have ChatInterface component', () => {
     // ChatInterface component test coverage
-    expect(true).toBe(true)
-  })
+    expect(true).toBe(true);
+  });
 
   it('should have CodeEditor component', () => {
-    expect(true).toBe(true)
-  })
+    expect(true).toBe(true);
+  });
 
   it('should have FileManager component', () => {
-    expect(true).toBe(true)
-  })
+    expect(true).toBe(true);
+  });
 
   it('should have PreviewPanel component', () => {
-    expect(true).toBe(true)
-  })
+    expect(true).toBe(true);
+  });
 
   it('should have IntegratedTerminal component', () => {
-    expect(true).toBe(true)
-  })
+    expect(true).toBe(true);
+  });
 
   it('should have Header component', () => {
-    expect(true).toBe(true)
-  })
+    expect(true).toBe(true);
+  });
 
   it('should have CommandPalette component', () => {
-    expect(true).toBe(true)
-  })
+    expect(true).toBe(true);
+  });
 
   it('should have ModelSettings component', () => {
-    expect(true).toBe(true)
-  })
+    expect(true).toBe(true);
+  });
 
   it('should have ThemeCustomizer component', () => {
-    expect(true).toBe(true)
-  })
-})
+    expect(true).toBe(true);
+  });
+});
 
 describe('AI Services Coverage', () => {
   it('should have AI Provider service', () => {
-    expect(true).toBe(true)
-  })
+    expect(true).toBe(true);
+  });
 
   it('should have AI Completion service', () => {
-    expect(true).toBe(true)
-  })
+    expect(true).toBe(true);
+  });
 
   it('should have Quick Actions service', () => {
-    expect(true).toBe(true)
-  })
-})
+    expect(true).toBe(true);
+  });
+});

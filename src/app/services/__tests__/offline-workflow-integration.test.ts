@@ -9,12 +9,12 @@
  * @tags integration,test,offline,workflow
  */
 
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 
-import { OfflineState } from '../../../types/offline'
-import { offlineDegradationService } from '../../../services/offline-degradation-service'
-import { storageService } from '../../../services/storage-service'
-import { syncManagerService } from '../../../services/sync-manager-service'
+import { offlineDegradationService } from '../../../services/offline-degradation-service';
+import { storageService } from '../../../services/storage-service';
+import { syncManagerService } from '../../../services/sync-manager-service';
+import { OfflineState } from '../../../types/offline';
 
 // Mock offline and sync services
 vi.mock('../../../services/offline-degradation-service', () => ({
@@ -23,7 +23,7 @@ vi.mock('../../../services/offline-degradation-service', () => ({
     clearQueue: vi.fn(),
     getStatistics: vi.fn(),
   },
-}))
+}));
 
 vi.mock('../../../services/sync-manager-service', () => ({
   syncManagerService: {
@@ -31,7 +31,7 @@ vi.mock('../../../services/sync-manager-service', () => ({
     getSyncStatus: vi.fn(),
     getStatistics: vi.fn(),
   },
-}))
+}));
 
 vi.mock('../../../services/storage-service', () => ({
   storageService: {
@@ -40,20 +40,20 @@ vi.mock('../../../services/storage-service', () => ({
     saveFile: vi.fn(),
     listFiles: vi.fn(),
   },
-}))
+}));
 
 describe('Offline Workflow Integration', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
-  })
+    vi.clearAllMocks();
+  });
 
   afterEach(() => {
-    vi.clearAllTimers()
-  })
+    vi.clearAllTimers();
+  });
 
   describe('1. Online-Offline Transitions', () => {
     it('should detect offline status and enable offline mode', async () => {
-      const mockGetOfflineStatus = vi.mocked(offlineDegradationService.getOfflineStatus)
+      const mockGetOfflineStatus = vi.mocked(offlineDegradationService.getOfflineStatus);
       mockGetOfflineStatus.mockResolvedValue({
         state: OfflineState.OFFLINE,
         isOnline: false,
@@ -61,16 +61,16 @@ describe('Offline Workflow Integration', () => {
         succeededOperations: 0,
         failedOperations: 0,
         lastUpdated: Date.now(),
-      })
+      });
 
-      const status = await mockGetOfflineStatus()
+      const status = await mockGetOfflineStatus();
 
-      expect(mockGetOfflineStatus).toHaveBeenCalled()
-      expect(status.isOnline).toBe(false)
-    })
+      expect(mockGetOfflineStatus).toHaveBeenCalled();
+      expect(status.isOnline).toBe(false);
+    });
 
     it('should handle offline status changes', async () => {
-      const mockGetOfflineStatus = vi.mocked(offlineDegradationService.getOfflineStatus)
+      const mockGetOfflineStatus = vi.mocked(offlineDegradationService.getOfflineStatus);
       mockGetOfflineStatus.mockResolvedValue({
         state: OfflineState.OFFLINE,
         isOnline: false,
@@ -78,19 +78,19 @@ describe('Offline Workflow Integration', () => {
         succeededOperations: 0,
         failedOperations: 0,
         lastUpdated: Date.now(),
-      })
+      });
 
-      const status = await mockGetOfflineStatus()
+      const status = await mockGetOfflineStatus();
 
-      expect(mockGetOfflineStatus).toHaveBeenCalled()
-      expect(status.isOnline).toBe(false)
-    })
-  })
+      expect(mockGetOfflineStatus).toHaveBeenCalled();
+      expect(status.isOnline).toBe(false);
+    });
+  });
 
   describe('2. Data Persistence', () => {
     it('should save data to local storage when offline', async () => {
-      const mockSaveFile = vi.mocked(storageService.saveFile)
-      mockSaveFile.mockResolvedValue()
+      const mockSaveFile = vi.mocked(storageService.saveFile);
+      mockSaveFile.mockResolvedValue();
 
       await mockSaveFile({
         id: 'file-1',
@@ -101,13 +101,13 @@ describe('Offline Workflow Integration', () => {
         createdAt: Date.now(),
         updatedAt: Date.now(),
         size: 100,
-      })
+      });
 
-      expect(mockSaveFile).toHaveBeenCalled()
-    })
+      expect(mockSaveFile).toHaveBeenCalled();
+    });
 
     it('should read from cache when offline', async () => {
-      const mockGetFile = vi.mocked(storageService.getFile)
+      const mockGetFile = vi.mocked(storageService.getFile);
       mockGetFile.mockResolvedValue({
         id: 'file-1',
         name: 'test.ts',
@@ -117,19 +117,19 @@ describe('Offline Workflow Integration', () => {
         createdAt: Date.now(),
         updatedAt: Date.now(),
         size: 100,
-      })
+      });
 
-      const file = await mockGetFile('file-1')
+      const file = await mockGetFile('file-1');
 
-      expect(mockGetFile).toHaveBeenCalled()
-      expect(file?.content).toBe('cached content')
-    })
+      expect(mockGetFile).toHaveBeenCalled();
+      expect(file?.content).toBe('cached content');
+    });
 
     it('should maintain data integrity during offline period', async () => {
-      const mockSaveFile = vi.mocked(storageService.saveFile)
-      mockSaveFile.mockResolvedValue()
+      const mockSaveFile = vi.mocked(storageService.saveFile);
+      mockSaveFile.mockResolvedValue();
 
-      const mockGetFile = vi.mocked(storageService.getFile)
+      const mockGetFile = vi.mocked(storageService.getFile);
       mockGetFile.mockResolvedValue({
         id: 'file-1',
         name: 'test.ts',
@@ -139,7 +139,7 @@ describe('Offline Workflow Integration', () => {
         createdAt: Date.now(),
         updatedAt: Date.now(),
         size: 100,
-      })
+      });
 
       // Save offline changes
       await mockSaveFile({
@@ -151,19 +151,19 @@ describe('Offline Workflow Integration', () => {
         createdAt: Date.now(),
         updatedAt: Date.now(),
         size: 100,
-      })
+      });
       // Verify data persists
-      const file = await mockGetFile('file-1')
+      const file = await mockGetFile('file-1');
 
-      expect(mockSaveFile).toHaveBeenCalled()
-      expect(mockGetFile).toHaveBeenCalled()
-      expect(file).toBeDefined()
-    })
-  })
+      expect(mockSaveFile).toHaveBeenCalled();
+      expect(mockGetFile).toHaveBeenCalled();
+      expect(file).toBeDefined();
+    });
+  });
 
   describe('3. Conflict Resolution', () => {
     it('should get sync status', async () => {
-      const mockGetSyncStatus = vi.mocked(syncManagerService.getSyncStatus)
+      const mockGetSyncStatus = vi.mocked(syncManagerService.getSyncStatus);
       mockGetSyncStatus.mockResolvedValue({
         isOnline: true,
         isSyncing: false,
@@ -172,16 +172,16 @@ describe('Offline Workflow Integration', () => {
         conflictCount: 0,
         lastSyncTime: Date.now(),
         nextSyncTime: Date.now() + 60000,
-      })
+      });
 
-      const status = await mockGetSyncStatus()
+      const status = await mockGetSyncStatus();
 
-      expect(mockGetSyncStatus).toHaveBeenCalled()
-      expect(status.isSyncing).toBe(false)
-    })
+      expect(mockGetSyncStatus).toHaveBeenCalled();
+      expect(status.isSyncing).toBe(false);
+    });
 
     it('should get sync statistics', async () => {
-      const mockGetStatistics = vi.mocked(syncManagerService.getStatistics)
+      const mockGetStatistics = vi.mocked(syncManagerService.getStatistics);
       mockGetStatistics.mockResolvedValue({
         totalSyncs: 10,
         successCount: 9,
@@ -190,18 +190,18 @@ describe('Offline Workflow Integration', () => {
         averageSyncTime: 1000,
         lastSyncTime: Date.now(),
         pendingOperations: 0,
-      })
+      });
 
-      const stats = await mockGetStatistics()
+      const stats = await mockGetStatistics();
 
-      expect(mockGetStatistics).toHaveBeenCalled()
-      expect(stats.totalSyncs).toBe(10)
-    })
-  })
+      expect(mockGetStatistics).toHaveBeenCalled();
+      expect(stats.totalSyncs).toBe(10);
+    });
+  });
 
   describe('4. Queue Management', () => {
     it('should track operation queue size', async () => {
-      const mockGetOfflineStatus = vi.mocked(offlineDegradationService.getOfflineStatus)
+      const mockGetOfflineStatus = vi.mocked(offlineDegradationService.getOfflineStatus);
       mockGetOfflineStatus.mockResolvedValue({
         state: OfflineState.OFFLINE,
         isOnline: false,
@@ -209,26 +209,26 @@ describe('Offline Workflow Integration', () => {
         succeededOperations: 0,
         failedOperations: 0,
         lastUpdated: Date.now(),
-      })
+      });
 
-      const status = await mockGetOfflineStatus()
+      const status = await mockGetOfflineStatus();
 
-      expect(mockGetOfflineStatus).toHaveBeenCalled()
-      expect(status.queuedOperations).toBe(10)
-    })
+      expect(mockGetOfflineStatus).toHaveBeenCalled();
+      expect(status.queuedOperations).toBe(10);
+    });
 
     it('should handle queue clearing', async () => {
-      const mockClearQueue = vi.mocked(offlineDegradationService.clearQueue)
-      mockClearQueue.mockImplementation(() => {})
+      const mockClearQueue = vi.mocked(offlineDegradationService.clearQueue);
+      mockClearQueue.mockImplementation(() => {});
 
       // Clear queue
-      mockClearQueue()
+      mockClearQueue();
 
-      expect(mockClearQueue).toHaveBeenCalled()
-    })
+      expect(mockClearQueue).toHaveBeenCalled();
+    });
 
     it('should get offline statistics', async () => {
-      const mockGetStatistics = vi.mocked(offlineDegradationService.getStatistics)
+      const mockGetStatistics = vi.mocked(offlineDegradationService.getStatistics);
       mockGetStatistics.mockResolvedValue({
         totalOfflineTime: 1000000,
         totalOfflineCount: 5,
@@ -238,12 +238,12 @@ describe('Offline Workflow Integration', () => {
         averageQueueSize: 10,
         maxQueueSize: 20,
         currentQueueSize: 10,
-      })
+      });
 
-      const stats = await mockGetStatistics()
+      const stats = await mockGetStatistics();
 
-      expect(mockGetStatistics).toHaveBeenCalled()
-      expect(stats.totalQueueOperations).toBe(100)
-    })
-  })
-})
+      expect(mockGetStatistics).toHaveBeenCalled();
+      expect(stats.totalQueueOperations).toBe(100);
+    });
+  });
+});

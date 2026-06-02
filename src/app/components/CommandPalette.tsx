@@ -15,26 +15,59 @@
  * @tags component,command-palette,ui,keyboard
  */
 
-import { Command } from 'cmdk'
+import { Command } from 'cmdk';
 import {
-  Home, Eye, Code, Search, Terminal, Settings, Palette,
-  Folder, Bell, Rocket, Share, Github, Keyboard,
-  Languages, Sun, Moon, TreePine, Sunset, Star,
-  Play, TestTube, GitBranch, X, Sparkles,
-  Brain, Activity, Gauge,
-  LayoutGrid, HardDrive, Database, PenTool, FlaskConical, BookOpen,
-  Pencil, GitFork, Code2,
-  Puzzle, Wifi, BarChart3,
+  Home,
+  Eye,
+  Code,
+  Search,
+  Terminal,
+  Settings,
+  Palette,
+  Folder,
+  Bell,
+  Rocket,
+  Share,
+  Github,
+  Keyboard,
+  Languages,
+  Sun,
+  Moon,
+  TreePine,
+  Sunset,
+  Star,
+  Play,
+  TestTube,
+  GitBranch,
+  X,
+  Sparkles,
+  Brain,
+  Activity,
+  Gauge,
+  LayoutGrid,
+  HardDrive,
+  Database,
+  PenTool,
+  FlaskConical,
+  BookOpen,
+  Pencil,
+  GitFork,
+  Code2,
+  Puzzle,
+  Wifi,
+  BarChart3,
   AppWindow,
-  Users, Box, TableProperties
-} from 'lucide-react'
-import React, { useCallback, useEffect } from 'react'
-import { useNavigate } from 'react-router'
-import { toast } from 'sonner'
+  Users,
+  Box,
+  TableProperties,
+} from 'lucide-react';
+import React, { useCallback, useEffect } from 'react';
+import { useNavigate } from 'react-router';
+import { toast } from 'sonner';
 
-import { useAppStore } from '../store'
-import { getI18n, resolveKey } from '../utils/i18n'
-import { getThemeTokens, THEME_PRESETS } from '../utils/theme'
+import { useAppStore } from '../store';
+import { getI18n, resolveKey } from '../utils/i18n';
+import { getThemeTokens, THEME_PRESETS } from '../utils/theme';
 
 const THEME_ICONS: Record<string, React.FC<{ className?: string }>> = {
   light: Sun,
@@ -42,59 +75,66 @@ const THEME_ICONS: Record<string, React.FC<{ className?: string }>> = {
   midnight: Star,
   forest: TreePine,
   sunset: Sunset,
-}
+};
 
 export function CommandPalette() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const {
-    theme, setTheme, language, toggleLanguage,
-    commandPaletteOpen, setCommandPaletteOpen,
-    setViewMode, toggleTerminal, openThemeCustomizer,
-    openModelSettings, setShortcutsDialogOpen,
-    setSearchPanelOpen, setNotificationCenterOpen,
+    theme,
+    setTheme,
+    language,
+    toggleLanguage,
+    commandPaletteOpen,
+    setCommandPaletteOpen,
+    setViewMode,
+    toggleTerminal,
+    openThemeCustomizer,
+    openModelSettings,
+    setShortcutsDialogOpen,
+    setSearchPanelOpen,
+    setNotificationCenterOpen,
     addProject,
-  } = useAppStore()
-  const t = getThemeTokens(theme)
-  const i = getI18n(language)
+  } = useAppStore();
+  const t = getThemeTokens(theme);
+  const i = getI18n(language);
 
   // Global shortcut: Ctrl+K or Ctrl+P opens palette
-  const handleGlobalKey = useCallback((e: KeyboardEvent) => {
-    const ctrl = e.ctrlKey || e.metaKey
-    if (ctrl && (e.key === 'k' || e.key === 'K')) {
-      e.preventDefault()
-      setCommandPaletteOpen(!commandPaletteOpen)
-    }
-  }, [commandPaletteOpen, setCommandPaletteOpen])
+  const handleGlobalKey = useCallback(
+    (e: KeyboardEvent) => {
+      const ctrl = e.ctrlKey || e.metaKey;
+      if (ctrl && (e.key === 'k' || e.key === 'K')) {
+        e.preventDefault();
+        setCommandPaletteOpen(!commandPaletteOpen);
+      }
+    },
+    [commandPaletteOpen, setCommandPaletteOpen]
+  );
 
   useEffect(() => {
-    window.addEventListener('keydown', handleGlobalKey)
-    return () => window.removeEventListener('keydown', handleGlobalKey)
-  }, [handleGlobalKey])
+    window.addEventListener('keydown', handleGlobalKey);
+    return () => window.removeEventListener('keydown', handleGlobalKey);
+  }, [handleGlobalKey]);
 
-  if (!commandPaletteOpen) return null
+  if (!commandPaletteOpen) return null;
 
-  const close = () => setCommandPaletteOpen(false)
+  const close = () => setCommandPaletteOpen(false);
 
   const run = (fn: () => void) => {
-    fn()
-    close()
-  }
+    fn();
+    close();
+  };
 
   return (
     <>
       {/* Backdrop */}
-      <div
-        className="fixed inset-0 z-[70] bg-black/50 backdrop-blur-sm"
-        onClick={close}
-      />
+      <div className="fixed inset-0 z-[70] bg-black/50 backdrop-blur-sm" onClick={close} />
 
       {/* Palette */}
       <div className="fixed inset-0 z-[71] flex items-start justify-center pt-[15vh]">
-        <div className={`w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl ${t.surface.popover} ${t.border.popover}`}>
-          <Command
-            className="flex flex-col"
-            label={i.cpPlaceholder}
-          >
+        <div
+          className={`w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl ${t.surface.popover} ${t.border.popover}`}
+        >
+          <Command className="flex flex-col" label={i.cpPlaceholder}>
             {/* Input */}
             <div className={`flex items-center px-4 border-b ${t.border.subtle}`}>
               <Search className={`w-4 h-4 flex-shrink-0 ${t.text.muted}`} />
@@ -103,7 +143,10 @@ export function CommandPalette() {
                 className={`flex-1 bg-transparent border-none outline-none px-3 py-3.5 text-[14px] ${t.text.primary} placeholder:${t.text.dimmed}`}
                 autoFocus
               />
-              <button onClick={close} className={`p-1 rounded-lg ${t.transition} ${t.interactive.iconBtn}`}>
+              <button
+                onClick={close}
+                className={`p-1 rounded-lg ${t.transition} ${t.interactive.iconBtn}`}
+              >
                 <X className="w-3.5 h-3.5" />
               </button>
             </div>
@@ -165,10 +208,18 @@ export function CommandPalette() {
                 <PaletteItem
                   icon={<Folder className="w-4 h-4" />}
                   label={i.newProject}
-                  onSelect={() => run(() => {
-                    addProject({ name: `Project ${Date.now() % 1000}`, description: 'projDescDashboard', updatedAt: Date.now(), status: 'draft', color: '#6366f1' })
-                    toast.success(i.toastProjectCreated)
-                  })}
+                  onSelect={() =>
+                    run(() => {
+                      addProject({
+                        name: `Project ${Date.now() % 1000}`,
+                        description: 'projDescDashboard',
+                        updatedAt: Date.now(),
+                        status: 'draft',
+                        color: '#6366f1',
+                      });
+                      toast.success(i.toastProjectCreated);
+                    })
+                  }
                   t={t}
                 />
                 <PaletteItem
@@ -198,7 +249,12 @@ export function CommandPalette() {
                 <PaletteItem
                   icon={<Share className="w-4 h-4" />}
                   label={i.shareCopyLink}
-                  onSelect={() => run(() => { navigator.clipboard.writeText('https://yyc3.app/project/demo'); toast.success(i.toastLinkCopied) })}
+                  onSelect={() =>
+                    run(() => {
+                      navigator.clipboard.writeText('https://yyc3.app/project/demo');
+                      toast.success(i.toastLinkCopied);
+                    })
+                  }
                   t={t}
                 />
                 <PaletteItem
@@ -211,18 +267,23 @@ export function CommandPalette() {
 
               {/* ── Themes ── */}
               <Command.Group heading={i.cpThemes}>
-                {THEME_PRESETS.map(preset => {
-                  const Icon = THEME_ICONS[preset.id] || Palette
+                {THEME_PRESETS.map((preset) => {
+                  const Icon = THEME_ICONS[preset.id] || Palette;
                   return (
                     <PaletteItem
                       key={preset.id}
                       icon={<Icon className="w-4 h-4" />}
                       label={resolveKey(i, preset.labelKey)}
                       active={theme === preset.id}
-                      onSelect={() => run(() => { setTheme(preset.id); toast.success(`${i.toastSwitchedTo} ${resolveKey(i, preset.labelKey)}`) })}
+                      onSelect={() =>
+                        run(() => {
+                          setTheme(preset.id);
+                          toast.success(`${i.toastSwitchedTo} ${resolveKey(i, preset.labelKey)}`);
+                        })
+                      }
                       t={t}
                     />
-                  )
+                  );
                 })}
                 <PaletteItem
                   icon={<Palette className="w-4 h-4" />}
@@ -277,7 +338,12 @@ export function CommandPalette() {
                   icon={<Languages className="w-4 h-4" />}
                   label={i.language}
                   shortcut="Ctrl+Shift+L"
-                  onSelect={() => run(() => { toggleLanguage(); toast.info(i.toastLanguageSwitched) })}
+                  onSelect={() =>
+                    run(() => {
+                      toggleLanguage();
+                      toast.info(i.toastLanguageSwitched);
+                    })
+                  }
                   t={t}
                 />
                 <PaletteItem
@@ -374,7 +440,9 @@ export function CommandPalette() {
                 <PaletteItem
                   icon={<Users className="w-4 h-4" />}
                   label={i.rcTitle}
-                  onSelect={() => run(() => useAppStore.getState().setRealtimeCollabEnhancedOpen(true))}
+                  onSelect={() =>
+                    run(() => useAppStore.getState().setRealtimeCollabEnhancedOpen(true))
+                  }
                   t={t}
                 />
                 <PaletteItem
@@ -393,11 +461,19 @@ export function CommandPalette() {
             </Command.List>
 
             {/* Footer hint */}
-            <div className={`flex items-center justify-between px-4 py-2 border-t ${t.border.subtle} text-[10px] ${t.text.dimmed}`}>
+            <div
+              className={`flex items-center justify-between px-4 py-2 border-t ${t.border.subtle} text-[10px] ${t.text.dimmed}`}
+            >
               <div className="flex items-center space-x-3">
-                <span><kbd className={`px-1 py-0.5 rounded ${t.kbd}`}>↑↓</kbd> navigate</span>
-                <span><kbd className={`px-1 py-0.5 rounded ${t.kbd}`}>Enter</kbd> select</span>
-                <span><kbd className={`px-1 py-0.5 rounded ${t.kbd}`}>Esc</kbd> close</span>
+                <span>
+                  <kbd className={`px-1 py-0.5 rounded ${t.kbd}`}>↑↓</kbd> navigate
+                </span>
+                <span>
+                  <kbd className={`px-1 py-0.5 rounded ${t.kbd}`}>Enter</kbd> select
+                </span>
+                <span>
+                  <kbd className={`px-1 py-0.5 rounded ${t.kbd}`}>Esc</kbd> close
+                </span>
               </div>
               <span>Ctrl+K</span>
             </div>
@@ -405,19 +481,24 @@ export function CommandPalette() {
         </div>
       </div>
     </>
-  )
+  );
 }
 
 /* ── Individual palette item ── */
 function PaletteItem({
-  icon, label, shortcut, active, onSelect, t
+  icon,
+  label,
+  shortcut,
+  active,
+  onSelect,
+  t,
 }: {
-  icon: React.ReactNode
-  label: string
-  shortcut?: string
-  active?: boolean
-  onSelect: () => void
-  t: ReturnType<typeof getThemeTokens>
+  icon: React.ReactNode;
+  label: string;
+  shortcut?: string;
+  active?: boolean;
+  onSelect: () => void;
+  t: ReturnType<typeof getThemeTokens>;
 }) {
   return (
     <Command.Item
@@ -436,11 +517,16 @@ function PaletteItem({
           {shortcut.split('+').map((k, idx) => (
             <React.Fragment key={idx}>
               {idx > 0 && <span className={`text-[9px] mx-0.5 ${t.text.dimmed}`}>+</span>}
-              <kbd className={`px-1.5 py-0.5 rounded text-[9px] ${t.kbd}`} style={{ fontWeight: 500 }}>{k}</kbd>
+              <kbd
+                className={`px-1.5 py-0.5 rounded text-[9px] ${t.kbd}`}
+                style={{ fontWeight: 500 }}
+              >
+                {k}
+              </kbd>
             </React.Fragment>
           ))}
         </div>
       )}
     </Command.Item>
-  )
+  );
 }

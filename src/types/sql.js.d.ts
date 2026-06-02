@@ -1,24 +1,24 @@
 declare module 'sql.js' {
   interface SqlJsStatic {
-    Database: new (data?: ArrayLike<number>) => Database
+    Database: new (data?: ArrayLike<number>) => Database;
   }
 
   interface Database {
-    run(sql: string, params?: unknown[]): Database
-    exec(sql: string, params?: unknown[]): QueryExecResult[]
-    close(): void
-    export(): Uint8Array
+    run(sql: string, params?: unknown[]): Database;
+    exec(sql: string, params?: unknown[]): QueryExecResult[];
+    close(): void;
+    export(): Uint8Array;
   }
 
   interface QueryExecResult {
-    columns: string[]
-    values: unknown[][]
+    columns: string[];
+    values: unknown[][];
   }
 
   interface SqlJsConfig {
-    locateFile?: (file: string) => string
+    locateFile?: (file: string) => string;
   }
 
-  export default function initSqlJs(config?: SqlJsConfig): Promise<SqlJsStatic>
-  export { Database, QueryExecResult, SqlJsStatic, SqlJsConfig }
+  export default function initSqlJs(config?: SqlJsConfig): Promise<SqlJsStatic>;
+  export { Database, QueryExecResult, SqlJsStatic, SqlJsConfig };
 }

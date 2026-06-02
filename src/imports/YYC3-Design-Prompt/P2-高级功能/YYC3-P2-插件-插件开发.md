@@ -13,6 +13,7 @@ tags: p2,plugin,development
 ## 开发环境: Node.js>=18, TypeScript>=5, Vite>=5
 
 ## 项目结构
+
 ```
 my-yyc3-plugin/
 ├── src/index.ts (入口), components/, services/, types/, utils/
@@ -24,32 +25,40 @@ my-yyc3-plugin/
 ## 核心 API
 
 ### BasePlugin 基类
+
 - abstract activate(context: PluginContext): void
 - abstract deactivate(): void
 - onConfigChange?(config): void
 
 ### PluginContext
+
 - api: PluginAPI (ui/editor/ai/database/collaboration/fetch/sendMessage/onMessage)
 - config, storage, logger
 
 ### UI API
+
 - registerPanel({id, title, position, component, icon, closable, resizable})
 - registerButton({id, label, icon, position, onClick})
 - registerMenuItem({id, label, position, onClick})
 - showNotification/showDialog/showInputBox/showQuickPick
 
 ### Editor API
+
 - getContent/setContent/getSelection/setSelection/insertText
 - getFilePath/getLanguage/format/onContentChange
 
 ### AI API
+
 - generateCode(prompt, options)/completeCode/optimizeCode/explainCode/reviewCode
 
 ## 示例插件
+
 1. 代码格式化插件: registerButton -> editor.format()
 2. AI 代码生成插件: registerMenuItem -> ai.generateCode(selection) -> insertText
 3. 自定义面板插件: registerPanel -> React 组件
 
 ## 测试: Vitest + mock PluginContext
+
 ## 打包: vite build (ES module), npm pack
+
 ## 发布: 提交到 YYC3 插件市场

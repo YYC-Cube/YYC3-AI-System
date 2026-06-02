@@ -12,111 +12,111 @@
  * @tags test,utils,ai,simulator,demo
  */
 
-import { describe, test, expect, vi } from 'vitest'
+import { describe, test, expect, vi } from 'vitest';
 
-import { simulateStreamResponse } from '../ai-simulator'
+import { simulateStreamResponse } from '../ai-simulator';
 
 describe('AI Simulator - simulateStreamResponse', () => {
   test('should call onChunk with text chunks', async () => {
-    const chunks: string[] = []
-    const onChunk = vi.fn((chunk: string) => chunks.push(chunk))
-    const onComplete = vi.fn()
+    const chunks: string[] = [];
+    const onChunk = vi.fn((chunk: string) => chunks.push(chunk));
+    const onComplete = vi.fn();
 
-    await simulateStreamResponse('test', onChunk, onComplete, 'zh')
+    await simulateStreamResponse('test', onChunk, onComplete, 'zh');
 
-    expect(chunks.length).toBeGreaterThan(0)
-    expect(chunks.join('').length).toBeGreaterThan(0)
-    expect(onComplete).toHaveBeenCalledTimes(1)
-  })
+    expect(chunks.length).toBeGreaterThan(0);
+    expect(chunks.join('').length).toBeGreaterThan(0);
+    expect(onComplete).toHaveBeenCalledTimes(1);
+  });
 
   test('should handle empty input', async () => {
-    const chunks: string[] = []
-    const onChunk = vi.fn((chunk: string) => chunks.push(chunk))
-    const onComplete = vi.fn()
+    const chunks: string[] = [];
+    const onChunk = vi.fn((chunk: string) => chunks.push(chunk));
+    const onComplete = vi.fn();
 
-    await simulateStreamResponse('', onChunk, onComplete, 'zh')
+    await simulateStreamResponse('', onChunk, onComplete, 'zh');
 
-    expect(chunks.join('').length).toBeGreaterThan(0)
-    expect(onComplete).toHaveBeenCalledTimes(1)
-  })
+    expect(chunks.join('').length).toBeGreaterThan(0);
+    expect(onComplete).toHaveBeenCalledTimes(1);
+  });
 
   test('should call onComplete after streaming', async () => {
-    const chunks: string[] = []
-    const onChunk = vi.fn((chunk: string) => chunks.push(chunk))
-    const onComplete = vi.fn()
+    const chunks: string[] = [];
+    const onChunk = vi.fn((chunk: string) => chunks.push(chunk));
+    const onComplete = vi.fn();
 
-    await simulateStreamResponse('code', onChunk, onComplete, 'zh')
+    await simulateStreamResponse('code', onChunk, onComplete, 'zh');
 
-    expect(onComplete).toHaveBeenCalledTimes(1)
-  })
+    expect(onComplete).toHaveBeenCalledTimes(1);
+  });
 
   test('should return non-empty response', async () => {
-    const chunks: string[] = []
-    const onChunk = vi.fn((chunk: string) => chunks.push(chunk))
-    const onComplete = vi.fn()
+    const chunks: string[] = [];
+    const onChunk = vi.fn((chunk: string) => chunks.push(chunk));
+    const onComplete = vi.fn();
 
-    await simulateStreamResponse('help', onChunk, onComplete, 'zh')
+    await simulateStreamResponse('help', onChunk, onComplete, 'zh');
 
-    const response = chunks.join('')
-    expect(response.length).toBeGreaterThan(0)
-    expect(response).toContain('帮助')
-  })
+    const response = chunks.join('');
+    expect(response.length).toBeGreaterThan(0);
+    expect(response).toContain('帮助');
+  });
 
   test('should handle Chinese language input', async () => {
-    const chunks: string[] = []
-    const onChunk = vi.fn((chunk: string) => chunks.push(chunk))
-    const onComplete = vi.fn()
+    const chunks: string[] = [];
+    const onChunk = vi.fn((chunk: string) => chunks.push(chunk));
+    const onComplete = vi.fn();
 
-    await simulateStreamResponse('代码', onChunk, onComplete, 'zh')
+    await simulateStreamResponse('代码', onChunk, onComplete, 'zh');
 
-    const response = chunks.join('')
-    expect(response.length).toBeGreaterThan(0)
-    expect(onComplete).toHaveBeenCalledTimes(1)
-  })
+    const response = chunks.join('');
+    expect(response.length).toBeGreaterThan(0);
+    expect(onComplete).toHaveBeenCalledTimes(1);
+  });
 
   test('should handle English language input', async () => {
-    const chunks: string[] = []
-    const onChunk = vi.fn((chunk: string) => chunks.push(chunk))
-    const onComplete = vi.fn()
+    const chunks: string[] = [];
+    const onChunk = vi.fn((chunk: string) => chunks.push(chunk));
+    const onComplete = vi.fn();
 
-    await simulateStreamResponse('code', onChunk, onComplete, 'en')
+    await simulateStreamResponse('code', onChunk, onComplete, 'en');
 
-    const response = chunks.join('')
-    expect(response.length).toBeGreaterThan(0)
-    expect(onComplete).toHaveBeenCalledTimes(1)
-  })
+    const response = chunks.join('');
+    expect(response.length).toBeGreaterThan(0);
+    expect(onComplete).toHaveBeenCalledTimes(1);
+  });
 
   test('should handle Japanese language input', async () => {
-    const chunks: string[] = []
-    const onChunk = vi.fn((chunk: string) => chunks.push(chunk))
-    const onComplete = vi.fn()
+    const chunks: string[] = [];
+    const onChunk = vi.fn((chunk: string) => chunks.push(chunk));
+    const onComplete = vi.fn();
 
-    await simulateStreamResponse('コード', onChunk, onComplete, 'ja')
+    await simulateStreamResponse('コード', onChunk, onComplete, 'ja');
 
-    const response = chunks.join('')
-    expect(response.length).toBeGreaterThan(0)
-    expect(onComplete).toHaveBeenCalledTimes(1)
-  })
+    const response = chunks.join('');
+    expect(response.length).toBeGreaterThan(0);
+    expect(onComplete).toHaveBeenCalledTimes(1);
+  });
 
   test('should handle Korean language input', async () => {
-    const chunks: string[] = []
-    const onChunk = vi.fn((chunk: string) => chunks.push(chunk))
-    const onComplete = vi.fn()
+    const chunks: string[] = [];
+    const onChunk = vi.fn((chunk: string) => chunks.push(chunk));
+    const onComplete = vi.fn();
 
-    await simulateStreamResponse('코드', onChunk, onComplete, 'ko')
+    await simulateStreamResponse('코드', onChunk, onComplete, 'ko');
 
-    const response = chunks.join('')
-    expect(response.length).toBeGreaterThan(0)
-    expect(onComplete).toHaveBeenCalledTimes(1)
-  })
+    const response = chunks.join('');
+    expect(response.length).toBeGreaterThan(0);
+    expect(onComplete).toHaveBeenCalledTimes(1);
+  });
 
   test('should generate multiple chunks', async () => {
-    const chunks: string[] = []
-    const onChunk = vi.fn((chunk: string) => chunks.push(chunk))
-    const onComplete = vi.fn()
+    const chunks: string[] = [];
+    const onChunk = vi.fn((chunk: string) => chunks.push(chunk));
+    const onComplete = vi.fn();
 
-    await simulateStreamResponse('test', onChunk, onComplete, 'zh')
+    await simulateStreamResponse('test', onChunk, onComplete, 'zh');
 
-    expect(chunks.length).toBeGreaterThan(0)
-  })
-})
+    expect(chunks.length).toBeGreaterThan(0);
+  });
+});

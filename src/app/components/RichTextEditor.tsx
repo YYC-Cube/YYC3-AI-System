@@ -14,32 +14,45 @@
  * @tags component,editor,rich-text,collaboration,yjs
  */
 
-import Collaboration from '@tiptap/extension-collaboration'
-import CollaborationCursor from '@tiptap/extension-collaboration-cursor'
-import Highlight from '@tiptap/extension-highlight'
-import Placeholder from '@tiptap/extension-placeholder'
-import Typography from '@tiptap/extension-typography'
-import { useEditor, EditorContent } from '@tiptap/react'
-import StarterKit from '@tiptap/starter-kit'
+import Collaboration from '@tiptap/extension-collaboration';
+import CollaborationCursor from '@tiptap/extension-collaboration-cursor';
+import Highlight from '@tiptap/extension-highlight';
+import Placeholder from '@tiptap/extension-placeholder';
+import Typography from '@tiptap/extension-typography';
+import { useEditor, EditorContent } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
 import {
-  Bold, Italic, Strikethrough, Code, List,
-  ListOrdered, Quote, Minus, Undo2, Redo2,
-  Heading1, Heading2, Heading3, Pilcrow, FileCode2,
-  Wifi, WifiOff
-} from 'lucide-react'
-import React, { useEffect, useMemo, useState } from 'react'
-import * as Y from 'yjs'
+  Bold,
+  Italic,
+  Strikethrough,
+  Code,
+  List,
+  ListOrdered,
+  Quote,
+  Minus,
+  Undo2,
+  Redo2,
+  Heading1,
+  Heading2,
+  Heading3,
+  Pilcrow,
+  FileCode2,
+  Wifi,
+  WifiOff,
+} from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
+import * as Y from 'yjs';
 
-import { collabManager } from '../utils/collaboration'
+import { collabManager } from '../utils/collaboration';
 
 // ── Collaboration Config ──
 
 interface CollabConfig {
-  enabled: boolean
+  enabled: boolean;
   /** Name of the shared Y.XmlFragment in the Y.Doc. Each document gets a unique one. */
-  fragmentName: string
-  userName: string
-  userColor: string
+  fragmentName: string;
+  userName: string;
+  userColor: string;
 }
 
 const DEFAULT_COLLAB: CollabConfig = {
@@ -47,20 +60,20 @@ const DEFAULT_COLLAB: CollabConfig = {
   fragmentName: 'doc-editor',
   userName: 'You',
   userColor: '#6366f1',
-}
+};
 
 // ── Props ──
 
 interface RichTextEditorProps {
-  content: string
-  onChange?: (html: string, text: string) => void
-  isDark: boolean
-  placeholder?: string
-  editable?: boolean
-  className?: string
-  themeTokens?: unknown
+  content: string;
+  onChange?: (html: string, text: string) => void;
+  isDark: boolean;
+  placeholder?: string;
+  editable?: boolean;
+  className?: string;
+  themeTokens?: unknown;
   /** Enable Yjs collaborative editing */
-  collaboration?: Partial<CollabConfig>
+  collaboration?: Partial<CollabConfig>;
 }
 
 export function RichTextEditor({
@@ -72,12 +85,15 @@ export function RichTextEditor({
   className = '',
   collaboration: collabProp,
 }: RichTextEditorProps) {
-  const collab = useMemo<CollabConfig>(() => ({ ...DEFAULT_COLLAB, ...collabProp }), [collabProp])
-  const [connectedUsers, setConnectedUsers] = useState<{ name: string; color: string }[]>([])
+  const collab = useMemo<CollabConfig>(() => ({ ...DEFAULT_COLLAB, ...collabProp }), [collabProp]);
+  const [connectedUsers, setConnectedUsers] = useState<{ name: string; color: string }[]>([]);
 
   // Get or create the Y.XmlFragment for collaborative editing
-  const ydoc = collab.enabled ? collabManager.doc : useMemo(() => new Y.Doc(), [])
-  const fragment = useMemo(() => ydoc.getXmlFragment(collab.fragmentName), [ydoc, collab.fragmentName])
+  const ydoc = collab.enabled ? collabManager.doc : useMemo(() => new Y.Doc(), []);
+  const fragment = useMemo(
+    () => ydoc.getXmlFragment(collab.fragmentName),
+    [ydoc, collab.fragmentName]
+  );
 
   // Build extensions based on collaboration mode
   const extensions = useMemo(() => {
@@ -86,7 +102,7 @@ export function RichTextEditor({
       Placeholder.configure({ placeholder }),
       Highlight.configure({ multicolor: true }),
       Typography,
-    ]
+    ];
 
     if (collab.enabled) {
       // Collaboration mode: use Yjs fragment, disable built-in history (Yjs handles undo/redo)
@@ -94,7 +110,7 @@ export function RichTextEditor({
         StarterKit.configure({
           codeBlock: { HTMLAttributes: { class: 'tiptap-code-block' } },
           heading: { levels: [1, 2, 3] },
-           // Yjs provides its own undo manager
+          // Yjs provides its own undo manager
         }),
         Collaboration.configure({ fragment }),
         CollaborationCursor.configure({
@@ -109,161 +125,237 @@ export function RichTextEditor({
             color: collab.userColor,
           },
           render: (user: { name: string; color: string }) => {
-            const cursor = document.createElement('span')
-            cursor.classList.add('collaboration-cursor__caret')
-            cursor.style.borderColor = user.color
+            const cursor = document.createElement('span');
+            cursor.classList.add('collaboration-cursor__caret');
+            cursor.style.borderColor = user.color;
 
-            const label = document.createElement('div')
-            label.classList.add('collaboration-cursor__label')
-            label.style.backgroundColor = user.color
-            label.textContent = user.name
-            cursor.appendChild(label)
+            const label = document.createElement('div');
+            label.classList.add('collaboration-cursor__label');
+            label.style.backgroundColor = user.color;
+            label.textContent = user.name;
+            cursor.appendChild(label);
 
-            return cursor
+            return cursor;
           },
-        }),
-      )
+        })
+      );
     } else {
       // Standalone mode: normal StarterKit with history
       base.push(
         StarterKit.configure({
           codeBlock: { HTMLAttributes: { class: 'tiptap-code-block' } },
           heading: { levels: [1, 2, 3] },
-        }),
-      )
+        })
+      );
     }
 
-    return base
-  }, [collab.enabled, collab.fragmentName, collab.userName, collab.userColor, placeholder, fragment])
+    return base;
+  }, [
+    collab.enabled,
+    collab.fragmentName,
+    collab.userName,
+    collab.userColor,
+    placeholder,
+    fragment,
+  ]);
 
-  const editor = useEditor({
-    extensions,
-    content: collab.enabled ? undefined : content, // In collab mode, Yjs fragment IS the content
-    editable,
-    onUpdate: ({ editor }) => {
-      onChange?.(editor.getHTML(), editor.getText())
-    },
-    editorProps: {
-      attributes: {
-        class: `prose prose-sm max-w-none focus:outline-none min-h-[200px] px-4 py-3 ${
-          isDark ? 'prose-invert' : ''
-        }`,
+  const editor = useEditor(
+    {
+      extensions,
+      content: collab.enabled ? undefined : content, // In collab mode, Yjs fragment IS the content
+      editable,
+      onUpdate: ({ editor }) => {
+        onChange?.(editor.getHTML(), editor.getText());
+      },
+      editorProps: {
+        attributes: {
+          class: `prose prose-sm max-w-none focus:outline-none min-h-[200px] px-4 py-3 ${
+            isDark ? 'prose-invert' : ''
+          }`,
+        },
       },
     },
-  }, [extensions]) // Re-create editor when extensions change
+    [extensions]
+  ); // Re-create editor when extensions change
 
   // Sync external content changes (non-collab mode only)
   useEffect(() => {
     if (!collab.enabled && editor && content !== editor.getHTML()) {
-      editor.commands.setContent(content, { emitUpdate: false })
+      editor.commands.setContent(content, { emitUpdate: false });
     }
-  }, [content])  
+  }, [content]);
 
   // Track connected users from awareness
   useEffect(() => {
-    if (!collab.enabled) return
+    if (!collab.enabled) return;
 
     const update = () => {
-      const users: { name: string; color: string }[] = []
-      collabManager.awareness.getStates().forEach(state => {
+      const users: { name: string; color: string }[] = [];
+      collabManager.awareness.getStates().forEach((state) => {
         if (state.user) {
-          users.push({ name: state.user.name, color: state.user.color })
+          users.push({ name: state.user.name, color: state.user.color });
         }
-      })
-      setConnectedUsers(users)
-    }
+      });
+      setConnectedUsers(users);
+    };
 
-    collabManager.awareness.on('change', update)
-    update()
-    return () => collabManager.awareness.off('change', update)
-  }, [collab.enabled])
+    collabManager.awareness.on('change', update);
+    update();
+    return () => collabManager.awareness.off('change', update);
+  }, [collab.enabled]);
 
-  if (!editor) return null
+  if (!editor) return null;
 
-  const ToolBtn = ({ active, onClick, children, title, disabled }: {
-    active?: boolean; onClick: () => void; children: React.ReactNode; title: string; disabled?: boolean
+  const ToolBtn = ({
+    active,
+    onClick,
+    children,
+    title,
+    disabled,
+  }: {
+    active?: boolean;
+    onClick: () => void;
+    children: React.ReactNode;
+    title: string;
+    disabled?: boolean;
   }) => (
     <button
       onClick={onClick}
       title={title}
       disabled={disabled}
       className={`p-1 rounded transition-colors ${
-        disabled ? 'opacity-25 cursor-not-allowed' :
-        active
-          ? (isDark ? 'bg-indigo-500/20 text-indigo-400' : 'bg-indigo-100 text-indigo-600')
-          : (isDark ? 'text-white/30 hover:text-white/60 hover:bg-white/5' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100')
+        disabled
+          ? 'opacity-25 cursor-not-allowed'
+          : active
+            ? isDark
+              ? 'bg-indigo-500/20 text-indigo-400'
+              : 'bg-indigo-100 text-indigo-600'
+            : isDark
+              ? 'text-white/30 hover:text-white/60 hover:bg-white/5'
+              : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100'
       }`}
     >
       {children}
     </button>
-  )
+  );
 
   return (
-    <div className={`flex flex-col overflow-hidden rounded-xl ${isDark ? 'bg-white/[0.02] border border-white/[0.06]' : 'bg-white border border-slate-200'} ${className}`}>
+    <div
+      className={`flex flex-col overflow-hidden rounded-xl ${isDark ? 'bg-white/[0.02] border border-white/[0.06]' : 'bg-white border border-slate-200'} ${className}`}
+    >
       {/* Toolbar */}
       {editable && (
-        <div className={`flex items-center gap-0.5 px-2 py-1 border-b ${isDark ? 'border-white/[0.06]' : 'border-slate-200'} flex-wrap`}>
-          <ToolBtn active={editor.isActive('heading', { level: 1 })}
-            onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()} title="Heading 1">
+        <div
+          className={`flex items-center gap-0.5 px-2 py-1 border-b ${isDark ? 'border-white/[0.06]' : 'border-slate-200'} flex-wrap`}
+        >
+          <ToolBtn
+            active={editor.isActive('heading', { level: 1 })}
+            onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+            title="Heading 1"
+          >
             <Heading1 className="w-3.5 h-3.5" />
           </ToolBtn>
-          <ToolBtn active={editor.isActive('heading', { level: 2 })}
-            onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()} title="Heading 2">
+          <ToolBtn
+            active={editor.isActive('heading', { level: 2 })}
+            onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+            title="Heading 2"
+          >
             <Heading2 className="w-3.5 h-3.5" />
           </ToolBtn>
-          <ToolBtn active={editor.isActive('heading', { level: 3 })}
-            onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()} title="Heading 3">
+          <ToolBtn
+            active={editor.isActive('heading', { level: 3 })}
+            onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+            title="Heading 3"
+          >
             <Heading3 className="w-3.5 h-3.5" />
           </ToolBtn>
-          <ToolBtn active={editor.isActive('paragraph')}
-            onClick={() => editor.chain().focus().setParagraph().run()} title="Paragraph">
+          <ToolBtn
+            active={editor.isActive('paragraph')}
+            onClick={() => editor.chain().focus().setParagraph().run()}
+            title="Paragraph"
+          >
             <Pilcrow className="w-3.5 h-3.5" />
           </ToolBtn>
 
           <div className={`w-px h-4 mx-0.5 ${isDark ? 'bg-white/[0.06]' : 'bg-slate-200'}`} />
 
-          <ToolBtn active={editor.isActive('bold')}
-            onClick={() => editor.chain().focus().toggleBold().run()} title="Bold">
+          <ToolBtn
+            active={editor.isActive('bold')}
+            onClick={() => editor.chain().focus().toggleBold().run()}
+            title="Bold"
+          >
             <Bold className="w-3.5 h-3.5" />
           </ToolBtn>
-          <ToolBtn active={editor.isActive('italic')}
-            onClick={() => editor.chain().focus().toggleItalic().run()} title="Italic">
+          <ToolBtn
+            active={editor.isActive('italic')}
+            onClick={() => editor.chain().focus().toggleItalic().run()}
+            title="Italic"
+          >
             <Italic className="w-3.5 h-3.5" />
           </ToolBtn>
-          <ToolBtn active={editor.isActive('strike')}
-            onClick={() => editor.chain().focus().toggleStrike().run()} title="Strikethrough">
+          <ToolBtn
+            active={editor.isActive('strike')}
+            onClick={() => editor.chain().focus().toggleStrike().run()}
+            title="Strikethrough"
+          >
             <Strikethrough className="w-3.5 h-3.5" />
           </ToolBtn>
-          <ToolBtn active={editor.isActive('code')}
-            onClick={() => editor.chain().focus().toggleCode().run()} title="Inline code">
+          <ToolBtn
+            active={editor.isActive('code')}
+            onClick={() => editor.chain().focus().toggleCode().run()}
+            title="Inline code"
+          >
             <Code className="w-3.5 h-3.5" />
           </ToolBtn>
-          <ToolBtn active={editor.isActive('highlight')}
-            onClick={() => editor.chain().focus().toggleHighlight().run()} title="Highlight">
-            <span className="w-3.5 h-3.5 flex items-center justify-center text-[9px]" style={{ fontWeight: 700 }}>H</span>
+          <ToolBtn
+            active={editor.isActive('highlight')}
+            onClick={() => editor.chain().focus().toggleHighlight().run()}
+            title="Highlight"
+          >
+            <span
+              className="w-3.5 h-3.5 flex items-center justify-center text-[9px]"
+              style={{ fontWeight: 700 }}
+            >
+              H
+            </span>
           </ToolBtn>
 
           <div className={`w-px h-4 mx-0.5 ${isDark ? 'bg-white/[0.06]' : 'bg-slate-200'}`} />
 
-          <ToolBtn active={editor.isActive('bulletList')}
-            onClick={() => editor.chain().focus().toggleBulletList().run()} title="Bullet list">
+          <ToolBtn
+            active={editor.isActive('bulletList')}
+            onClick={() => editor.chain().focus().toggleBulletList().run()}
+            title="Bullet list"
+          >
             <List className="w-3.5 h-3.5" />
           </ToolBtn>
-          <ToolBtn active={editor.isActive('orderedList')}
-            onClick={() => editor.chain().focus().toggleOrderedList().run()} title="Ordered list">
+          <ToolBtn
+            active={editor.isActive('orderedList')}
+            onClick={() => editor.chain().focus().toggleOrderedList().run()}
+            title="Ordered list"
+          >
             <ListOrdered className="w-3.5 h-3.5" />
           </ToolBtn>
-          <ToolBtn active={editor.isActive('blockquote')}
-            onClick={() => editor.chain().focus().toggleBlockquote().run()} title="Blockquote">
+          <ToolBtn
+            active={editor.isActive('blockquote')}
+            onClick={() => editor.chain().focus().toggleBlockquote().run()}
+            title="Blockquote"
+          >
             <Quote className="w-3.5 h-3.5" />
           </ToolBtn>
-          <ToolBtn active={editor.isActive('codeBlock')}
-            onClick={() => editor.chain().focus().toggleCodeBlock().run()} title="Code block">
+          <ToolBtn
+            active={editor.isActive('codeBlock')}
+            onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+            title="Code block"
+          >
             <FileCode2 className="w-3.5 h-3.5" />
           </ToolBtn>
 
-          <ToolBtn active={false}
-            onClick={() => editor.chain().focus().setHorizontalRule().run()} title="Divider">
+          <ToolBtn
+            active={false}
+            onClick={() => editor.chain().focus().setHorizontalRule().run()}
+            title="Divider"
+          >
             <Minus className="w-3.5 h-3.5" />
           </ToolBtn>
 
@@ -279,15 +371,19 @@ export function RichTextEditor({
               )}
               <div className="flex items-center -space-x-1">
                 {connectedUsers.slice(0, 5).map((u, i) => (
-                  <div key={i}
+                  <div
+                    key={i}
                     className="w-4 h-4 rounded-full border border-black/20 flex items-center justify-center text-[7px] text-white"
                     style={{ backgroundColor: u.color, fontWeight: 700, zIndex: 5 - i }}
-                    title={u.name}>
+                    title={u.name}
+                  >
                     {u.name.charAt(0).toUpperCase()}
                   </div>
                 ))}
                 {connectedUsers.length > 5 && (
-                  <span className={`text-[7px] ml-1 ${isDark ? 'text-white/30' : 'text-slate-400'}`}>
+                  <span
+                    className={`text-[7px] ml-1 ${isDark ? 'text-white/30' : 'text-slate-400'}`}
+                  >
                     +{connectedUsers.length - 5}
                   </span>
                 )}
@@ -298,14 +394,20 @@ export function RichTextEditor({
             </div>
           )}
 
-          <ToolBtn active={false}
-            onClick={() => editor.chain().focus().undo().run()} title="Undo"
-            disabled={collab.enabled && !editor.can().undo()}>
+          <ToolBtn
+            active={false}
+            onClick={() => editor.chain().focus().undo().run()}
+            title="Undo"
+            disabled={collab.enabled && !editor.can().undo()}
+          >
             <Undo2 className="w-3.5 h-3.5" />
           </ToolBtn>
-          <ToolBtn active={false}
-            onClick={() => editor.chain().focus().redo().run()} title="Redo"
-            disabled={collab.enabled && !editor.can().redo()}>
+          <ToolBtn
+            active={false}
+            onClick={() => editor.chain().focus().redo().run()}
+            title="Redo"
+            disabled={collab.enabled && !editor.can().redo()}
+          >
             <Redo2 className="w-3.5 h-3.5" />
           </ToolBtn>
         </div>
@@ -369,5 +471,5 @@ export function RichTextEditor({
         }
       `}</style>
     </div>
-  )
+  );
 }

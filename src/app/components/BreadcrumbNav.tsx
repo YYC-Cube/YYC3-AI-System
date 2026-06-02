@@ -15,13 +15,13 @@
  * @tags component,breadcrumb,navigation,ui
  */
 
-import { ChevronRight, Folder, FileCode, Home, Copy, Check } from 'lucide-react'
-import { useMemo, useState } from 'react'
-import { toast } from 'sonner'
+import { ChevronRight, Folder, FileCode, Home, Copy, Check } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { toast } from 'sonner';
 
-import { useAppStore } from '../store'
-import { getI18n } from '../utils/i18n'
-import { getThemeTokens } from '../utils/theme'
+import { useAppStore } from '../store';
+import { getI18n } from '../utils/i18n';
+import { getThemeTokens } from '../utils/theme';
 
 /* ── Path mapping for known files ── */
 const FILE_PATHS: Record<string, string> = {
@@ -57,42 +57,45 @@ const FILE_PATHS: Record<string, string> = {
   'i18n.ts': 'src/app/utils',
   'i18n-data.ts': 'src/app/utils',
   'collaboration.ts': 'src/app/utils',
-}
+};
 
 /* ══════════════════════════════════════════════════ */
 /*  BreadcrumbNav — Main Component                   */
 /* ══════════════════════════════════════════════════ */
 
 export function BreadcrumbNav() {
-  const { theme, language, selectedFile } = useAppStore()
-  const t = getThemeTokens(theme)
-  const i = getI18n(language)
-  const [copied, setCopied] = useState(false)
+  const { theme, language, selectedFile } = useAppStore();
+  const t = getThemeTokens(theme);
+  const i = getI18n(language);
+  const [copied, setCopied] = useState(false);
 
-  const currentFile = selectedFile || 'ChatInterface.tsx'
-  const basePath = FILE_PATHS[currentFile] || 'src/app/components'
+  const currentFile = selectedFile || 'ChatInterface.tsx';
+  const basePath = FILE_PATHS[currentFile] || 'src/app/components';
 
   const segments = useMemo(() => {
-    const parts = basePath.split('/')
+    const parts = basePath.split('/');
     return parts.map((part, idx) => ({
       name: part,
       fullPath: parts.slice(0, idx + 1).join('/'),
       isLast: false,
-    }))
-  }, [basePath])
+    }));
+  }, [basePath]);
 
-  const allSegments = useMemo(() => [
-    ...segments,
-    { name: currentFile, fullPath: `${basePath}/${currentFile}`, isLast: true },
-  ], [segments, currentFile, basePath])
+  const allSegments = useMemo(
+    () => [
+      ...segments,
+      { name: currentFile, fullPath: `${basePath}/${currentFile}`, isLast: true },
+    ],
+    [segments, currentFile, basePath]
+  );
 
   const copyPath = () => {
-    const fullPath = `${basePath}/${currentFile}`
-    navigator.clipboard.writeText(fullPath)
-    setCopied(true)
-    toast.success(`${i.codeCopied}: ${fullPath}`)
-    setTimeout(() => setCopied(false), 2000)
-  }
+    const fullPath = `${basePath}/${currentFile}`;
+    navigator.clipboard.writeText(fullPath);
+    setCopied(true);
+    toast.success(`${i.codeCopied}: ${fullPath}`);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   return (
     <div className="flex items-center gap-0 min-w-0 overflow-hidden">
@@ -137,8 +140,12 @@ export function BreadcrumbNav() {
         className={`flex-shrink-0 ml-1.5 p-0.5 rounded opacity-0 hover:opacity-100 focus:opacity-100 ${t.transition} ${t.interactive.iconBtn}`}
         title={i.copyPath}
       >
-        {copied ? <Check className={`w-2.5 h-2.5 ${t.status.success}`} /> : <Copy className="w-2.5 h-2.5" />}
+        {copied ? (
+          <Check className={`w-2.5 h-2.5 ${t.status.success}`} />
+        ) : (
+          <Copy className="w-2.5 h-2.5" />
+        )}
       </button>
     </div>
-  )
+  );
 }

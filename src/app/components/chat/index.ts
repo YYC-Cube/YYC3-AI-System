@@ -9,5 +9,5 @@
  * @copyright Copyright (c) 2026 YanYuCloudCube Team
  */
 
-export { ChatInterface } from './ChatInterface'
-export type { Message, ChatInterfaceProps } from './ChatInterface'
+export { ChatInterface } from './ChatInterface';
+export type { Message, ChatInterfaceProps } from './ChatInterface';

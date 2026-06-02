@@ -19,75 +19,70 @@
  * - 状态同步
  */
 
-import type { StateCreator, StoreApi, UseBoundStore } from 'zustand'
+import type { StateCreator, StoreApi, UseBoundStore } from 'zustand';
 
-export type Selector<T, U> = (state: T) => U
+export type Selector<T, U> = (state: T) => U;
 
-export type Updater<T> = (state: T) => T
+export type Updater<T> = (state: T) => T;
 
 export interface StateSnapshot<T> {
-  state: T
-  timestamp: number
-  version: string
+  state: T;
+  timestamp: number;
+  version: string;
 }
 
 export function createSelector<T, U>(selector: Selector<T, U>): Selector<T, U> {
-  return selector
+  return selector;
 }
 
 export function createDeepSelector<T, U>(selector: Selector<T, U>): Selector<T, U> {
-  let lastResult: U | undefined
-  let lastState: T | undefined
+  let lastResult: U | undefined;
+  let lastState: T | undefined;
 
   return (state: T): U => {
     if (lastState === state) {
-      return lastResult as U
+      return lastResult as U;
     }
 
-    const result = selector(state)
-    lastState = state
-    lastResult = result
-    return result
-  }
+    const result = selector(state);
+    lastState = state;
+    lastResult = result;
+    return result;
+  };
 }
 
 export function shallowEqual<T>(obj1: T, obj2: T): boolean {
-  if (obj1 === obj2) return true
+  if (obj1 === obj2) return true;
 
-  if (
-    typeof obj1 !== 'object' ||
-    typeof obj2 !== 'object' ||
-    obj1 === null ||
-    obj2 === null
-  ) {
-    return false
+  if (typeof obj1 !== 'object' || typeof obj2 !== 'object' || obj1 === null || obj2 === null) {
+    return false;
   }
 
-  const keys1 = Object.keys(obj1) as (keyof T)[]
-  const keys2 = Object.keys(obj2) as (keyof T)[]
+  const keys1 = Object.keys(obj1) as (keyof T)[];
+  const keys2 = Object.keys(obj2) as (keyof T)[];
 
-  if (keys1.length !== keys2.length) return false
+  if (keys1.length !== keys2.length) return false;
 
   for (const key of keys1) {
-    if (obj1[key] !== obj2[key]) return false
+    if (obj1[key] !== obj2[key]) return false;
   }
 
-  return true
+  return true;
 }
 
 export function createShallowSelector<T, U>(selector: Selector<T, U>): Selector<T, U> {
-  let lastResult: U | undefined
+  let lastResult: U | undefined;
 
   return (state: T): U => {
-    const result = selector(state)
+    const result = selector(state);
 
     if (lastResult !== undefined && shallowEqual(result, lastResult)) {
-      return lastResult
+      return lastResult;
     }
 
-    lastResult = result
-    return result
-  }
+    lastResult = result;
+    return result;
+  };
 }
 
 export function createStateSnapshot<T>(state: T, version = '1.0.0'): StateSnapshot<T> {
@@ -95,142 +90,145 @@ export function createStateSnapshot<T>(state: T, version = '1.0.0'): StateSnapsh
     state: JSON.parse(JSON.stringify(state)),
     timestamp: Date.now(),
     version,
-  }
+  };
 }
 
 export function restoreFromSnapshot<T>(snapshot: StateSnapshot<T>): T {
-  return JSON.parse(JSON.stringify(snapshot.state))
+  return JSON.parse(JSON.stringify(snapshot.state));
 }
 
 export function createPersistMiddleware<T>(
   storageKey: string,
   options?: {
-    partialize?: (state: T) => Partial<T>
-    version?: number
-    migrate?: (persistedState: unknown, version: number) => T
+    partialize?: (state: T) => Partial<T>;
+    version?: number;
+    migrate?: (persistedState: unknown, version: number) => T;
   }
 ) {
-  return (config: StateCreator<T>): StateCreator<T> => (set, get, api) => {
-    const state = config(set, get, api)
-
-    try {
-      const stored = localStorage.getItem(storageKey)
-      if (stored) {
-        const parsed = JSON.parse(stored)
-        const version = options?.version ?? 0
-
-        if (parsed.version !== version && options?.migrate) {
-          const migrated = options.migrate(parsed.state, parsed.version ?? 0)
-          set(migrated)
-        } else {
-          set(parsed.state)
-        }
-      }
-    } catch (error) {
-      console.warn('Failed to restore state from storage:', error)
-    }
-
-    const originalSet = api.setState
-    api.setState = (partial: T | Partial<T> | ((state: T) => T | Partial<T>)) => {
-      originalSet(partial)
+  return (config: StateCreator<T>): StateCreator<T> =>
+    (set, get, api) => {
+      const state = config(set, get, api);
 
       try {
-        const currentState = get()
-        const stateToStore = options?.partialize
-          ? options.partialize(currentState)
-          : currentState
+        const stored = localStorage.getItem(storageKey);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          const version = options?.version ?? 0;
 
-        localStorage.setItem(
-          storageKey,
-          JSON.stringify({
-            state: stateToStore,
-            version: options?.version ?? 0,
-            timestamp: Date.now(),
-          })
-        )
+          if (parsed.version !== version && options?.migrate) {
+            const migrated = options.migrate(parsed.state, parsed.version ?? 0);
+            set(migrated);
+          } else {
+            set(parsed.state);
+          }
+        }
       } catch (error) {
-        console.warn('Failed to persist state:', error)
+        console.warn('Failed to restore state from storage:', error);
       }
-    }
 
-    return state
-  }
+      const originalSet = api.setState;
+      api.setState = (partial: T | Partial<T> | ((state: T) => T | Partial<T>)) => {
+        originalSet(partial);
+
+        try {
+          const currentState = get();
+          const stateToStore = options?.partialize
+            ? options.partialize(currentState)
+            : currentState;
+
+          localStorage.setItem(
+            storageKey,
+            JSON.stringify({
+              state: stateToStore,
+              version: options?.version ?? 0,
+              timestamp: Date.now(),
+            })
+          );
+        } catch (error) {
+          console.warn('Failed to persist state:', error);
+        }
+      };
+
+      return state;
+    };
 }
 
 export function createLoggerMiddleware<T>(name: string) {
-  return (config: StateCreator<T>): StateCreator<T> => (set, get, api) => {
-    const loggedSet: typeof set = (partial, replace) => {
-      const prevState = get()
-      if (replace === true) {
-        set(partial as T | ((state: T) => T), true)
-      } else {
-        set(partial)
-      }
-      const nextState = get()
+  return (config: StateCreator<T>): StateCreator<T> =>
+    (set, get, api) => {
+      const loggedSet: typeof set = (partial, replace) => {
+        const prevState = get();
+        if (replace === true) {
+          set(partial as T | ((state: T) => T), true);
+        } else {
+          set(partial);
+        }
+        const nextState = get();
 
-      if (process.env.NODE_ENV === 'development') {
-        console.group(`[${name}] State Update`)
-        console.log('Prev:', prevState)
-        console.log('Next:', nextState)
-        console.groupEnd()
-      }
-    }
+        if (process.env.NODE_ENV === 'development') {
+          console.group(`[${name}] State Update`);
+          console.log('Prev:', prevState);
+          console.log('Next:', nextState);
+          console.groupEnd();
+        }
+      };
 
-    return config(loggedSet, get, api)
-  }
+      return config(loggedSet, get, api);
+    };
 }
 
-export function createUndoRedoMiddleware<T extends object>(
-  undoRedoService: { push: (state: T, action: string) => void }
-) {
-  return (config: StateCreator<T>): StateCreator<T> => (set, get, api) => {
-    const wrappedSet: typeof set = (partial, replace) => {
-      if (replace === true) {
-        set(partial as T | ((state: T) => T), true)
-      } else {
-        set(partial)
-      }
-      const nextState = get()
-      undoRedoService.push(nextState, 'state-update')
-    }
+export function createUndoRedoMiddleware<T extends object>(undoRedoService: {
+  push: (state: T, action: string) => void;
+}) {
+  return (config: StateCreator<T>): StateCreator<T> =>
+    (set, get, api) => {
+      const wrappedSet: typeof set = (partial, replace) => {
+        if (replace === true) {
+          set(partial as T | ((state: T) => T), true);
+        } else {
+          set(partial);
+        }
+        const nextState = get();
+        undoRedoService.push(nextState, 'state-update');
+      };
 
-    return config(wrappedSet, get, api)
-  }
+      return config(wrappedSet, get, api);
+    };
 }
 
 export function debounceStateUpdate<T extends (...args: unknown[]) => void>(
   fn: T,
   delay: number
 ): T {
-  let timeoutId: ReturnType<typeof setTimeout> | null = null
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
   return ((...args: Parameters<T>) => {
     if (timeoutId) {
-      clearTimeout(timeoutId)
+      clearTimeout(timeoutId);
     }
 
     timeoutId = setTimeout(() => {
-      fn(...args)
-      timeoutId = null
-    }, delay)
-  }) as T
+      fn(...args);
+      timeoutId = null;
+    }, delay);
+  }) as T;
 }
 
 export function throttleStateUpdate<T extends (...args: unknown[]) => void>(
   fn: T,
   limit: number
 ): T {
-  let inThrottle = false
+  let inThrottle = false;
 
   return ((...args: Parameters<T>) => {
     if (!inThrottle) {
-      fn(...args)
-      inThrottle = true
+      fn(...args);
+      inThrottle = true;
       setTimeout(() => {
-        inThrottle = false
-      }, limit)
+        inThrottle = false;
+      }, limit);
     }
-  }) as T
+  }) as T;
 }
 
 export function createComputedProperty<T extends object, K extends keyof T>(
@@ -238,71 +236,68 @@ export function createComputedProperty<T extends object, K extends keyof T>(
   key: K,
   compute: (state: T) => T[K]
 ): T {
-  let cachedValue: T[K] | undefined
-  let isDirty = true
+  let cachedValue: T[K] | undefined;
+  let isDirty = true;
 
   return new Proxy(state, {
     get(target, prop) {
       if (prop === key) {
         if (isDirty) {
-          cachedValue = compute(target)
-          isDirty = false
+          cachedValue = compute(target);
+          isDirty = false;
         }
-        return cachedValue
+        return cachedValue;
       }
-      return target[prop as keyof T]
+      return target[prop as keyof T];
     },
     set(target, prop, value) {
-      target[prop as keyof T] = value
-      isDirty = true
-      return true
+      target[prop as keyof T] = value;
+      isDirty = true;
+      return true;
     },
-  })
+  });
 }
 
 export function mergeStates<T extends object>(base: T, ...updates: Partial<T>[]): T {
-  return Object.assign({}, base, ...updates)
+  return Object.assign({}, base, ...updates);
 }
 
-export function pickState<T extends object, K extends keyof T>(
-  state: T,
-  keys: K[]
-): Pick<T, K> {
-  const result = {} as Pick<T, K>
+export function pickState<T extends object, K extends keyof T>(state: T, keys: K[]): Pick<T, K> {
+  const result = {} as Pick<T, K>;
   for (const key of keys) {
-    result[key] = state[key]
+    result[key] = state[key];
   }
-  return result
+  return result;
 }
 
-export function omitState<T extends object, K extends keyof T>(
-  state: T,
-  keys: K[]
-): Omit<T, K> {
-  const result = { ...state }
+export function omitState<T extends object, K extends keyof T>(state: T, keys: K[]): Omit<T, K> {
+  const result = { ...state };
   for (const key of keys) {
-    delete result[key]
+    delete result[key];
   }
-  return result
+  return result;
 }
 
 export function createStateValidator<T extends object>(
   schema: Record<keyof T, (value: unknown) => boolean>
 ) {
   return (state: T): { valid: boolean; errors: string[] } => {
-    const errors: string[] = []
+    const errors: string[] = [];
 
-    for (const [key, validator] of Object.entries(schema) as [keyof T, (value: unknown) => boolean][]) {
+    for (const [key, validator] of Object.entries(schema) as [
+      keyof T,
+      (value: unknown) => boolean,
+    ][]) {
       if (!validator(state[key])) {
-        errors.push(`Invalid value for ${String(key)}`)
+        errors.push(`Invalid value for ${String(key)}`);
       }
     }
 
     return {
       valid: errors.length === 0,
       errors,
-    }
-  }
+    };
+  };
 }
 
 export function createBatchUpdater<T>(
@@ -310,13 +305,13 @@ export function createBatchUpdater<T>(
 ): (updates: Array<(state: T) => Partial<T>>) => void {
   return (updates) => {
     store.setState((state) => {
-      let newState = state
+      let newState = state;
       for (const update of updates) {
-        newState = { ...newState, ...update(newState) }
+        newState = { ...newState, ...update(newState) };
       }
-      return newState
-    })
-  }
+      return newState;
+    });
+  };
 }
 
 export function withEventBus<T extends object>(
@@ -326,18 +321,18 @@ export function withEventBus<T extends object>(
 ): T {
   return new Proxy(store, {
     set(target, property, value) {
-      const oldValue = target[property as keyof T]
-      target[property as keyof T] = value
+      const oldValue = target[property as keyof T];
+      target[property as keyof T] = value;
 
       eventBus.emit(`${eventPrefix}:${String(property)}:changed`, {
         property: String(property),
         oldValue,
         newValue: value,
-      })
+      });
 
-      return true
+      return true;
     },
-  })
+  });
 }
 
 export default {
@@ -359,4 +354,4 @@ export default {
   createStateValidator,
   createBatchUpdater,
   withEventBus,
-}
+};

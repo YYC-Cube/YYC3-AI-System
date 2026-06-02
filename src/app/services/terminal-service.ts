@@ -21,87 +21,87 @@
  */
 
 export interface TerminalSession {
-  id: string
-  name: string
-  type: TerminalType
-  status: TerminalStatus
-  createdAt: number
-  lastActivityAt: number
-  cwd: string
-  environment: Record<string, string>
-  history: CommandHistoryEntry[]
-  output: OutputLine[]
-  scrollback: number
+  id: string;
+  name: string;
+  type: TerminalType;
+  status: TerminalStatus;
+  createdAt: number;
+  lastActivityAt: number;
+  cwd: string;
+  environment: Record<string, string>;
+  history: CommandHistoryEntry[];
+  output: OutputLine[];
+  scrollback: number;
 }
 
-export type TerminalType = 'bash' | 'zsh' | 'powershell' | 'cmd' | 'sh'
+export type TerminalType = 'bash' | 'zsh' | 'powershell' | 'cmd' | 'sh';
 
-export type TerminalStatus = 'running' | 'idle' | 'suspended' | 'closed'
+export type TerminalStatus = 'running' | 'idle' | 'suspended' | 'closed';
 
 export interface CommandHistoryEntry {
-  id: string
-  command: string
-  timestamp: number
-  exitCode?: number
-  duration?: number
-  sessionId: string
-  cwd: string
-  output?: string
+  id: string;
+  command: string;
+  timestamp: number;
+  exitCode?: number;
+  duration?: number;
+  sessionId: string;
+  cwd: string;
+  output?: string;
 }
 
 export interface OutputLine {
-  id: string
-  content: string
-  type: OutputType
-  timestamp: number
-  sessionId: string
+  id: string;
+  content: string;
+  type: OutputType;
+  timestamp: number;
+  sessionId: string;
 }
 
-export type OutputType = 'stdout' | 'stderr' | 'stdin' | 'system' | 'error'
+export type OutputType = 'stdout' | 'stderr' | 'stdin' | 'system' | 'error';
 
 export interface TerminalTheme {
-  id: string
-  name: string
+  id: string;
+  name: string;
   colors: {
-    background: string
-    foreground: string
-    cursor: string
-    selection: string
-    black: string
-    red: string
-    green: string
-    yellow: string
-    blue: string
-    magenta: string
-    cyan: string
-    white: string
-    brightBlack: string
-    brightRed: string
-    brightGreen: string
-    brightYellow: string
-    brightBlue: string
-    brightMagenta: string
-    brightCyan: string
-    brightWhite: string
-  }
-  fontSize: number
-  fontFamily: string
-  cursorStyle: 'block' | 'underline' | 'bar'
-  cursorBlink: boolean
+    background: string;
+    foreground: string;
+    cursor: string;
+    selection: string;
+    black: string;
+    red: string;
+    green: string;
+    yellow: string;
+    blue: string;
+    magenta: string;
+    cyan: string;
+    white: string;
+    brightBlack: string;
+    brightRed: string;
+    brightGreen: string;
+    brightYellow: string;
+    brightBlue: string;
+    brightMagenta: string;
+    brightCyan: string;
+    brightWhite: string;
+  };
+  fontSize: number;
+  fontFamily: string;
+  cursorStyle: 'block' | 'underline' | 'bar';
+  cursorBlink: boolean;
 }
 
 export interface CommandAlias {
-  name: string
-  command: string
-  description?: string
+  name: string;
+  command: string;
+  description?: string;
 }
 
 export interface OutputFilter {
-  id: string
-  name: string
-  pattern: string
-  type: 'include' | 'exclude' | 'highlight'
-  enabled: boolean
+  id: string;
+  name: string;
+  pattern: string;
+  type: 'include' | 'exclude' | 'highlight';
+  enabled: boolean;
 }
 
 const DEFAULT_THEME: TerminalTheme = {
@@ -133,7 +133,7 @@ const DEFAULT_THEME: TerminalTheme = {
   fontFamily: 'Monaco, Menlo, "Courier New", monospace',
   cursorStyle: 'block',
   cursorBlink: true,
-}
+};
 
 const DEFAULT_ALIASES: CommandAlias[] = [
   { name: 'll', command: 'ls -la', description: '详细列表' },
@@ -144,35 +144,35 @@ const DEFAULT_ALIASES: CommandAlias[] = [
   { name: 'grep', command: 'grep --color=auto', description: '彩色grep' },
   { name: 'ports', command: 'netstat -tulanp', description: '显示端口' },
   { name: 'myip', command: 'curl -s ifconfig.me', description: '显示公网IP' },
-]
+];
 
 class TerminalService {
-  private sessions: Map<string, TerminalSession> = new Map()
-  private globalHistory: CommandHistoryEntry[] = []
-  private themes: Map<string, TerminalTheme> = new Map()
-  private aliases: Map<string, CommandAlias> = new Map()
-  private filters: Map<string, OutputFilter> = new Map()
-  private currentSessionId: string | null = null
-  private maxHistorySize = 1000
-  private maxScrollback = 10000
+  private sessions: Map<string, TerminalSession> = new Map();
+  private globalHistory: CommandHistoryEntry[] = [];
+  private themes: Map<string, TerminalTheme> = new Map();
+  private aliases: Map<string, CommandAlias> = new Map();
+  private filters: Map<string, OutputFilter> = new Map();
+  private currentSessionId: string | null = null;
+  private maxHistorySize = 1000;
+  private maxScrollback = 10000;
 
   constructor() {
-    this.initializeDefaults()
-    this.loadFromStorage()
+    this.initializeDefaults();
+    this.loadFromStorage();
   }
 
   private initializeDefaults(): void {
-    this.themes.set(DEFAULT_THEME.id, DEFAULT_THEME)
+    this.themes.set(DEFAULT_THEME.id, DEFAULT_THEME);
     DEFAULT_ALIASES.forEach((alias) => {
-      this.aliases.set(alias.name, alias)
-    })
+      this.aliases.set(alias.name, alias);
+    });
   }
 
   createSession(options?: {
-    name?: string
-    type?: TerminalType
-    cwd?: string
-    environment?: Record<string, string>
+    name?: string;
+    type?: TerminalType;
+    cwd?: string;
+    environment?: Record<string, string>;
   }): TerminalSession {
     const session: TerminalSession = {
       id: this.generateId(),
@@ -186,59 +186,59 @@ class TerminalService {
       history: [],
       output: [],
       scrollback: this.maxScrollback,
-    }
+    };
 
-    this.sessions.set(session.id, session)
-    this.currentSessionId = session.id
-    this.saveToStorage()
+    this.sessions.set(session.id, session);
+    this.currentSessionId = session.id;
+    this.saveToStorage();
 
-    return session
+    return session;
   }
 
   getSession(sessionId: string): TerminalSession | undefined {
-    return this.sessions.get(sessionId)
+    return this.sessions.get(sessionId);
   }
 
   getCurrentSession(): TerminalSession | undefined {
-    if (!this.currentSessionId) return undefined
-    return this.sessions.get(this.currentSessionId)
+    if (!this.currentSessionId) return undefined;
+    return this.sessions.get(this.currentSessionId);
   }
 
   getAllSessions(): TerminalSession[] {
-    return Array.from(this.sessions.values()).sort((a, b) => b.lastActivityAt - a.lastActivityAt)
+    return Array.from(this.sessions.values()).sort((a, b) => b.lastActivityAt - a.lastActivityAt);
   }
 
   setCurrentSession(sessionId: string): boolean {
     if (this.sessions.has(sessionId)) {
-      this.currentSessionId = sessionId
-      return true
+      this.currentSessionId = sessionId;
+      return true;
     }
-    return false
+    return false;
   }
 
   closeSession(sessionId: string): boolean {
-    const session = this.sessions.get(sessionId)
-    if (!session) return false
+    const session = this.sessions.get(sessionId);
+    if (!session) return false;
 
-    session.status = 'closed'
-    this.sessions.delete(sessionId)
+    session.status = 'closed';
+    this.sessions.delete(sessionId);
 
     if (this.currentSessionId === sessionId) {
-      const remaining = this.getAllSessions()
-      this.currentSessionId = remaining.length > 0 ? remaining[0].id : null
+      const remaining = this.getAllSessions();
+      this.currentSessionId = remaining.length > 0 ? remaining[0].id : null;
     }
 
-    this.saveToStorage()
-    return true
+    this.saveToStorage();
+    return true;
   }
 
   executeCommand(sessionId: string, command: string): CommandHistoryEntry {
-    const session = this.sessions.get(sessionId)
+    const session = this.sessions.get(sessionId);
     if (!session) {
-      throw new Error(`会话不存在: ${sessionId}`)
+      throw new Error(`会话不存在: ${sessionId}`);
     }
 
-    const resolvedCommand = this.resolveAlias(command)
+    const resolvedCommand = this.resolveAlias(command);
 
     const entry: CommandHistoryEntry = {
       id: this.generateId(),
@@ -246,40 +246,40 @@ class TerminalService {
       timestamp: Date.now(),
       sessionId,
       cwd: session.cwd,
-    }
+    };
 
-    session.history.push(entry)
-    session.lastActivityAt = Date.now()
-    session.status = 'running'
+    session.history.push(entry);
+    session.lastActivityAt = Date.now();
+    session.status = 'running';
 
-    this.globalHistory.push(entry)
+    this.globalHistory.push(entry);
     if (this.globalHistory.length > this.maxHistorySize) {
-      this.globalHistory.shift()
+      this.globalHistory.shift();
     }
 
-    this.saveToStorage()
-    return entry
+    this.saveToStorage();
+    return entry;
   }
 
   completeCommand(sessionId: string, commandId: string, exitCode: number, duration: number): void {
-    const session = this.sessions.get(sessionId)
-    if (!session) return
+    const session = this.sessions.get(sessionId);
+    if (!session) return;
 
-    const entry = session.history.find((h) => h.id === commandId)
+    const entry = session.history.find((h) => h.id === commandId);
     if (entry) {
-      entry.exitCode = exitCode
-      entry.duration = duration
+      entry.exitCode = exitCode;
+      entry.duration = duration;
     }
 
-    session.status = 'idle'
-    session.lastActivityAt = Date.now()
-    this.saveToStorage()
+    session.status = 'idle';
+    session.lastActivityAt = Date.now();
+    this.saveToStorage();
   }
 
   addOutput(sessionId: string, content: string, type: OutputType): OutputLine {
-    const session = this.sessions.get(sessionId)
+    const session = this.sessions.get(sessionId);
     if (!session) {
-      throw new Error(`会话不存在: ${sessionId}`)
+      throw new Error(`会话不存在: ${sessionId}`);
     }
 
     const line: OutputLine = {
@@ -288,161 +288,161 @@ class TerminalService {
       type,
       timestamp: Date.now(),
       sessionId,
-    }
+    };
 
-    session.output.push(line)
+    session.output.push(line);
 
     if (session.output.length > session.scrollback) {
-      session.output.shift()
+      session.output.shift();
     }
 
-    return line
+    return line;
   }
 
   getHistory(sessionId?: string): CommandHistoryEntry[] {
     if (sessionId) {
-      const session = this.sessions.get(sessionId)
-      return session ? [...session.history] : []
+      const session = this.sessions.get(sessionId);
+      return session ? [...session.history] : [];
     }
-    return [...this.globalHistory]
+    return [...this.globalHistory];
   }
 
   searchHistory(query: string, sessionId?: string): CommandHistoryEntry[] {
-    const history = this.getHistory(sessionId)
-    const lowerQuery = query.toLowerCase()
-    return history.filter((entry) => entry.command.toLowerCase().includes(lowerQuery))
+    const history = this.getHistory(sessionId);
+    const lowerQuery = query.toLowerCase();
+    return history.filter((entry) => entry.command.toLowerCase().includes(lowerQuery));
   }
 
   clearHistory(sessionId?: string): void {
     if (sessionId) {
-      const session = this.sessions.get(sessionId)
+      const session = this.sessions.get(sessionId);
       if (session) {
-        session.history = []
+        session.history = [];
       }
     } else {
-      this.globalHistory = []
+      this.globalHistory = [];
       this.sessions.forEach((session) => {
-        session.history = []
-      })
+        session.history = [];
+      });
     }
-    this.saveToStorage()
+    this.saveToStorage();
   }
 
   getOutput(sessionId: string, filter?: OutputFilter): OutputLine[] {
-    const session = this.sessions.get(sessionId)
-    if (!session) return []
+    const session = this.sessions.get(sessionId);
+    if (!session) return [];
 
-    let output = [...session.output]
+    let output = [...session.output];
 
     if (filter && filter.enabled) {
-      const regex = new RegExp(filter.pattern, 'gi')
+      const regex = new RegExp(filter.pattern, 'gi');
       switch (filter.type) {
         case 'include':
-          output = output.filter((line) => regex.test(line.content))
-          break
+          output = output.filter((line) => regex.test(line.content));
+          break;
         case 'exclude':
-          output = output.filter((line) => !regex.test(line.content))
-          break
+          output = output.filter((line) => !regex.test(line.content));
+          break;
         case 'highlight':
-          break
+          break;
       }
     }
 
-    return output
+    return output;
   }
 
   clearOutput(sessionId: string): void {
-    const session = this.sessions.get(sessionId)
+    const session = this.sessions.get(sessionId);
     if (session) {
-      session.output = []
+      session.output = [];
     }
   }
 
   getTheme(themeId: string): TerminalTheme | undefined {
-    return this.themes.get(themeId)
+    return this.themes.get(themeId);
   }
 
   getAllThemes(): TerminalTheme[] {
-    return Array.from(this.themes.values())
+    return Array.from(this.themes.values());
   }
 
   addTheme(theme: TerminalTheme): void {
-    this.themes.set(theme.id, theme)
-    this.saveToStorage()
+    this.themes.set(theme.id, theme);
+    this.saveToStorage();
   }
 
   removeTheme(themeId: string): boolean {
-    if (themeId === 'default') return false
-    return this.themes.delete(themeId)
+    if (themeId === 'default') return false;
+    return this.themes.delete(themeId);
   }
 
   getAlias(name: string): CommandAlias | undefined {
-    return this.aliases.get(name)
+    return this.aliases.get(name);
   }
 
   getAllAliases(): CommandAlias[] {
-    return Array.from(this.aliases.values())
+    return Array.from(this.aliases.values());
   }
 
   addAlias(alias: CommandAlias): void {
-    this.aliases.set(alias.name, alias)
-    this.saveToStorage()
+    this.aliases.set(alias.name, alias);
+    this.saveToStorage();
   }
 
   removeAlias(name: string): boolean {
-    return this.aliases.delete(name)
+    return this.aliases.delete(name);
   }
 
   resolveAlias(command: string): string {
-    const parts = command.trim().split(/\s+/)
-    const alias = this.aliases.get(parts[0])
+    const parts = command.trim().split(/\s+/);
+    const alias = this.aliases.get(parts[0]);
 
     if (alias) {
-      parts[0] = alias.command
-      return parts.join(' ')
+      parts[0] = alias.command;
+      return parts.join(' ');
     }
 
-    return command
+    return command;
   }
 
   addFilter(filter: OutputFilter): void {
-    this.filters.set(filter.id, filter)
-    this.saveToStorage()
+    this.filters.set(filter.id, filter);
+    this.saveToStorage();
   }
 
   getFilter(filterId: string): OutputFilter | undefined {
-    return this.filters.get(filterId)
+    return this.filters.get(filterId);
   }
 
   getAllFilters(): OutputFilter[] {
-    return Array.from(this.filters.values())
+    return Array.from(this.filters.values());
   }
 
   removeFilter(filterId: string): boolean {
-    return this.filters.delete(filterId)
+    return this.filters.delete(filterId);
   }
 
   getStatistics(): {
-    totalSessions: number
-    activeSessions: number
-    totalCommands: number
-    averageCommandsPerSession: number
-    mostUsedCommands: Array<{ command: string; count: number }>
+    totalSessions: number;
+    activeSessions: number;
+    totalCommands: number;
+    averageCommandsPerSession: number;
+    mostUsedCommands: Array<{ command: string; count: number }>;
   } {
-    const sessions = this.getAllSessions()
-    const activeSessions = sessions.filter((s) => s.status !== 'closed').length
-    const totalCommands = this.globalHistory.length
+    const sessions = this.getAllSessions();
+    const activeSessions = sessions.filter((s) => s.status !== 'closed').length;
+    const totalCommands = this.globalHistory.length;
 
-    const commandCounts: Record<string, number> = {}
+    const commandCounts: Record<string, number> = {};
     this.globalHistory.forEach((entry) => {
-      const cmd = entry.command.split(' ')[0]
-      commandCounts[cmd] = (commandCounts[cmd] || 0) + 1
-    })
+      const cmd = entry.command.split(' ')[0];
+      commandCounts[cmd] = (commandCounts[cmd] || 0) + 1;
+    });
 
     const mostUsedCommands = Object.entries(commandCounts)
       .map(([command, count]) => ({ command, count }))
       .sort((a, b) => b.count - a.count)
-      .slice(0, 10)
+      .slice(0, 10);
 
     return {
       totalSessions: sessions.length,
@@ -450,21 +450,21 @@ class TerminalService {
       totalCommands,
       averageCommandsPerSession: sessions.length > 0 ? totalCommands / sessions.length : 0,
       mostUsedCommands,
-    }
+    };
   }
 
   private detectDefaultShell(): TerminalType {
     if (typeof process !== 'undefined') {
-      const platform = process.platform
-      if (platform === 'win32') return 'powershell'
-      if (platform === 'darwin') return 'zsh'
-      return 'bash'
+      const platform = process.platform;
+      if (platform === 'win32') return 'powershell';
+      if (platform === 'darwin') return 'zsh';
+      return 'bash';
     }
-    return 'bash'
+    return 'bash';
   }
 
   private generateId(): string {
-    return `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
+    return `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
   }
 
   private saveToStorage(): void {
@@ -475,48 +475,48 @@ class TerminalService {
         themes: Array.from(this.themes.entries()),
         aliases: Array.from(this.aliases.entries()),
         filters: Array.from(this.filters.entries()),
-      }
-      localStorage.setItem('yyc3_terminal_data', JSON.stringify(data))
+      };
+      localStorage.setItem('yyc3_terminal_data', JSON.stringify(data));
     } catch (error) {
-      console.warn('保存终端数据失败:', error)
+      console.warn('保存终端数据失败:', error);
     }
   }
 
   private loadFromStorage(): void {
     try {
-      const stored = localStorage.getItem('yyc3_terminal_data')
+      const stored = localStorage.getItem('yyc3_terminal_data');
       if (stored) {
-        const data = JSON.parse(stored)
+        const data = JSON.parse(stored);
         if (data.sessions) {
           data.sessions.forEach(([id, session]: [string, TerminalSession]) => {
-            this.sessions.set(id, session)
-          })
+            this.sessions.set(id, session);
+          });
         }
         if (data.globalHistory) {
-          this.globalHistory = data.globalHistory
+          this.globalHistory = data.globalHistory;
         }
         if (data.themes) {
           data.themes.forEach(([id, theme]: [string, TerminalTheme]) => {
-            this.themes.set(id, theme)
-          })
+            this.themes.set(id, theme);
+          });
         }
         if (data.aliases) {
           data.aliases.forEach(([name, alias]: [string, CommandAlias]) => {
-            this.aliases.set(name, alias)
-          })
+            this.aliases.set(name, alias);
+          });
         }
         if (data.filters) {
           data.filters.forEach(([id, filter]: [string, OutputFilter]) => {
-            this.filters.set(id, filter)
-          })
+            this.filters.set(id, filter);
+          });
         }
       }
     } catch (error) {
-      console.warn('加载终端数据失败:', error)
+      console.warn('加载终端数据失败:', error);
     }
   }
 }
 
-export const terminalService = new TerminalService()
+export const terminalService = new TerminalService();
 
-export default TerminalService
+export default TerminalService;

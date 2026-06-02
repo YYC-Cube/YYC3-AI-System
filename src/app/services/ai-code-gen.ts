@@ -16,35 +16,35 @@
 // ── Types ──
 
 export interface CodeIssue {
-  id: string
-  severity: 'info' | 'warning' | 'error'
-  line: number
-  column: number
-  message: string
-  suggestion?: string
-  rule?: string
+  id: string;
+  severity: 'info' | 'warning' | 'error';
+  line: number;
+  column: number;
+  message: string;
+  suggestion?: string;
+  rule?: string;
 }
 
 export interface CodeImprovement {
-  id: string
-  type: 'performance' | 'readability' | 'maintainability' | 'security'
-  reason: string
-  line?: number
-  endLine?: number
-  before: string
-  after: string
+  id: string;
+  type: 'performance' | 'readability' | 'maintainability' | 'security';
+  reason: string;
+  line?: number;
+  endLine?: number;
+  before: string;
+  after: string;
 }
 
 export interface CodeOptimizeResult {
-  improvements: CodeImprovement[]
+  improvements: CodeImprovement[];
 }
 
 export interface CodeReviewResult {
-  score: number
-  issues: CodeIssue[]
-  suggestions: string[]
-  summary: string
-  timestamp: number
+  score: number;
+  issues: CodeIssue[];
+  suggestions: string[];
+  summary: string;
+  timestamp: number;
 }
 
 // ── Mock Implementation ──
@@ -61,7 +61,7 @@ class CodeReviewerService {
       suggestions: [],
       summary: 'Code review completed',
       timestamp: Date.now(),
-    }
+    };
   }
 }
 
@@ -69,19 +69,23 @@ class CodeOptimizerService {
   /**
    * Optimize code and return improvements
    */
-  async optimizeCode(_options: { language: string; code: string; goals?: string[] }): Promise<CodeOptimizeResult> {
+  async optimizeCode(_options: {
+    language: string;
+    code: string;
+    goals?: string[];
+  }): Promise<CodeOptimizeResult> {
     return {
       improvements: [],
-    }
+    };
   }
 }
 
 // ── Exports ──
 
-export const codeReviewer = new CodeReviewerService()
-export const codeOptimizer = new CodeOptimizerService()
+export const codeReviewer = new CodeReviewerService();
+export const codeOptimizer = new CodeOptimizerService();
 
 export default {
   codeReviewer,
   codeOptimizer,
-}
+};

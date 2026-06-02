@@ -11,6 +11,7 @@ tags: p1,layout,drag,drop
 # YYC³ P1-布局-拖拽交互
 
 ## useLayoutStore (Zustand + devtools + persist)
+
 - panels[], selectedPanelId, dragging state, resizing state
 - Panel ops: add/remove/update/select
 - Drag: startDrag(panelId, e) -> onDrag(e) -> endDrag()
@@ -19,11 +20,13 @@ tags: p1,layout,drag,drop
 - Layout persistence: localStorage auto-save
 
 ## DraggablePanel 组件
+
 - Header 拖拽手柄 + title + 控制按钮 (minimize/maximize/close)
 - Content area
 - ResizeHandle (e/s/se 方向)
 - 最小尺寸限制
 
 ## LayoutGrid 组件
+
 - CSS Grid background lines (可切换)
 - DraggablePanel 渲染

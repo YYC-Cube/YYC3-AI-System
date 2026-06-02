@@ -24,7 +24,7 @@ const ResetPasswordPage: React.FC = () => {
   const [formData, setFormData] = useState<ResetPasswordFormData>({
     token: '',
     newPassword: '',
-    confirmPassword: ''
+    confirmPassword: '',
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -38,13 +38,13 @@ const ResetPasswordPage: React.FC = () => {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const token = params.get('token');
-    
+
     if (!token) {
       navigate('/forgot-password');
       return;
     }
 
-    setFormData(prev => ({ ...prev, token }));
+    setFormData((prev) => ({ ...prev, token }));
   }, [location.search, navigate]);
 
   /**
@@ -84,7 +84,7 @@ const ResetPasswordPage: React.FC = () => {
 
       try {
         const response = await resetPassword(formData);
-        
+
         if (response.success) {
           setIsSuccess(true);
           // 3秒后跳转到登录页
@@ -107,14 +107,14 @@ const ResetPasswordPage: React.FC = () => {
    */
   const handleChange = useCallback(
     (field: keyof ResetPasswordFormData, value: string) => {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        [field]: value
+        [field]: value,
       }));
-      
+
       // 清除该字段的错误
       if (errors[field]) {
-        setErrors(prev => {
+        setErrors((prev) => {
           const newErrors = { ...prev };
           delete newErrors[field];
           return newErrors;
@@ -133,11 +133,11 @@ const ResetPasswordPage: React.FC = () => {
               <div className="mx-auto w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-6">
                 <CheckCircle className="w-8 h-8 text-green-600 dark:text-green-400" />
               </div>
-              
+
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
                 密码重置成功
               </h2>
-              
+
               <p className="text-gray-600 dark:text-gray-400 mb-6">
                 您的密码已成功重置，将自动跳转到登录页面...
               </p>
@@ -163,12 +163,8 @@ const ResetPasswordPage: React.FC = () => {
           <div className="mx-auto w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center mb-4 shadow-lg">
             <Lock className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            重置密码
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            请输入您的新密码
-          </p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">重置密码</h1>
+          <p className="text-gray-600 dark:text-gray-400">请输入您的新密码</p>
         </div>
 
         {/* 重置密码表单 */}
@@ -176,9 +172,7 @@ const ResetPasswordPage: React.FC = () => {
           {errors.newPassword && (
             <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-red-800 dark:text-red-200">
-                {errors.newPassword}
-              </p>
+              <p className="text-sm text-red-800 dark:text-red-200">{errors.newPassword}</p>
             </div>
           )}
 
@@ -212,17 +206,11 @@ const ResetPasswordPage: React.FC = () => {
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                   disabled={isLoading}
                 >
-                  {showPassword ? (
-                    <EyeOff className="w-5 h-5" />
-                  ) : (
-                    <Eye className="w-5 h-5" />
-                  )}
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
               {errors.newPassword && (
-                <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-                  {errors.newPassword}
-                </p>
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.newPassword}</p>
               )}
             </div>
 
@@ -245,9 +233,10 @@ const ResetPasswordPage: React.FC = () => {
                   className={`w-full pl-10 pr-12 py-3 border ${
                     errors.confirmPassword
                       ? 'border-red-500 focus:ring-red-500'
-                      : formData.confirmPassword && formData.confirmPassword === formData.newPassword
-                      ? 'border-green-500 focus:ring-green-500'
-                      : 'border-gray-300 dark:border-gray-600 focus:ring-blue-500'
+                      : formData.confirmPassword &&
+                          formData.confirmPassword === formData.newPassword
+                        ? 'border-green-500 focus:ring-green-500'
+                        : 'border-gray-300 dark:border-gray-600 focus:ring-blue-500'
                   } rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all`}
                   disabled={isLoading}
                 />
@@ -263,9 +252,11 @@ const ResetPasswordPage: React.FC = () => {
                     <Eye className="w-5 h-5" />
                   )}
                 </button>
-                {formData.confirmPassword && formData.confirmPassword === formData.newPassword && !errors.confirmPassword && (
-                  <CheckCircle className="absolute right-12 top-1/2 -translate-y-1/2 w-5 h-5 text-green-500" />
-                )}
+                {formData.confirmPassword &&
+                  formData.confirmPassword === formData.newPassword &&
+                  !errors.confirmPassword && (
+                    <CheckCircle className="absolute right-12 top-1/2 -translate-y-1/2 w-5 h-5 text-green-500" />
+                  )}
               </div>
               {errors.confirmPassword && (
                 <p className="mt-1 text-sm text-red-600 dark:text-red-400">

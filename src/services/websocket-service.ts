@@ -11,7 +11,7 @@
  * @tags service,websocket,connection,retry,critical
  */
 
-import { v4 as uuidv4 } from 'uuid'
+import { v4 as uuidv4 } from 'uuid';
 
 import type {
   WebSocketConnectionState,
@@ -22,41 +22,41 @@ import type {
   WebSocketStatistics,
   RetryStrategy,
   MessageQueueItem,
-} from '../types/websocket'
+} from '../types/websocket';
 import {
   WebSocketMessageType,
   WebSocketEventType as WSEventType,
   WebSocketConnectionState as WSState,
-} from '../types/websocket'
+} from '../types/websocket';
 
 /**
  * WebSocket连接管理服务类
  * 提供连接管理、重试机制、心跳检测等功能
  */
 export class WebSocketService {
-  private static instance: WebSocketService
+  private static instance: WebSocketService;
 
-  private ws: WebSocket | null = null
-  private config: Required<WebSocketConfig>
-  private state: WebSocketConnectionState = WSState.DISCONNECTED
+  private ws: WebSocket | null = null;
+  private config: Required<WebSocketConfig>;
+  private state: WebSocketConnectionState = WSState.DISCONNECTED;
 
   // 重试相关
-  private retryTimer: ReturnType<typeof setTimeout> | null = null
-  private retryCount = 0
-  private currentRetryInterval: number
-  private isManualDisconnect = false
+  private retryTimer: ReturnType<typeof setTimeout> | null = null;
+  private retryCount = 0;
+  private currentRetryInterval: number;
+  private isManualDisconnect = false;
 
   // 心跳相关
-  private heartbeatTimer: ReturnType<typeof setInterval> | null = null
-  private heartbeatTimeoutTimer: ReturnType<typeof setTimeout> | null = null
+  private heartbeatTimer: ReturnType<typeof setInterval> | null = null;
+  private heartbeatTimeoutTimer: ReturnType<typeof setTimeout> | null = null;
 
   // 消息队列
-  private messageQueue: MessageQueueItem[] = []
-  private isProcessingQueue = false
+  private messageQueue: MessageQueueItem[] = [];
+  private isProcessingQueue = false;
 
   // 事件监听器
   private eventListeners: Map<WebSocketEventType, Set<(data: WebSocketEventData) => void>> =
-    new Map()
+    new Map();
 
   // 统计信息
   private statistics: WebSocketStatistics = {
@@ -71,7 +71,7 @@ export class WebSocketService {
     averageMessageSize: 0,
     errorCount: 0,
     lastErrorTime: 0,
-  }
+  };
 
   // 默认配置
   private defaultConfig: Required<WebSocketConfig> = {
@@ -88,14 +88,14 @@ export class WebSocketService {
     enableMessageQueue: true,
     maxMessageQueueSize: 100,
     enableCompression: false,
-  }
+  };
 
   private constructor(config?: Partial<WebSocketConfig>) {
-    this.config = { ...this.defaultConfig, ...config } as Required<WebSocketConfig>
-    this.currentRetryInterval = this.config.initialRetryInterval
+    this.config = { ...this.defaultConfig, ...config } as Required<WebSocketConfig>;
+    this.currentRetryInterval = this.config.initialRetryInterval;
 
     if (this.config.autoConnect) {
-      this.connect()
+      this.connect();
     }
   }
 
@@ -104,37 +104,37 @@ export class WebSocketService {
    */
   static getInstance(config?: Partial<WebSocketConfig>): WebSocketService {
     if (!WebSocketService.instance) {
-      WebSocketService.instance = new WebSocketService(config)
+      WebSocketService.instance = new WebSocketService(config);
     }
-    return WebSocketService.instance
+    return WebSocketService.instance;
   }
 
   /**
    * 更新配置
    */
   updateConfig(config: Partial<WebSocketConfig>): void {
-    this.config = { ...this.config, ...config } as Required<WebSocketConfig>
+    this.config = { ...this.config, ...config } as Required<WebSocketConfig>;
   }
 
   /**
    * 获取配置
    */
   getConfig(): Required<WebSocketConfig> {
-    return { ...this.config }
+    return { ...this.config };
   }
 
   /**
    * 获取连接状态
    */
   getState(): WebSocketConnectionState {
-    return this.state
+    return this.state;
   }
 
   /**
    * 获取统计信息
    */
   getStatistics(): WebSocketStatistics {
-    return { ...this.statistics }
+    return { ...this.statistics };
   }
 
   /**
@@ -142,47 +142,47 @@ export class WebSocketService {
    */
   connect(): void {
     if (this.state === WSState.CONNECTING || this.state === WSState.CONNECTED) {
-      console.warn('[WebSocketService] Already connected or connecting')
-      return
+      console.warn('[WebSocketService] Already connected or connecting');
+      return;
     }
 
-    this.setState(WSState.CONNECTING)
-    this.emitEvent(WSEventType.OPEN, { state: WSState.CONNECTING })
+    this.setState(WSState.CONNECTING);
+    this.emitEvent(WSEventType.OPEN, { state: WSState.CONNECTING });
 
     try {
-      this.ws = new WebSocket(this.config.url)
+      this.ws = new WebSocket(this.config.url);
 
       // 设置连接超时
       const connectionTimeoutTimer = setTimeout(() => {
         if (this.state === WSState.CONNECTING) {
-          console.error('[WebSocketService] Connection timeout')
-          this.handleError(new Error('Connection timeout'))
+          console.error('[WebSocketService] Connection timeout');
+          this.handleError(new Error('Connection timeout'));
         }
-      }, this.config.connectionTimeout)
+      }, this.config.connectionTimeout);
 
       this.ws.onopen = () => {
-        clearTimeout(connectionTimeoutTimer)
-        this.handleOpen()
-      }
+        clearTimeout(connectionTimeoutTimer);
+        this.handleOpen();
+      };
 
       this.ws.onclose = (event) => {
-        clearTimeout(connectionTimeoutTimer)
-        this.handleClose(event)
-      }
+        clearTimeout(connectionTimeoutTimer);
+        this.handleClose(event);
+      };
 
       this.ws.onerror = (error) => {
-        clearTimeout(connectionTimeoutTimer)
-        this.handleError(error as Error | Event)
-      }
+        clearTimeout(connectionTimeoutTimer);
+        this.handleError(error as Error | Event);
+      };
 
       this.ws.onmessage = (event) => {
-        this.handleMessage(event)
-      }
+        this.handleMessage(event);
+      };
 
-      console.log('[WebSocketService] Connecting to', this.config.url)
+      console.log('[WebSocketService] Connecting to', this.config.url);
     } catch (error) {
-      console.error('[WebSocketService] Connection failed:', error)
-      this.handleError(error as Error | Event)
+      console.error('[WebSocketService] Connection failed:', error);
+      this.handleError(error as Error | Event);
     }
   }
 
@@ -190,16 +190,16 @@ export class WebSocketService {
    * 断开连接
    */
   disconnect(): void {
-    this.isManualDisconnect = true
+    this.isManualDisconnect = true;
     if (this.ws) {
-      this.setState(WSState.CLOSED)
-      this.ws.close()
-      this.ws = null
+      this.setState(WSState.CLOSED);
+      this.ws.close();
+      this.ws = null;
     }
 
     // 清理定时器
-    this.cleanupTimers()
-    console.log('[WebSocketService] Disconnected')
+    this.cleanupTimers();
+    console.log('[WebSocketService] Disconnected');
   }
 
   /**
@@ -211,36 +211,36 @@ export class WebSocketService {
       id: message.id || uuidv4(),
       timestamp: Date.now(),
       ...message,
-    }
+    };
 
     // 如果已连接，直接发送
     if (this.state === WSState.CONNECTED && this.ws) {
       try {
-        const messageStr = JSON.stringify(fullMessage)
-        this.ws.send(messageStr)
+        const messageStr = JSON.stringify(fullMessage);
+        this.ws.send(messageStr);
 
         // 更新统计
-        this.statistics.messagesSent++
-        this.statistics.bytesSent += messageStr.length
-        this.updateAverageMessageSize()
+        this.statistics.messagesSent++;
+        this.statistics.bytesSent += messageStr.length;
+        this.updateAverageMessageSize();
 
-        this.emitEvent(WSEventType.SEND, { data: { message: fullMessage } })
-        return true
+        this.emitEvent(WSEventType.SEND, { data: { message: fullMessage } });
+        return true;
       } catch (error) {
-        console.error('[WebSocketService] Send failed:', error)
-        this.handleError(error as Error | Event)
-        return false
+        console.error('[WebSocketService] Send failed:', error);
+        this.handleError(error as Error | Event);
+        return false;
       }
     }
 
     // 如果未连接且启用消息队列，加入队列
     if (queueIfOffline && this.config.enableMessageQueue) {
-      this.addToQueue(fullMessage)
-      return true
+      this.addToQueue(fullMessage);
+      return true;
     }
 
-    console.warn('[WebSocketService] Cannot send message, not connected')
-    return false
+    console.warn('[WebSocketService] Cannot send message, not connected');
+    return false;
   }
 
   /**
@@ -248,18 +248,18 @@ export class WebSocketService {
    */
   on(event: WebSocketEventType, callback: (data: WebSocketEventData) => void): void {
     if (!this.eventListeners.has(event)) {
-      this.eventListeners.set(event, new Set())
+      this.eventListeners.set(event, new Set());
     }
-    this.eventListeners.get(event)!.add(callback)
+    this.eventListeners.get(event)!.add(callback);
   }
 
   /**
    * 移除事件监听器
    */
   off(event: WebSocketEventType, callback: (data: WebSocketEventData) => void): void {
-    const listeners = this.eventListeners.get(event)
+    const listeners = this.eventListeners.get(event);
     if (listeners) {
-      listeners.delete(callback)
+      listeners.delete(callback);
     }
   }
 
@@ -267,66 +267,66 @@ export class WebSocketService {
    * 处理连接打开
    */
   private handleOpen(): void {
-    console.log('[WebSocketService] Connected')
+    console.log('[WebSocketService] Connected');
 
-    this.setState(WSState.CONNECTED)
-    this.statistics.connectionTime = Date.now()
-    this.statistics.lastConnectedTime = Date.now()
-    this.retryCount = 0
-    this.currentRetryInterval = this.config.initialRetryInterval
-    this.isManualDisconnect = false
+    this.setState(WSState.CONNECTED);
+    this.statistics.connectionTime = Date.now();
+    this.statistics.lastConnectedTime = Date.now();
+    this.retryCount = 0;
+    this.currentRetryInterval = this.config.initialRetryInterval;
+    this.isManualDisconnect = false;
 
     // 启动心跳
-    this.startHeartbeat()
+    this.startHeartbeat();
 
     // 处理消息队列
     if (this.config.enableMessageQueue) {
-      this.processMessageQueue()
+      this.processMessageQueue();
     }
 
-    this.emitEvent(WSEventType.OPEN, { state: WSState.CONNECTED })
+    this.emitEvent(WSEventType.OPEN, { state: WSState.CONNECTED });
   }
 
   /**
    * 处理连接关闭
    */
   private handleClose(event: CloseEvent): void {
-    console.log('[WebSocketService] Connection closed:', event.code, event.reason)
+    console.log('[WebSocketService] Connection closed:', event.code, event.reason);
 
     // 如果是主动断开，不进行重连，状态已由disconnect()设置
     if (this.isManualDisconnect) {
-      this.isManualDisconnect = false
-      this.statistics.disconnectCount++
-      this.stopHeartbeat()
-      this.emitEvent(WSEventType.CLOSE, { data: { code: event.code, reason: event.reason } })
-      return
+      this.isManualDisconnect = false;
+      this.statistics.disconnectCount++;
+      this.stopHeartbeat();
+      this.emitEvent(WSEventType.CLOSE, { data: { code: event.code, reason: event.reason } });
+      return;
     }
 
-    this.setState(WSState.DISCONNECTED)
-    this.statistics.disconnectCount++
+    this.setState(WSState.DISCONNECTED);
+    this.statistics.disconnectCount++;
 
     // 清理定时器
-    this.stopHeartbeat()
+    this.stopHeartbeat();
 
     // 如果配置了自动重连，开始重连
     if (this.config.autoReconnect && this.retryCount < this.config.maxRetries) {
-      this.scheduleReconnect()
+      this.scheduleReconnect();
     }
 
-    this.emitEvent(WSEventType.CLOSE, { data: { code: event.code, reason: event.reason } })
+    this.emitEvent(WSEventType.CLOSE, { data: { code: event.code, reason: event.reason } });
   }
 
   /**
    * 处理错误
    */
   private handleError(error: Event | Error): void {
-    console.error('[WebSocketService] Error:', error)
+    console.error('[WebSocketService] Error:', error);
 
-    this.statistics.errorCount++
-    this.statistics.lastErrorTime = Date.now()
+    this.statistics.errorCount++;
+    this.statistics.lastErrorTime = Date.now();
 
-    this.setState(WSState.ERROR)
-    this.emitEvent(WSEventType.ERROR, { data: { error } })
+    this.setState(WSState.ERROR);
+    this.emitEvent(WSEventType.ERROR, { data: { error } });
   }
 
   /**
@@ -334,23 +334,23 @@ export class WebSocketService {
    */
   private handleMessage(event: MessageEvent): void {
     try {
-      const message: WebSocketMessage = JSON.parse(event.data)
+      const message: WebSocketMessage = JSON.parse(event.data);
 
       // 更新统计
-      this.statistics.messagesReceived++
-      this.statistics.bytesReceived += event.data.length
-      this.updateAverageMessageSize()
+      this.statistics.messagesReceived++;
+      this.statistics.bytesReceived += event.data.length;
+      this.updateAverageMessageSize();
 
       // 处理心跳消息
       if (message.type === WebSocketMessageType.HEARTBEAT) {
-        this.handleHeartbeatResponse(message)
-        return
+        this.handleHeartbeatResponse(message);
+        return;
       }
 
       // 触发消息事件
-      this.emitEvent(WSEventType.MESSAGE, { data: { message } })
+      this.emitEvent(WSEventType.MESSAGE, { data: { message } });
     } catch (error) {
-      console.error('[WebSocketService] Failed to parse message:', error)
+      console.error('[WebSocketService] Failed to parse message:', error);
     }
   }
 
@@ -359,16 +359,16 @@ export class WebSocketService {
    */
   private startHeartbeat(): void {
     if (this.heartbeatTimer) {
-      clearInterval(this.heartbeatTimer)
+      clearInterval(this.heartbeatTimer);
     }
 
     this.heartbeatTimer = setInterval(() => {
-      this.sendHeartbeat()
-    }, this.config.heartbeatInterval)
+      this.sendHeartbeat();
+    }, this.config.heartbeatInterval);
 
     console.log(
       `[WebSocketService] Heartbeat started (interval: ${this.config.heartbeatInterval}ms)`
-    )
+    );
   }
 
   /**
@@ -376,12 +376,12 @@ export class WebSocketService {
    */
   private stopHeartbeat(): void {
     if (this.heartbeatTimer) {
-      clearInterval(this.heartbeatTimer)
-      this.heartbeatTimer = null
+      clearInterval(this.heartbeatTimer);
+      this.heartbeatTimer = null;
     }
     if (this.heartbeatTimeoutTimer) {
-      clearTimeout(this.heartbeatTimeoutTimer)
-      this.heartbeatTimeoutTimer = null
+      clearTimeout(this.heartbeatTimeoutTimer);
+      this.heartbeatTimeoutTimer = null;
     }
   }
 
@@ -392,20 +392,20 @@ export class WebSocketService {
     const heartbeatMessage: WebSocketMessage = {
       type: WebSocketMessageType.HEARTBEAT,
       timestamp: Date.now(),
-    }
+    };
 
-    this.send(heartbeatMessage, false)
+    this.send(heartbeatMessage, false);
 
     // 设置心跳超时
     if (this.heartbeatTimeoutTimer) {
-      clearTimeout(this.heartbeatTimeoutTimer)
+      clearTimeout(this.heartbeatTimeoutTimer);
     }
     this.heartbeatTimeoutTimer = setTimeout(() => {
-      console.warn('[WebSocketService] Heartbeat timeout')
-      this.handleHeartbeatTimeout()
-    }, this.config.heartbeatTimeout)
+      console.warn('[WebSocketService] Heartbeat timeout');
+      this.handleHeartbeatTimeout();
+    }, this.config.heartbeatTimeout);
 
-    this.emitEvent(WSEventType.HEARTBEAT_SEND, {})
+    this.emitEvent(WSEventType.HEARTBEAT_SEND, {});
   }
 
   /**
@@ -413,23 +413,23 @@ export class WebSocketService {
    */
   private handleHeartbeatResponse(_message: WebSocketMessage): void {
     if (this.heartbeatTimeoutTimer) {
-      clearTimeout(this.heartbeatTimeoutTimer)
-      this.heartbeatTimeoutTimer = null
+      clearTimeout(this.heartbeatTimeoutTimer);
+      this.heartbeatTimeoutTimer = null;
     }
 
-    this.emitEvent(WSEventType.HEARTBEAT_RECEIVE, {})
+    this.emitEvent(WSEventType.HEARTBEAT_RECEIVE, {});
   }
 
   /**
    * 处理心跳超时
    */
   private handleHeartbeatTimeout(): void {
-    this.emitEvent(WSEventType.HEARTBEAT_TIMEOUT, {})
-    this.statistics.errorCount++
+    this.emitEvent(WSEventType.HEARTBEAT_TIMEOUT, {});
+    this.statistics.errorCount++;
 
     // 心跳超时，断开连接并重连
     if (this.ws) {
-      this.ws.close()
+      this.ws.close();
     }
   }
 
@@ -438,46 +438,46 @@ export class WebSocketService {
    */
   private scheduleReconnect(): void {
     if (this.retryTimer) {
-      clearTimeout(this.retryTimer)
+      clearTimeout(this.retryTimer);
     }
 
-    this.setState(WSState.RECONNECTING)
+    this.setState(WSState.RECONNECTING);
     this.emitEvent(WSEventType.RECONNECT_START, {
       data: { retryCount: this.retryCount, retryInterval: this.currentRetryInterval },
-    })
+    });
 
     console.log(
       `[WebSocketService] Reconnecting in ${this.currentRetryInterval}ms (attempt ${this.retryCount + 1}/${this.config.maxRetries})`
-    )
+    );
 
     this.retryTimer = setTimeout(() => {
-      this.reconnect()
-    }, this.currentRetryInterval)
+      this.reconnect();
+    }, this.currentRetryInterval);
   }
 
   /**
    * 重连
    */
   private reconnect(): void {
-    this.retryCount++
-    this.statistics.reconnectCount++
+    this.retryCount++;
+    this.statistics.reconnectCount++;
 
     if (this.retryCount >= this.config.maxRetries) {
-      console.error('[WebSocketService] Max retries reached')
+      console.error('[WebSocketService] Max retries reached');
       this.emitEvent(WSEventType.RECONNECT_FAILED, {
         data: { retryCount: this.retryCount },
-      })
-      this.setState(WSState.ERROR)
-      return
+      });
+      this.setState(WSState.ERROR);
+      return;
     }
 
     // 指数退避
     this.currentRetryInterval = Math.min(
       this.currentRetryInterval * this.config.retryBackoffFactor,
       this.config.maxRetryInterval
-    )
+    );
 
-    this.connect()
+    this.connect();
   }
 
   /**
@@ -489,7 +489,7 @@ export class WebSocketService {
       nextRetryTime: Date.now() + this.currentRetryInterval,
       retryInterval: this.currentRetryInterval,
       shouldRetry: this.retryCount < this.config.maxRetries,
-    }
+    };
   }
 
   /**
@@ -498,7 +498,7 @@ export class WebSocketService {
   private addToQueue(message: WebSocketMessage): void {
     // 如果队列已满，移除最旧的消息
     if (this.messageQueue.length >= this.config.maxMessageQueueSize) {
-      this.messageQueue.shift()
+      this.messageQueue.shift();
     }
 
     const queueItem: MessageQueueItem = {
@@ -507,10 +507,10 @@ export class WebSocketService {
       timestamp: Date.now(),
       retryCount: 0,
       priority: 1,
-    }
+    };
 
-    this.messageQueue.push(queueItem)
-    console.log(`[WebSocketService] Message queued (${this.messageQueue.length} in queue)`)
+    this.messageQueue.push(queueItem);
+    console.log(`[WebSocketService] Message queued (${this.messageQueue.length} in queue)`);
   }
 
   /**
@@ -518,30 +518,30 @@ export class WebSocketService {
    */
   private async processMessageQueue(): Promise<void> {
     if (this.isProcessingQueue || this.messageQueue.length === 0) {
-      return
+      return;
     }
 
-    this.isProcessingQueue = true
+    this.isProcessingQueue = true;
 
     while (this.messageQueue.length > 0 && this.state === WSState.CONNECTED) {
-      const queueItem = this.messageQueue.shift()!
-      const success = this.send(queueItem.message, false)
+      const queueItem = this.messageQueue.shift()!;
+      const success = this.send(queueItem.message, false);
 
       if (!success) {
         // 发送失败，重新加入队列
         if (queueItem.retryCount < 3) {
-          queueItem.retryCount++
-          this.messageQueue.unshift(queueItem)
+          queueItem.retryCount++;
+          this.messageQueue.unshift(queueItem);
         } else {
-          console.warn('[WebSocketService] Message dropped after 3 retries')
+          console.warn('[WebSocketService] Message dropped after 3 retries');
         }
       }
 
       // 短暂延迟，避免阻塞
-      await new Promise((resolve) => setTimeout(resolve, 10))
+      await new Promise((resolve) => setTimeout(resolve, 10));
     }
 
-    this.isProcessingQueue = false
+    this.isProcessingQueue = false;
   }
 
   /**
@@ -549,10 +549,10 @@ export class WebSocketService {
    */
   private cleanupTimers(): void {
     if (this.retryTimer) {
-      clearTimeout(this.retryTimer)
-      this.retryTimer = null
+      clearTimeout(this.retryTimer);
+      this.retryTimer = null;
     }
-    this.stopHeartbeat()
+    this.stopHeartbeat();
   }
 
   /**
@@ -560,12 +560,12 @@ export class WebSocketService {
    */
   private setState(newState: WebSocketConnectionState): void {
     if (this.state !== newState) {
-      const oldState = this.state
-      this.state = newState
+      const oldState = this.state;
+      this.state = newState;
       this.emitEvent(WSEventType.STATE_CHANGE, {
         state: newState,
         data: { oldState, newState },
-      })
+      });
     }
   }
 
@@ -578,17 +578,17 @@ export class WebSocketService {
       timestamp: Date.now(),
       state: this.state,
       data,
-    }
+    };
 
-    const listeners = this.eventListeners.get(type)
+    const listeners = this.eventListeners.get(type);
     if (listeners) {
       listeners.forEach((callback) => {
         try {
-          callback(eventData)
+          callback(eventData);
         } catch (error) {
-          console.error(`[WebSocketService] Event callback error:`, error)
+          console.error(`[WebSocketService] Event callback error:`, error);
         }
-      })
+      });
     }
   }
 
@@ -596,18 +596,18 @@ export class WebSocketService {
    * 更新平均消息大小
    */
   private updateAverageMessageSize(): void {
-    const totalMessages = this.statistics.messagesSent + this.statistics.messagesReceived
-    const totalBytes = this.statistics.bytesSent + this.statistics.bytesReceived
-    this.statistics.averageMessageSize = totalBytes / totalMessages
+    const totalMessages = this.statistics.messagesSent + this.statistics.messagesReceived;
+    const totalBytes = this.statistics.bytesSent + this.statistics.bytesReceived;
+    this.statistics.averageMessageSize = totalBytes / totalMessages;
   }
 
   /**
    * 销毁服务
    */
   destroy(): void {
-    this.disconnect()
-    this.eventListeners.clear()
-    this.messageQueue = []
-    console.log('[WebSocketService] Service destroyed')
+    this.disconnect();
+    this.eventListeners.clear();
+    this.messageQueue = [];
+    console.log('[WebSocketService] Service destroyed');
   }
 }

@@ -40,24 +40,23 @@
  * └───────────────────────────┴──────────────┴──────────────────────────────────┘
  */
 
-
 // ============================================================
 // Type-safe test scenario definitions (framework-agnostic)
 // ============================================================
 
 interface PanelTestScenario {
-  name: string
-  shortcut: { ctrl: boolean; alt: boolean; key: string }
-  panelTitleZh: string
-  panelTitleEn: string
-  storeOpenKey: string
-  storeSetterKey: string
-  commandPaletteLabel: string
-  headerQuickActionLabel: string
-  shortcutsDialogEntry: string
-  closeBehavior: 'click-x' | 'click-backdrop' | 'escape'
-  tabLabels: string[]
-  uniqueSelectors: string[]
+  name: string;
+  shortcut: { ctrl: boolean; alt: boolean; key: string };
+  panelTitleZh: string;
+  panelTitleEn: string;
+  storeOpenKey: string;
+  storeSetterKey: string;
+  commandPaletteLabel: string;
+  headerQuickActionLabel: string;
+  shortcutsDialogEntry: string;
+  closeBehavior: 'click-x' | 'click-backdrop' | 'escape';
+  tabLabels: string[];
+  uniqueSelectors: string[];
 }
 
 export const PANEL_TEST_SCENARIOS: PanelTestScenario[] = [
@@ -90,10 +89,7 @@ export const PANEL_TEST_SCENARIOS: PanelTestScenario[] = [
     shortcutsDialogEntry: 'Ctrl+Alt+S',
     closeBehavior: 'click-x',
     tabLabels: ['sbEditor', 'sbConsole', 'sbResources', 'sbDeps'],
-    uniqueSelectors: [
-      '[data-testid="sandbox-editor"]',
-      '[data-testid="sandbox-preview-iframe"]',
-    ],
+    uniqueSelectors: ['[data-testid="sandbox-editor"]', '[data-testid="sandbox-preview-iframe"]'],
   },
   {
     name: 'VisualQueryBuilder',
@@ -107,12 +103,9 @@ export const PANEL_TEST_SCENARIOS: PanelTestScenario[] = [
     shortcutsDialogEntry: 'Ctrl+Alt+Q',
     closeBehavior: 'click-x',
     tabLabels: ['vqBuilder', 'vqSqlPreview', 'vqQueryPlan', 'vqResults'],
-    uniqueSelectors: [
-      '[data-testid="query-builder-tables"]',
-      '[data-testid="query-builder-sql"]',
-    ],
+    uniqueSelectors: ['[data-testid="query-builder-tables"]', '[data-testid="query-builder-sql"]'],
   },
-]
+];
 
 // ============================================================
 // Playwright E2E Test Specifications
@@ -138,7 +131,7 @@ export const E2E_TEST_SPECS = {
    * 7. Assert panel overlay is removed
    * 8. Assert IDE layout is still functional (three-column visible)
    */
-  keyboardShortcutOpenClose: PANEL_TEST_SCENARIOS.map(scenario => ({
+  keyboardShortcutOpenClose: PANEL_TEST_SCENARIOS.map((scenario) => ({
     testName: `${scenario.name}: Ctrl+Alt+${scenario.shortcut.key.toUpperCase()} opens panel, X closes it`,
     steps: [
       `navigate to /ide`,
@@ -155,7 +148,7 @@ export const E2E_TEST_SPECS = {
   /**
    * TEST SUITE 2: Backdrop Click -> Panel Close
    */
-  backdropClickClose: PANEL_TEST_SCENARIOS.map(scenario => ({
+  backdropClickClose: PANEL_TEST_SCENARIOS.map((scenario) => ({
     testName: `${scenario.name}: clicking backdrop closes panel`,
     steps: [
       `open panel via Ctrl+Alt+${scenario.shortcut.key}`,
@@ -168,7 +161,7 @@ export const E2E_TEST_SPECS = {
   /**
    * TEST SUITE 3: CommandPalette Entry -> Panel Open
    */
-  commandPaletteOpen: PANEL_TEST_SCENARIOS.map(scenario => ({
+  commandPaletteOpen: PANEL_TEST_SCENARIOS.map((scenario) => ({
     testName: `${scenario.name}: CommandPalette entry opens panel`,
     steps: [
       `navigate to /ide`,
@@ -183,7 +176,7 @@ export const E2E_TEST_SPECS = {
   /**
    * TEST SUITE 4: Header QuickActions -> Panel Open
    */
-  headerQuickActionsOpen: PANEL_TEST_SCENARIOS.map(scenario => ({
+  headerQuickActionsOpen: PANEL_TEST_SCENARIOS.map((scenario) => ({
     testName: `${scenario.name}: Header QuickAction opens panel`,
     steps: [
       `navigate to /ide`,
@@ -305,7 +298,7 @@ export const E2E_TEST_SPECS = {
       `  close panel`,
     ],
   },
-}
+};
 
 /**
  * Export test summary for documentation
@@ -318,7 +311,7 @@ export const TEST_SUMMARY = {
     1 + // connection mode
     2 + // sandbox sync
     1 + // query builder flow
-    1,  // i18n
+    1, // i18n
   panels: ['RealtimeCollabEnhanced', 'CodeSandbox', 'VisualQueryBuilder'],
   shortcuts: ['Ctrl+Alt+R', 'Ctrl+Alt+S', 'Ctrl+Alt+Q'],
   integrationPoints: [
@@ -331,4 +324,4 @@ export const TEST_SUMMARY = {
     'Sandbox ↔ Preview code sync',
     'Real WebSocket connection mode',
   ],
-}
+};

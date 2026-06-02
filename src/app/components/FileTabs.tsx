@@ -14,61 +14,68 @@
  * @tags component,tabs,drag-drop,file-management
  */
 
-import {
-  X, Pin, FileCode, FileJson, FileType, FileCog, Hash
-} from 'lucide-react'
-import React, { useState, useRef, useCallback } from 'react'
-import { useDrag, useDrop } from 'react-dnd'
+import { X, Pin, FileCode, FileJson, FileType, FileCog, Hash } from 'lucide-react';
+import React, { useState, useRef, useCallback } from 'react';
+import { useDrag, useDrop } from 'react-dnd';
 
-import { useAppStore } from '../store'
-import { getI18n } from '../utils/i18n'
-import { getThemeTokens } from '../utils/theme'
+import { useAppStore } from '../store';
+import { getI18n } from '../utils/i18n';
+import { getThemeTokens } from '../utils/theme';
 
 /* ── File icon helper ── */
 function getFileIcon(name: string): React.ElementType {
-  if (name.endsWith('.tsx') || name.endsWith('.ts')) return FileCode
-  if (name.endsWith('.json')) return FileJson
-  if (name.endsWith('.css')) return FileType
-  if (name.endsWith('.md')) return FileType
-  if (name.endsWith('.config.ts') || name.endsWith('.config.js')) return FileCog
-  return Hash
+  if (name.endsWith('.tsx') || name.endsWith('.ts')) return FileCode;
+  if (name.endsWith('.json')) return FileJson;
+  if (name.endsWith('.css')) return FileType;
+  if (name.endsWith('.md')) return FileType;
+  if (name.endsWith('.config.ts') || name.endsWith('.config.js')) return FileCog;
+  return Hash;
 }
 
 function getFileColor(name: string, isDark: boolean): string {
-  if (name.endsWith('.tsx')) return isDark ? 'text-blue-400' : 'text-blue-600'
-  if (name.endsWith('.ts')) return isDark ? 'text-sky-400' : 'text-sky-600'
-  if (name.endsWith('.json')) return isDark ? 'text-amber-400' : 'text-amber-600'
-  if (name.endsWith('.css')) return isDark ? 'text-pink-400' : 'text-pink-600'
-  if (name.endsWith('.md')) return isDark ? 'text-slate-400' : 'text-slate-500'
-  return isDark ? 'text-slate-400' : 'text-slate-500'
+  if (name.endsWith('.tsx')) return isDark ? 'text-blue-400' : 'text-blue-600';
+  if (name.endsWith('.ts')) return isDark ? 'text-sky-400' : 'text-sky-600';
+  if (name.endsWith('.json')) return isDark ? 'text-amber-400' : 'text-amber-600';
+  if (name.endsWith('.css')) return isDark ? 'text-pink-400' : 'text-pink-600';
+  if (name.endsWith('.md')) return isDark ? 'text-slate-400' : 'text-slate-500';
+  return isDark ? 'text-slate-400' : 'text-slate-500';
 }
 
 /* ── DnD item type ── */
-const TAB_DND_TYPE = 'FILE_TAB'
+const TAB_DND_TYPE = 'FILE_TAB';
 
 interface DragItem {
-  index: number
-  file: string
+  index: number;
+  file: string;
 }
 
 /* ── Single Tab ── */
 function Tab({
-  file, index, isActive, isPinned, isModified, onSelect, onClose, onContextMenu,
-  onReorder, t, isDark,
+  file,
+  index,
+  isActive,
+  isPinned,
+  isModified,
+  onSelect,
+  onClose,
+  onContextMenu,
+  onReorder,
+  t,
+  isDark,
 }: {
-  file: string
-  index: number
-  isActive: boolean
-  isPinned: boolean
-  isModified: boolean
-  onSelect: () => void
-  onClose: (e: React.MouseEvent) => void
-  onContextMenu: (e: React.MouseEvent) => void
-  onReorder: (from: number, to: number) => void
-  t: ReturnType<typeof getThemeTokens>
-  isDark: boolean
+  file: string;
+  index: number;
+  isActive: boolean;
+  isPinned: boolean;
+  isModified: boolean;
+  onSelect: () => void;
+  onClose: (e: React.MouseEvent) => void;
+  onContextMenu: (e: React.MouseEvent) => void;
+  onReorder: (from: number, to: number) => void;
+  t: ReturnType<typeof getThemeTokens>;
+  isDark: boolean;
 }) {
-  const ref = useRef<HTMLDivElement>(null)
+  const ref = useRef<HTMLDivElement>(null);
 
   const [{ isDragging }, drag] = useDrag({
     type: TAB_DND_TYPE,
@@ -76,24 +83,24 @@ function Tab({
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
-  })
+  });
 
   const [{ isOver }, drop] = useDrop<DragItem, void, { isOver: boolean }>({
     accept: TAB_DND_TYPE,
     hover: (item) => {
       if (item.index !== index) {
-        onReorder(item.index, index)
-        item.index = index
+        onReorder(item.index, index);
+        item.index = index;
       }
     },
     collect: (monitor) => ({
       isOver: monitor.isOver(),
     }),
-  })
+  });
 
-  drag(drop(ref))
+  drag(drop(ref));
 
-  const Icon = getFileIcon(file)
+  const Icon = getFileIcon(file);
 
   return (
     <div
@@ -111,25 +118,34 @@ function Tab({
     >
       {/* Active indicator bar */}
       {isActive && (
-        <div className={`absolute bottom-0 left-0 right-0 h-[2px] ${t.isDark ? 'bg-indigo-400' : 'bg-indigo-500'}`} />
+        <div
+          className={`absolute bottom-0 left-0 right-0 h-[2px] ${t.isDark ? 'bg-indigo-400' : 'bg-indigo-500'}`}
+        />
       )}
 
       {/* Pin indicator */}
       {isPinned && (
-        <Pin className={`w-2.5 h-2.5 flex-shrink-0 ${t.isDark ? 'text-amber-400/60' : 'text-amber-500/60'}`} />
+        <Pin
+          className={`w-2.5 h-2.5 flex-shrink-0 ${t.isDark ? 'text-amber-400/60' : 'text-amber-500/60'}`}
+        />
       )}
 
       {/* File icon */}
       <Icon className={`w-3 h-3 flex-shrink-0 ${getFileColor(file, isDark)}`} />
 
       {/* File name */}
-      <span className="text-[10px] truncate max-w-[100px]" style={{ fontWeight: isActive ? 500 : 400 }}>
+      <span
+        className="text-[10px] truncate max-w-[100px]"
+        style={{ fontWeight: isActive ? 500 : 400 }}
+      >
         {file}
       </span>
 
       {/* Modified indicator */}
       {isModified && !isActive && (
-        <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${t.isDark ? 'bg-amber-400' : 'bg-amber-500'}`} />
+        <div
+          className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${t.isDark ? 'bg-amber-400' : 'bg-amber-500'}`}
+        />
       )}
 
       {/* Close button */}
@@ -140,13 +156,15 @@ function Tab({
         } ${t.interactive.iconBtn}`}
       >
         {isModified && isActive ? (
-          <div className={`w-2.5 h-2.5 rounded-full ${t.isDark ? 'bg-amber-400' : 'bg-amber-500'}`} />
+          <div
+            className={`w-2.5 h-2.5 rounded-full ${t.isDark ? 'bg-amber-400' : 'bg-amber-500'}`}
+          />
         ) : (
           <X className="w-2.5 h-2.5" />
         )}
       </button>
     </div>
-  )
+  );
 }
 
 /* ══════════════════════════════════════════════════ */
@@ -155,64 +173,119 @@ function Tab({
 
 export function FileTabs() {
   const {
-    theme, language, selectedFile, setSelectedFile,
-    openTabs, pinnedTabs, addOpenTab, removeOpenTab,
-    reorderTabs, closeOtherTabs, closeRightTabs, closeAllTabs, togglePinTab,
+    theme,
+    language,
+    selectedFile,
+    setSelectedFile,
+    openTabs,
+    pinnedTabs,
+    addOpenTab,
+    removeOpenTab,
+    reorderTabs,
+    closeOtherTabs,
+    closeRightTabs,
+    closeAllTabs,
+    togglePinTab,
     modifiedFiles,
-  } = useAppStore()
-  const t = getThemeTokens(theme)
-  const i = getI18n(language)
+  } = useAppStore();
+  const t = getThemeTokens(theme);
+  const i = getI18n(language);
 
-  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; file: string } | null>(null)
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; file: string } | null>(
+    null
+  );
 
   // Ensure selected file is in open tabs
   React.useEffect(() => {
     if (selectedFile && !openTabs.includes(selectedFile)) {
-      addOpenTab(selectedFile)
+      addOpenTab(selectedFile);
     }
-  }, [selectedFile, openTabs, addOpenTab])
+  }, [selectedFile, openTabs, addOpenTab]);
 
-  const handleSelect = useCallback((file: string) => {
-    setSelectedFile(file)
-  }, [setSelectedFile])
+  const handleSelect = useCallback(
+    (file: string) => {
+      setSelectedFile(file);
+    },
+    [setSelectedFile]
+  );
 
-  const handleClose = useCallback((e: React.MouseEvent, file: string) => {
-    e.stopPropagation()
-    const isPinned = pinnedTabs.includes(file)
-    if (isPinned) return // Can't close pinned tabs via X
+  const handleClose = useCallback(
+    (e: React.MouseEvent, file: string) => {
+      e.stopPropagation();
+      const isPinned = pinnedTabs.includes(file);
+      if (isPinned) return; // Can't close pinned tabs via X
 
-    removeOpenTab(file)
-    // If closing active tab, switch to adjacent
-    if (file === selectedFile) {
-      const idx = openTabs.indexOf(file)
-      const next = openTabs[idx - 1] || openTabs[idx + 1] || null
-      setSelectedFile(next)
-    }
-  }, [openTabs, pinnedTabs, selectedFile, removeOpenTab, setSelectedFile])
+      removeOpenTab(file);
+      // If closing active tab, switch to adjacent
+      if (file === selectedFile) {
+        const idx = openTabs.indexOf(file);
+        const next = openTabs[idx - 1] || openTabs[idx + 1] || null;
+        setSelectedFile(next);
+      }
+    },
+    [openTabs, pinnedTabs, selectedFile, removeOpenTab, setSelectedFile]
+  );
 
   const handleContextMenu = useCallback((e: React.MouseEvent, file: string) => {
-    e.preventDefault()
-    setContextMenu({ x: e.clientX, y: e.clientY, file })
-  }, [])
+    e.preventDefault();
+    setContextMenu({ x: e.clientX, y: e.clientY, file });
+  }, []);
 
-  const handleReorder = useCallback((from: number, to: number) => {
-    reorderTabs(from, to)
-  }, [reorderTabs])
+  const handleReorder = useCallback(
+    (from: number, to: number) => {
+      reorderTabs(from, to);
+    },
+    [reorderTabs]
+  );
 
-  const ctxActions = contextMenu ? [
-    { label: i.ftClose, action: () => { handleClose(new MouseEvent('click') as any, contextMenu.file); setContextMenu(null) } },
-    { label: i.ftCloseOthers, action: () => { closeOtherTabs(contextMenu.file); setContextMenu(null) } },
-    { label: i.ftCloseRight, action: () => { closeRightTabs(contextMenu.file); setContextMenu(null) } },
-    { label: i.ftCloseAll, action: () => { closeAllTabs(); setContextMenu(null) } },
-    null, // separator
-    { label: pinnedTabs.includes(contextMenu.file) ? i.ftUnpin : i.ftPin, action: () => { togglePinTab(contextMenu.file); setContextMenu(null) } },
-  ] : []
+  const ctxActions = contextMenu
+    ? [
+        {
+          label: i.ftClose,
+          action: () => {
+            handleClose(new MouseEvent('click') as any, contextMenu.file);
+            setContextMenu(null);
+          },
+        },
+        {
+          label: i.ftCloseOthers,
+          action: () => {
+            closeOtherTabs(contextMenu.file);
+            setContextMenu(null);
+          },
+        },
+        {
+          label: i.ftCloseRight,
+          action: () => {
+            closeRightTabs(contextMenu.file);
+            setContextMenu(null);
+          },
+        },
+        {
+          label: i.ftCloseAll,
+          action: () => {
+            closeAllTabs();
+            setContextMenu(null);
+          },
+        },
+        null, // separator
+        {
+          label: pinnedTabs.includes(contextMenu.file) ? i.ftUnpin : i.ftPin,
+          action: () => {
+            togglePinTab(contextMenu.file);
+            setContextMenu(null);
+          },
+        },
+      ]
+    : [];
 
-  if (openTabs.length === 0) return null
+  if (openTabs.length === 0) return null;
 
   return (
     <>
-      <div className={`flex items-center h-[30px] overflow-x-auto ${t.scrollbar} ${t.isDark ? 'bg-slate-900/30' : 'bg-slate-50/40'} border-b ${t.border.subtle}`}>
+      <div
+        className={`flex items-center h-[30px] overflow-x-auto ${t.scrollbar} ${t.isDark ? 'bg-slate-900/30' : 'bg-slate-50/40'} border-b ${t.border.subtle}`}
+      >
         {/* Tab list */}
         {openTabs.map((file, idx) => (
           <Tab
@@ -258,5 +331,5 @@ export function FileTabs() {
         </>
       )}
     </>
-  )
+  );
 }

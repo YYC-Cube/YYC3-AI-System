@@ -11,30 +11,30 @@
  * @tags entry-point, react, app-bootstrap
  */
 
-import React from 'react'
-import ReactDOM from 'react-dom/client'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
 
-import App from './app/App'
-import { ServiceWorkerRegister } from './app/components/ServiceWorkerRegister'
-import './styles/index.css'
+import App from './app/App';
+import { ServiceWorkerRegister } from './app/components/ServiceWorkerRegister';
+import './styles/index.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ServiceWorkerRegister
       showUpdatePrompt={true}
       onRegistered={(registration) => {
-        console.log('[Main] Service Worker registered:', registration)
+        console.log('[Main] Service Worker registered:', registration);
       }}
       onUpdateAvailable={(registration) => {
-        console.log('[Main] Update available:', registration)
+        console.log('[Main] Update available:', registration);
       }}
       onUpdateReady={(registration) => {
-        console.log('[Main] Update ready:', registration)
+        console.log('[Main] Update ready:', registration);
       }}
       onError={(error) => {
-        console.error('[Main] Service Worker error:', error)
+        console.error('[Main] Service Worker error:', error);
       }}
     />
     <App />
-  </React.StrictMode>,
-)
+  </React.StrictMode>
+);

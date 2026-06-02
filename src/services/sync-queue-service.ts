@@ -11,30 +11,25 @@
  * @tags service,sync,queue,offline,critical
  */
 
-import { v4 as uuidv4 } from 'uuid'
+import { v4 as uuidv4 } from 'uuid';
 
-import type {
-  SyncOperation,
-} from '../types/sync'
-import {
-  SyncOperationStatus,
-} from '../types/sync'
+import type { SyncOperation } from '../types/sync';
+import { SyncOperationStatus } from '../types/sync';
 
-import { StorageService } from './storage-service'
-
+import { StorageService } from './storage-service';
 
 /**
  * 同步队列服务类
  * 管理离线操作队列，支持优先级排序和依赖管理
  */
 export class SyncQueueService {
-  private static instance: SyncQueueService
-  private storageService: StorageService
-  private queue: Map<string, SyncOperation> = new Map()
-  private isInitialized = false
+  private static instance: SyncQueueService;
+  private storageService: StorageService;
+  private queue: Map<string, SyncOperation> = new Map();
+  private isInitialized = false;
 
   private constructor() {
-    this.storageService = StorageService.getInstance()
+    this.storageService = StorageService.getInstance();
   }
 
   /**
@@ -42,9 +37,9 @@ export class SyncQueueService {
    */
   static getInstance(): SyncQueueService {
     if (!SyncQueueService.instance) {
-      SyncQueueService.instance = new SyncQueueService()
+      SyncQueueService.instance = new SyncQueueService();
     }
-    return SyncQueueService.instance
+    return SyncQueueService.instance;
   }
 
   /**
@@ -52,17 +47,17 @@ export class SyncQueueService {
    */
   async initialize(): Promise<void> {
     if (this.isInitialized) {
-      return
+      return;
     }
 
     try {
       // 从存储中加载待同步操作
-      await this.loadPendingOperations()
-      this.isInitialized = true
-      console.log('[SyncQueueService] 初始化成功')
+      await this.loadPendingOperations();
+      this.isInitialized = true;
+      console.log('[SyncQueueService] 初始化成功');
     } catch (error) {
-      console.error('[SyncQueueService] 初始化失败:', error)
-      throw error
+      console.error('[SyncQueueService] 初始化失败:', error);
+      throw error;
     }
   }
 
@@ -73,19 +68,19 @@ export class SyncQueueService {
     try {
       // 从IndexedDB中加载所有待同步的操作
       // 这里简化实现，实际应该从专门的同步队列存储中读取
-      const pendingOperations = await this.storageService.getAllSessions()
+      const pendingOperations = await this.storageService.getAllSessions();
       // 过滤出待同步的操作
       pendingOperations.forEach((session) => {
         if (session.data && session.data.operation) {
-          const operation = session.data.operation as SyncOperation
+          const operation = session.data.operation as SyncOperation;
           if (operation.status === SyncOperationStatus.PENDING) {
-            this.queue.set(operation.id, operation)
+            this.queue.set(operation.id, operation);
           }
         }
-      })
-      console.log(`[SyncQueueService] 加载了 ${this.queue.size} 个待同步操作`)
+      });
+      console.log(`[SyncQueueService] 加载了 ${this.queue.size} 个待同步操作`);
     } catch (error) {
-      console.error('[SyncQueueService] 加载待同步操作失败:', error)
+      console.error('[SyncQueueService] 加载待同步操作失败:', error);
     }
   }
 
@@ -95,25 +90,25 @@ export class SyncQueueService {
   async addOperation(
     operation: Omit<SyncOperation, 'id' | 'timestamp' | 'retryCount' | 'status'>
   ): Promise<string> {
-    const id = uuidv4()
-    const timestamp = Date.now()
+    const id = uuidv4();
+    const timestamp = Date.now();
     const fullOperation: SyncOperation = {
       ...operation,
       id,
       timestamp,
       retryCount: 0,
       status: SyncOperationStatus.PENDING,
-    }
+    };
 
-    this.queue.set(id, fullOperation)
+    this.queue.set(id, fullOperation);
 
     // 保存到存储
-    await this.saveOperationToStorage(fullOperation)
+    await this.saveOperationToStorage(fullOperation);
 
     console.log(
       `[SyncQueueService] 添加操作 ${operation.type} - ${operation.resourceType}/${operation.resourceId}`
-    )
-    return id
+    );
+    return id;
   }
 
   /**
@@ -122,12 +117,12 @@ export class SyncQueueService {
   async addOperations(
     operations: Array<Omit<SyncOperation, 'id' | 'timestamp' | 'retryCount' | 'status'>>
   ): Promise<string[]> {
-    const ids: string[] = []
+    const ids: string[] = [];
     for (const operation of operations) {
-      const id = await this.addOperation(operation)
-      ids.push(id)
+      const id = await this.addOperation(operation);
+      ids.push(id);
     }
-    return ids
+    return ids;
   }
 
   /**
@@ -142,18 +137,18 @@ export class SyncQueueService {
         high: 3,
         normal: 2,
         low: 1,
-      }
-      const weightDiff = priorityWeights[b.priority] - priorityWeights[a.priority]
+      };
+      const weightDiff = priorityWeights[b.priority] - priorityWeights[a.priority];
       if (weightDiff !== 0) {
-        return weightDiff
+        return weightDiff;
       }
       // 优先级相同，按时间戳排序
-      return a.timestamp - b.timestamp
-    })
+      return a.timestamp - b.timestamp;
+    });
 
     // 返回第一个待同步的操作
-    const operation = sortedOperations.find((op) => op.status === SyncOperationStatus.PENDING)
-    return operation || null
+    const operation = sortedOperations.find((op) => op.status === SyncOperationStatus.PENDING);
+    return operation || null;
   }
 
   /**
@@ -162,21 +157,21 @@ export class SyncQueueService {
   getPendingOperations(): SyncOperation[] {
     return Array.from(this.queue.values()).filter(
       (op) => op.status === SyncOperationStatus.PENDING
-    )
+    );
   }
 
   /**
    * 获取所有操作
    */
   getAllOperations(): SyncOperation[] {
-    return Array.from(this.queue.values())
+    return Array.from(this.queue.values());
   }
 
   /**
    * 根据ID获取操作
    */
   getOperation(id: string): SyncOperation | undefined {
-    return this.queue.get(id)
+    return this.queue.get(id);
   }
 
   /**
@@ -187,48 +182,48 @@ export class SyncQueueService {
     status: SyncOperationStatus,
     additionalData?: Partial<SyncOperation>
   ): Promise<void> {
-    const operation = this.queue.get(id)
+    const operation = this.queue.get(id);
     if (!operation) {
-      console.warn(`[SyncQueueService] 操作 ${id} 不存在`)
-      return
+      console.warn(`[SyncQueueService] 操作 ${id} 不存在`);
+      return;
     }
 
-    operation.status = status
+    operation.status = status;
     if (additionalData) {
-      Object.assign(operation, additionalData)
+      Object.assign(operation, additionalData);
     }
 
-    await this.saveOperationToStorage(operation)
+    await this.saveOperationToStorage(operation);
   }
 
   /**
    * 标记操作为同步中
    */
   async markAsSyncing(id: string): Promise<void> {
-    await this.updateOperationStatus(id, SyncOperationStatus.SYNCING)
+    await this.updateOperationStatus(id, SyncOperationStatus.SYNCING);
   }
 
   /**
    * 标记操作为成功
    */
   async markAsSuccess(id: string): Promise<void> {
-    await this.updateOperationStatus(id, SyncOperationStatus.SUCCESS)
-    this.queue.delete(id)
+    await this.updateOperationStatus(id, SyncOperationStatus.SUCCESS);
+    this.queue.delete(id);
   }
 
   /**
    * 标记操作为失败
    */
   async markAsFailed(id: string, error: string): Promise<void> {
-    const operation = this.queue.get(id)
-    if (!operation) return
+    const operation = this.queue.get(id);
+    if (!operation) return;
 
-    operation.retryCount++
+    operation.retryCount++;
     if (operation.retryCount >= operation.maxRetries) {
-      await this.updateOperationStatus(id, SyncOperationStatus.FAILED, { error })
+      await this.updateOperationStatus(id, SyncOperationStatus.FAILED, { error });
     } else {
       // 重置为待同步，稍后重试
-      await this.updateOperationStatus(id, SyncOperationStatus.PENDING, { error })
+      await this.updateOperationStatus(id, SyncOperationStatus.PENDING, { error });
     }
   }
 
@@ -236,34 +231,34 @@ export class SyncQueueService {
    * 标记操作为冲突
    */
   async markAsConflict(id: string, serverData: Record<string, unknown>): Promise<void> {
-    await this.updateOperationStatus(id, SyncOperationStatus.CONFLICT, { serverData })
+    await this.updateOperationStatus(id, SyncOperationStatus.CONFLICT, { serverData });
   }
 
   /**
    * 移除操作
    */
   async removeOperation(id: string): Promise<void> {
-    this.queue.delete(id)
+    this.queue.delete(id);
     // 从存储中移除
-    await this.storageService.deleteSession(id)
+    await this.storageService.deleteSession(id);
   }
 
   /**
    * 清空队列
    */
   async clearQueue(): Promise<void> {
-    const ids = Array.from(this.queue.keys())
+    const ids = Array.from(this.queue.keys());
     for (const id of ids) {
-      await this.removeOperation(id)
+      await this.removeOperation(id);
     }
-    this.queue.clear()
+    this.queue.clear();
   }
 
   /**
    * 获取队列统计
    */
   getQueueStats() {
-    const operations = Array.from(this.queue.values())
+    const operations = Array.from(this.queue.values());
     return {
       total: operations.length,
       pending: operations.filter((op) => op.status === SyncOperationStatus.PENDING).length,
@@ -272,18 +267,18 @@ export class SyncQueueService {
       failed: operations.filter((op) => op.status === SyncOperationStatus.FAILED).length,
       conflict: operations.filter((op) => op.status === SyncOperationStatus.CONFLICT).length,
       byResourceType: this.groupByResourceType(operations),
-    }
+    };
   }
 
   /**
    * 按资源类型分组
    */
   private groupByResourceType(operations: SyncOperation[]) {
-    const grouped: Record<string, number> = {}
+    const grouped: Record<string, number> = {};
     operations.forEach((op) => {
-      grouped[op.resourceType] = (grouped[op.resourceType] || 0) + 1
-    })
-    return grouped
+      grouped[op.resourceType] = (grouped[op.resourceType] || 0) + 1;
+    });
+    return grouped;
   }
 
   /**
@@ -298,10 +293,10 @@ export class SyncQueueService {
         data: { operation },
         createdAt: operation.timestamp,
         updatedAt: Date.now(),
-      })
+      });
     } catch (error) {
-      console.error('[SyncQueueService] 保存操作失败:', error)
-      throw error
+      console.error('[SyncQueueService] 保存操作失败:', error);
+      throw error;
     }
   }
 
@@ -309,23 +304,23 @@ export class SyncQueueService {
    * 获取可并发的操作列表
    */
   getConcurrentOperations(maxConcurrent: number): SyncOperation[] {
-    const pending = this.getPendingOperations()
-    return pending.slice(0, maxConcurrent)
+    const pending = this.getPendingOperations();
+    return pending.slice(0, maxConcurrent);
   }
 
   /**
    * 检查是否有待同步操作
    */
   hasPendingOperations(): boolean {
-    return this.getPendingOperations().length > 0
+    return this.getPendingOperations().length > 0;
   }
 
   /**
    * 获取操作依赖
    */
   getOperationDependencies(operationId: string): string[] {
-    this.getOperation(operationId)
+    this.getOperation(operationId);
     // 这里简化处理，实际应该从操作元数据中获取依赖
-    return []
+    return [];
   }
 }

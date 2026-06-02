@@ -12,17 +12,17 @@
  * @tags component,ui,skeleton,loading
  */
 
-import React from 'react'
+import React from 'react';
 
-import { getThemeTokens } from '../utils/theme'
+import { getThemeTokens } from '../utils/theme';
 
 interface SkeletonProps {
-  className?: string
-  width?: string | number
-  height?: string | number
-  borderRadius?: string | number
-  animate?: boolean
-  theme?: 'light' | 'dark'
+  className?: string;
+  width?: string | number;
+  height?: string | number;
+  borderRadius?: string | number;
+  animate?: boolean;
+  theme?: 'light' | 'dark';
 }
 
 export function Skeleton({
@@ -33,27 +33,28 @@ export function Skeleton({
   animate = true,
   theme = 'dark',
 }: SkeletonProps) {
-  const _t = getThemeTokens(theme)
-  void _t
+  const _t = getThemeTokens(theme);
+  void _t;
 
   const style: React.CSSProperties = {
     width: width,
     height: height,
     borderRadius: borderRadius || 8,
-  }
+  };
 
   return (
     <div
       className={`${animate ? 'animate-pulse' : ''} ${className}`}
       style={{
         ...style,
-        background: theme === 'dark'
-          ? 'linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%)'
-          : 'linear-gradient(90deg, rgba(0,0,0,0.05) 25%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.05) 75%)',
+        background:
+          theme === 'dark'
+            ? 'linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%)'
+            : 'linear-gradient(90deg, rgba(0,0,0,0.05) 25%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.05) 75%)',
         backgroundSize: '200% 100%',
       }}
     />
-  )
+  );
 }
 
 export function TextSkeleton({
@@ -63,11 +64,11 @@ export function TextSkeleton({
   className = '',
   theme = 'dark',
 }: {
-  lines?: number
-  lineHeight?: number
-  lineHeightLast?: string | number
-  className?: string
-  theme?: 'light' | 'dark'
+  lines?: number;
+  lineHeight?: number;
+  lineHeightLast?: string | number;
+  className?: string;
+  theme?: 'light' | 'dark';
 }) {
   return (
     <div className={`space-y-2 ${className}`}>
@@ -80,7 +81,7 @@ export function TextSkeleton({
         />
       ))}
     </div>
-  )
+  );
 }
 
 export function AvatarSkeleton({
@@ -88,19 +89,13 @@ export function AvatarSkeleton({
   className = '',
   theme = 'dark',
 }: {
-  size?: number
-  className?: string
-  theme?: 'light' | 'dark'
+  size?: number;
+  className?: string;
+  theme?: 'light' | 'dark';
 }) {
   return (
-    <Skeleton
-      className={className}
-      width={size}
-      height={size}
-      borderRadius="50%"
-      theme={theme}
-    />
-  )
+    <Skeleton className={className} width={size} height={size} borderRadius="50%" theme={theme} />
+  );
 }
 
 export function CardSkeleton({
@@ -110,21 +105,22 @@ export function CardSkeleton({
   lines = 3,
   theme = 'dark',
 }: {
-  className?: string
-  showHeader?: boolean
-  showAvatar?: boolean
-  lines?: number
-  theme?: 'light' | 'dark'
+  className?: string;
+  showHeader?: boolean;
+  showAvatar?: boolean;
+  lines?: number;
+  theme?: 'light' | 'dark';
 }) {
-  const _t = getThemeTokens(theme)
-  void _t
+  const _t = getThemeTokens(theme);
+  void _t;
 
   return (
     <div
       className={`p-4 rounded-xl ${className}`}
       style={{
         background: theme === 'dark' ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.02)',
-        border: theme === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.08)',
+        border:
+          theme === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.08)',
       }}
     >
       {showHeader && (
@@ -138,7 +134,7 @@ export function CardSkeleton({
       )}
       <TextSkeleton lines={lines} theme={theme} />
     </div>
-  )
+  );
 }
 
 export function FileTreeSkeleton({
@@ -146,9 +142,9 @@ export function FileTreeSkeleton({
   className = '',
   theme = 'dark',
 }: {
-  items?: number
-  className?: string
-  theme?: 'light' | 'dark'
+  items?: number;
+  className?: string;
+  theme?: 'light' | 'dark';
 }) {
   return (
     <div className={`space-y-2 ${className}`}>
@@ -159,15 +155,15 @@ export function FileTreeSkeleton({
         </div>
       ))}
     </div>
-  )
+  );
 }
 
 export function CodeEditorSkeleton({
   className = '',
   theme = 'dark',
 }: {
-  className?: string
-  theme?: 'light' | 'dark'
+  className?: string;
+  theme?: 'light' | 'dark';
 }) {
   return (
     <div
@@ -177,9 +173,14 @@ export function CodeEditorSkeleton({
       }}
     >
       <div className="flex gap-4">
-        <div className="flex flex-col items-end pr-4 select-none" style={{ color: theme === 'dark' ? '#484f58' : '#8b949e' }}>
+        <div
+          className="flex flex-col items-end pr-4 select-none"
+          style={{ color: theme === 'dark' ? '#484f58' : '#8b949e' }}
+        >
           {Array.from({ length: 15 }).map((_, i) => (
-            <div key={i} className="text-xs leading-6 font-mono">{i + 1}</div>
+            <div key={i} className="text-xs leading-6 font-mono">
+              {i + 1}
+            </div>
           ))}
         </div>
         <div className="flex-1 font-mono text-sm">
@@ -196,7 +197,7 @@ export function CodeEditorSkeleton({
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 export function ChatSkeleton({
@@ -204,23 +205,24 @@ export function ChatSkeleton({
   className = '',
   theme = 'dark',
 }: {
-  messages?: number
-  className?: string
-  theme?: 'light' | 'dark'
+  messages?: number;
+  className?: string;
+  theme?: 'light' | 'dark';
 }) {
   return (
     <div className={`space-y-4 ${className}`}>
       {Array.from({ length: messages }).map((_, i) => (
-        <div
-          key={i}
-          className={`flex gap-3 ${i % 2 === 0 ? '' : 'flex-row-reverse'}`}
-        >
+        <div key={i} className={`flex gap-3 ${i % 2 === 0 ? '' : 'flex-row-reverse'}`}>
           <AvatarSkeleton size={32} theme={theme} />
           <div
             className={`max-w-[70%] p-3 rounded-xl ${
               i % 2 === 0
-                ? theme === 'dark' ? 'bg-slate-800/50' : 'bg-slate-100'
-                : theme === 'dark' ? 'bg-indigo-500/20' : 'bg-indigo-50'
+                ? theme === 'dark'
+                  ? 'bg-slate-800/50'
+                  : 'bg-slate-100'
+                : theme === 'dark'
+                  ? 'bg-indigo-500/20'
+                  : 'bg-indigo-50'
             }`}
           >
             <TextSkeleton lines={1 + Math.floor(Math.random() * 2)} lineHeight={14} theme={theme} />
@@ -228,28 +230,30 @@ export function ChatSkeleton({
         </div>
       ))}
     </div>
-  )
+  );
 }
 
 export function PanelSkeleton({
   className = '',
   theme = 'dark',
 }: {
-  className?: string
-  theme?: 'light' | 'dark'
+  className?: string;
+  theme?: 'light' | 'dark';
 }) {
   return (
     <div
       className={`rounded-xl overflow-hidden ${className}`}
       style={{
         background: theme === 'dark' ? 'rgba(15,23,42,0.6)' : 'rgba(255,255,255,0.8)',
-        border: theme === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.08)',
+        border:
+          theme === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.08)',
       }}
     >
       <div
         className="px-4 py-3 flex items-center justify-between"
         style={{
-          borderBottom: theme === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.08)',
+          borderBottom:
+            theme === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.08)',
         }}
       >
         <Skeleton height={16} width={100} theme={theme} />
@@ -262,16 +266,20 @@ export function PanelSkeleton({
         <TextSkeleton lines={5} theme={theme} />
       </div>
     </div>
-  )
+  );
 }
 
 export function IDELayoutSkeleton({ theme = 'dark' }: { theme?: 'light' | 'dark' }) {
   return (
-    <div className="h-screen flex flex-col" style={{ background: theme === 'dark' ? '#0f172a' : '#f8fafc' }}>
+    <div
+      className="h-screen flex flex-col"
+      style={{ background: theme === 'dark' ? '#0f172a' : '#f8fafc' }}
+    >
       <div
         className="h-12 flex items-center justify-between px-4"
         style={{
-          borderBottom: theme === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.08)',
+          borderBottom:
+            theme === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.08)',
         }}
       >
         <Skeleton height={24} width={150} theme={theme} />
@@ -286,7 +294,8 @@ export function IDELayoutSkeleton({ theme = 'dark' }: { theme?: 'light' | 'dark'
         <div
           className="w-12 flex flex-col items-center py-2 gap-2"
           style={{
-            borderRight: theme === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.08)',
+            borderRight:
+              theme === 'dark' ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.08)',
           }}
         >
           {Array.from({ length: 6 }).map((_, i) => (
@@ -295,10 +304,20 @@ export function IDELayoutSkeleton({ theme = 'dark' }: { theme?: 'light' | 'dark'
         </div>
 
         <div className="flex-1 flex">
-          <div className="w-[30%] border-r" style={{ borderColor: theme === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)' }}>
+          <div
+            className="w-[30%] border-r"
+            style={{
+              borderColor: theme === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)',
+            }}
+          >
             <PanelSkeleton theme={theme} />
           </div>
-          <div className="w-[35%] border-r" style={{ borderColor: theme === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)' }}>
+          <div
+            className="w-[35%] border-r"
+            style={{
+              borderColor: theme === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)',
+            }}
+          >
             <PanelSkeleton theme={theme} />
           </div>
           <div className="flex-1">
@@ -307,5 +326,5 @@ export function IDELayoutSkeleton({ theme = 'dark' }: { theme?: 'light' | 'dark'
         </div>
       </div>
     </div>
-  )
+  );
 }

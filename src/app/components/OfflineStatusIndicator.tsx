@@ -11,29 +11,29 @@
  * @tags component,offline,indicator,ui
  */
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
 
-import { OfflineDegradationService } from '../../services/offline-degradation-service'
-import { OfflineEventType } from '../../types/offline'
+import { OfflineDegradationService } from '../../services/offline-degradation-service';
+import { OfflineEventType } from '../../types/offline';
 import type {
   OfflineState,
   OfflineStatus,
   OfflineStatistics,
   NetworkQuality,
-} from '../../types/offline'
+} from '../../types/offline';
 
 /**
  * 离线状态指示器属性接口
  */
 interface OfflineStatusIndicatorProps {
   /** 是否显示详细信息 */
-  showDetails?: boolean
+  showDetails?: boolean;
   /** 是否可点击展开 */
-  clickable?: boolean
+  clickable?: boolean;
   /** 自定义类名 */
-  className?: string
+  className?: string;
   /** 状态变化回调 */
-  onStateChange?: (state: OfflineState) => void
+  onStateChange?: (state: OfflineState) => void;
 }
 
 /**
@@ -45,38 +45,34 @@ export const OfflineStatusIndicator: React.FC<OfflineStatusIndicatorProps> = ({
   className = '',
   onStateChange,
 }) => {
-  const [offlineService] = useState(() =>
-    OfflineDegradationService.getInstance(),
-  )
-  const [status, setStatus] = useState<OfflineStatus | null>(null)
-  const [statistics, setStatistics] = useState<OfflineStatistics | null>(null)
-  const [expanded, setExpanded] = useState(false)
-  const [_networkQuality, _setNetworkQuality] = useState<NetworkQuality | null>(
-    null,
-  )
+  const [offlineService] = useState(() => OfflineDegradationService.getInstance());
+  const [status, setStatus] = useState<OfflineStatus | null>(null);
+  const [statistics, setStatistics] = useState<OfflineStatistics | null>(null);
+  const [expanded, setExpanded] = useState(false);
+  const [_networkQuality, _setNetworkQuality] = useState<NetworkQuality | null>(null);
 
   useEffect(() => {
     // 初始化服务
-    offlineService.initialize()
+    offlineService.initialize();
 
     // 获取初始状态
-    const initialStatus = offlineService.getOfflineStatus()
-    const initialStatistics = offlineService.getStatistics()
-    setStatus(initialStatus)
-    setStatistics(initialStatistics)
+    const initialStatus = offlineService.getOfflineStatus();
+    const initialStatistics = offlineService.getStatistics();
+    setStatus(initialStatus);
+    setStatistics(initialStatistics);
 
     // 监听状态变化
     const handleStateChange = (data: any) => {
-      const newStatus = offlineService.getOfflineStatus()
-      const newStatistics = offlineService.getStatistics()
+      const newStatus = offlineService.getOfflineStatus();
+      const newStatistics = offlineService.getStatistics();
 
-      setStatus(newStatus)
-      setStatistics(newStatistics)
+      setStatus(newStatus);
+      setStatistics(newStatistics);
 
       if (onStateChange && data.newState) {
-        onStateChange(data.newState)
+        onStateChange(data.newState);
       }
-    }
+    };
 
     const events = [
       OfflineEventType.STATE_CHANGED,
@@ -89,108 +85,108 @@ export const OfflineStatusIndicator: React.FC<OfflineStatusIndicatorProps> = ({
       OfflineEventType.OPERATION_QUEUED,
       OfflineEventType.OPERATION_SUCCESS,
       OfflineEventType.OPERATION_FAILED,
-    ]
-    events.forEach(e => offlineService.on(e, handleStateChange))
+    ];
+    events.forEach((e) => offlineService.on(e, handleStateChange));
 
     // 定期更新状态
     const updateInterval = setInterval(() => {
-      const currentStatus = offlineService.getOfflineStatus()
-      const currentStatistics = offlineService.getStatistics()
-      setStatus(currentStatus)
-      setStatistics(currentStatistics)
-    }, 5000)
+      const currentStatus = offlineService.getOfflineStatus();
+      const currentStatistics = offlineService.getStatistics();
+      setStatus(currentStatus);
+      setStatistics(currentStatistics);
+    }, 5000);
 
     return () => {
-      events.forEach(e => offlineService.off(e, handleStateChange))
-      clearInterval(updateInterval)
-    }
-  }, [offlineService, onStateChange])
+      events.forEach((e) => offlineService.off(e, handleStateChange));
+      clearInterval(updateInterval);
+    };
+  }, [offlineService, onStateChange]);
 
   // 获取状态颜色
   const getStatusColor = (state: OfflineState): string => {
     switch (state) {
       case 'online':
-        return 'bg-green-500'
+        return 'bg-green-500';
       case 'offline':
-        return 'bg-red-500'
+        return 'bg-red-500';
       case 'degraded':
       case 'syncing':
-        return 'bg-yellow-500'
+        return 'bg-yellow-500';
       default:
-        return 'bg-gray-500'
+        return 'bg-gray-500';
     }
-  }
+  };
 
   // 获取状态文本
   const getStatusText = (state: OfflineState): string => {
     switch (state) {
       case 'online':
-        return '在线'
+        return '在线';
       case 'offline':
-        return '离线'
+        return '离线';
       case 'degraded':
-        return '降级'
+        return '降级';
       case 'syncing':
-        return '同步中'
+        return '同步中';
       default:
-        return '未知'
+        return '未知';
     }
-  }
+  };
 
   // 获取状态图标
   const getStatusIcon = (state: OfflineState): string => {
     switch (state) {
       case 'online':
-        return '✅'
+        return '✅';
       case 'offline':
-        return '❌'
+        return '❌';
       case 'degraded':
-        return '⚠️'
+        return '⚠️';
       case 'syncing':
-        return '🔄'
+        return '🔄';
       default:
-        return '❓'
+        return '❓';
     }
-  }
+  };
 
   // 格式化时间
   const formatDuration = (ms: number): string => {
-    const seconds = Math.floor(ms / 1000)
-    const minutes = Math.floor(seconds / 60)
-    const hours = Math.floor(minutes / 60)
+    const seconds = Math.floor(ms / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
 
     if (hours > 0) {
-      return `${hours}小时${minutes % 60}分钟`
+      return `${hours}小时${minutes % 60}分钟`;
     } else if (minutes > 0) {
-      return `${minutes}分钟${seconds % 60}秒`
+      return `${minutes}分钟${seconds % 60}秒`;
     } else {
-      return `${seconds}秒`
+      return `${seconds}秒`;
     }
-  }
+  };
 
   // 格式化时间戳
   const formatTimestamp = (timestamp?: number): string => {
-    if (!timestamp) return '-'
-    const date = new Date(timestamp)
-    return date.toLocaleString('zh-CN')
-  }
+    if (!timestamp) return '-';
+    const date = new Date(timestamp);
+    return date.toLocaleString('zh-CN');
+  };
 
   // 手动触发同步
   const handleSyncNow = async () => {
     try {
-      await offlineService.syncNow()
+      await offlineService.syncNow();
     } catch (error) {
-      console.error('同步失败:', error)
+      console.error('同步失败:', error);
     }
-  }
+  };
 
   // 清空队列
   const handleClearQueue = () => {
-    offlineService.clearQueue()
-  }
+    offlineService.clearQueue();
+  };
 
   if (!status) {
-    return null
+    return null;
   }
 
   return (
@@ -211,37 +207,25 @@ export const OfflineStatusIndicator: React.FC<OfflineStatusIndicatorProps> = ({
         onClick={() => clickable && setExpanded(!expanded)}
       >
         {/* 状态点 */}
-        <div
-          className={`w-3 h-3 rounded-full ${getStatusColor(
-            status.state,
-          )} animate-pulse`}
-        />
+        <div className={`w-3 h-3 rounded-full ${getStatusColor(status.state)} animate-pulse`} />
 
         {/* 状态图标和文本 */}
         <div className="flex items-center gap-2">
           <span className="text-lg">{getStatusIcon(status.state)}</span>
-          <span className="font-medium text-gray-800">
-            {getStatusText(status.state)}
-          </span>
+          <span className="font-medium text-gray-800">{getStatusText(status.state)}</span>
         </div>
 
         {/* 队列数量 */}
         {status.queuedOperations > 0 && (
           <div className="flex items-center gap-1 ml-2 px-2 py-1 bg-yellow-100 rounded-full">
             <span className="text-xs text-yellow-800">队列</span>
-            <span className="text-sm font-bold text-yellow-800">
-              {status.queuedOperations}
-            </span>
+            <span className="text-sm font-bold text-yellow-800">{status.queuedOperations}</span>
           </div>
         )}
 
         {/* 展开/收起图标 */}
         {clickable && (
-          <div
-            className={`transform transition-transform ${
-              expanded ? 'rotate-180' : ''
-            }`}
-          >
+          <div className={`transform transition-transform ${expanded ? 'rotate-180' : ''}`}>
             <svg
               className="w-4 h-4 text-gray-600"
               fill="none"
@@ -273,18 +257,14 @@ export const OfflineStatusIndicator: React.FC<OfflineStatusIndicatorProps> = ({
 
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-gray-700">操作状态</span>
-              <span className="text-sm font-bold text-gray-900">
-                {getStatusText(status.state)}
-              </span>
+              <span className="text-sm font-bold text-gray-900">{getStatusText(status.state)}</span>
             </div>
 
             {/* 统计信息 */}
             {statistics && (
               <>
                 <div className="border-t pt-3">
-                  <div className="text-sm font-medium text-gray-700 mb-2">
-                    统计信息
-                  </div>
+                  <div className="text-sm font-medium text-gray-700 mb-2">统计信息</div>
                   <div className="grid grid-cols-2 gap-2 text-xs">
                     <div className="flex justify-between">
                       <span className="text-gray-600">总离线时长:</span>
@@ -330,18 +310,14 @@ export const OfflineStatusIndicator: React.FC<OfflineStatusIndicatorProps> = ({
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">最大队列:</span>
-                      <span className="font-medium text-gray-900">
-                        {statistics.maxQueueSize}
-                      </span>
+                      <span className="font-medium text-gray-900">{statistics.maxQueueSize}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* 时间信息 */}
                 <div className="border-t pt-3">
-                  <div className="text-sm font-medium text-gray-700 mb-2">
-                    时间信息
-                  </div>
+                  <div className="text-sm font-medium text-gray-700 mb-2">时间信息</div>
                   <div className="space-y-1 text-xs">
                     <div className="flex justify-between">
                       <span className="text-gray-600">最后离线:</span>
@@ -370,8 +346,8 @@ export const OfflineStatusIndicator: React.FC<OfflineStatusIndicatorProps> = ({
             <div className="border-t pt-3 flex gap-2">
               <button
                 onClick={(e) => {
-                  e.stopPropagation()
-                  handleSyncNow()
+                  e.stopPropagation();
+                  handleSyncNow();
                 }}
                 disabled={status.state !== 'online'}
                 className="flex-1 px-3 py-2 bg-blue-500 text-white text-sm rounded-md hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
@@ -380,8 +356,8 @@ export const OfflineStatusIndicator: React.FC<OfflineStatusIndicatorProps> = ({
               </button>
               <button
                 onClick={(e) => {
-                  e.stopPropagation()
-                  handleClearQueue()
+                  e.stopPropagation();
+                  handleClearQueue();
                 }}
                 disabled={status.queuedOperations === 0}
                 className="flex-1 px-3 py-2 bg-red-500 text-white text-sm rounded-md hover:bg-red-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
@@ -393,5 +369,5 @@ export const OfflineStatusIndicator: React.FC<OfflineStatusIndicatorProps> = ({
         </div>
       )}
     </div>
-  )
-}
+  );
+};

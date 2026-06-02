@@ -23,7 +23,7 @@ const LoginPage: React.FC = () => {
   const [formData, setFormData] = useState<LoginFormData>({
     email: '',
     password: '',
-    rememberMe: false
+    rememberMe: false,
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -66,7 +66,7 @@ const LoginPage: React.FC = () => {
 
       try {
         const response = await login(formData);
-        
+
         if (response.success) {
           // 登录成功，跳转到首页
           navigate('/');
@@ -86,14 +86,14 @@ const LoginPage: React.FC = () => {
    */
   const handleChange = useCallback(
     (field: keyof LoginFormData, value: string | boolean) => {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        [field]: value
+        [field]: value,
       }));
-      
+
       // 清除该字段的错误
       if (errors[field]) {
-        setErrors(prev => {
+        setErrors((prev) => {
           const newErrors = { ...prev };
           delete newErrors[field];
           return newErrors;
@@ -111,12 +111,8 @@ const LoginPage: React.FC = () => {
           <div className="mx-auto w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center mb-4 shadow-lg">
             <Lock className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            欢迎回来
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            登录 YYC³ 便携式智能 AI 系统
-          </p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">欢迎回来</h1>
+          <p className="text-gray-600 dark:text-gray-400">登录 YYC³ 便携式智能 AI 系统</p>
         </div>
 
         {/* 登录表单 */}
@@ -124,9 +120,7 @@ const LoginPage: React.FC = () => {
           {submitError && (
             <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-red-800 dark:text-red-200">
-                {submitError}
-              </p>
+              <p className="text-sm text-red-800 dark:text-red-200">{submitError}</p>
             </div>
           )}
 
@@ -156,9 +150,7 @@ const LoginPage: React.FC = () => {
                 />
               </div>
               {errors.email && (
-                <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-                  {errors.email}
-                </p>
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.email}</p>
               )}
             </div>
 
@@ -191,17 +183,11 @@ const LoginPage: React.FC = () => {
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                   disabled={isLoading}
                 >
-                  {showPassword ? (
-                    <EyeOff className="w-5 h-5" />
-                  ) : (
-                    <Eye className="w-5 h-5" />
-                  )}
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
               {errors.password && (
-                <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-                  {errors.password}
-                </p>
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.password}</p>
               )}
             </div>
 
@@ -215,9 +201,7 @@ const LoginPage: React.FC = () => {
                   className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500"
                   disabled={isLoading}
                 />
-                <span className="text-sm text-gray-600 dark:text-gray-400">
-                  记住我
-                </span>
+                <span className="text-sm text-gray-600 dark:text-gray-400">记住我</span>
               </label>
               <Link
                 to="/forgot-password"
@@ -251,9 +235,7 @@ const LoginPage: React.FC = () => {
                 <div className="w-full border-t border-gray-200 dark:border-gray-700" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-white dark:bg-gray-800 text-gray-500">
-                  或者
-                </span>
+                <span className="px-4 bg-white dark:bg-gray-800 text-gray-500">或者</span>
               </div>
             </div>
 
@@ -272,11 +254,10 @@ const LoginPage: React.FC = () => {
 
         {/* 演示账号提示 */}
         <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-          <p className="text-sm text-blue-800 dark:text-blue-200 mb-2 font-medium">
-            演示账号：
-          </p>
+          <p className="text-sm text-blue-800 dark:text-blue-200 mb-2 font-medium">演示账号：</p>
           <p className="text-sm text-blue-700 dark:text-blue-300">
-            邮箱: demo@example.com<br />
+            邮箱: demo@example.com
+            <br />
             密码: password123
           </p>
         </div>

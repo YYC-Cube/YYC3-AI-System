@@ -33,7 +33,7 @@ export const AuthRoutes: React.FC = () => {
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/reset-password" element={<ResetPasswordPage />} />
-      
+
       {/* 受保护的路由 - 需要登录才能访问 */}
       <Route
         path="/*"

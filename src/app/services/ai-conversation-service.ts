@@ -21,52 +21,52 @@
  */
 
 export interface AIModel {
-  id: string
-  name: string
-  provider: string
-  maxTokens: number
-  supportsStreaming: boolean
-  supportsVision: boolean
-  costPerToken: number
-  capabilities: string[]
+  id: string;
+  name: string;
+  provider: string;
+  maxTokens: number;
+  supportsStreaming: boolean;
+  supportsVision: boolean;
+  costPerToken: number;
+  capabilities: string[];
 }
 
 export interface ConversationMessage {
-  id: string
-  role: 'user' | 'assistant' | 'system'
-  content: string
-  timestamp: number
-  tokenCount?: number
+  id: string;
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+  timestamp: number;
+  tokenCount?: number;
   metadata?: {
-    model?: string
-    latency?: number
-    cached?: boolean
-  }
+    model?: string;
+    latency?: number;
+    cached?: boolean;
+  };
 }
 
 export interface ConversationSession {
-  id: string
-  title: string
-  messages: ConversationMessage[]
-  model: string
-  createdAt: number
-  updatedAt: number
-  totalTokens: number
-  metadata?: Record<string, unknown>
+  id: string;
+  title: string;
+  messages: ConversationMessage[];
+  model: string;
+  createdAt: number;
+  updatedAt: number;
+  totalTokens: number;
+  metadata?: Record<string, unknown>;
 }
 
 export interface ContextWindow {
-  maxTokens: number
-  usedTokens: number
-  availableTokens: number
-  messages: ConversationMessage[]
+  maxTokens: number;
+  usedTokens: number;
+  availableTokens: number;
+  messages: ConversationMessage[];
 }
 
 export interface StreamingResponse {
-  id: string
-  content: string
-  isComplete: boolean
-  tokenCount: number
+  id: string;
+  content: string;
+  isComplete: boolean;
+  tokenCount: number;
 }
 
 const AVAILABLE_MODELS: AIModel[] = [
@@ -120,36 +120,36 @@ const AVAILABLE_MODELS: AIModel[] = [
     costPerToken: 0.000001,
     capabilities: ['text', 'code', 'vision'],
   },
-]
+];
 
 class AIConversationService {
-  private sessions: Map<string, ConversationSession> = new Map()
-  private currentSessionId: string | null = null
-  private currentModel: string = 'gpt-3.5-turbo'
-  private contextWindowSize: number = 4096
-  private _streamingCallbacks: Map<string, (response: StreamingResponse) => void> = new Map()
+  private sessions: Map<string, ConversationSession> = new Map();
+  private currentSessionId: string | null = null;
+  private currentModel: string = 'gpt-3.5-turbo';
+  private contextWindowSize: number = 4096;
+  private _streamingCallbacks: Map<string, (response: StreamingResponse) => void> = new Map();
 
   constructor() {
-    void this._streamingCallbacks
-    this.loadSessions()
+    void this._streamingCallbacks;
+    this.loadSessions();
   }
 
   getAvailableModels(): AIModel[] {
-    return [...AVAILABLE_MODELS]
+    return [...AVAILABLE_MODELS];
   }
 
   getCurrentModel(): AIModel | undefined {
-    return AVAILABLE_MODELS.find((m) => m.id === this.currentModel)
+    return AVAILABLE_MODELS.find((m) => m.id === this.currentModel);
   }
 
   setCurrentModel(modelId: string): boolean {
-    const model = AVAILABLE_MODELS.find((m) => m.id === modelId)
+    const model = AVAILABLE_MODELS.find((m) => m.id === modelId);
     if (model) {
-      this.currentModel = modelId
-      this.contextWindowSize = model.maxTokens
-      return true
+      this.currentModel = modelId;
+      this.contextWindowSize = model.maxTokens;
+      return true;
     }
-    return false
+    return false;
   }
 
   createSession(title?: string): ConversationSession {
@@ -161,42 +161,46 @@ class AIConversationService {
       createdAt: Date.now(),
       updatedAt: Date.now(),
       totalTokens: 0,
-    }
+    };
 
-    this.sessions.set(session.id, session)
-    this.currentSessionId = session.id
-    this.saveSessions()
+    this.sessions.set(session.id, session);
+    this.currentSessionId = session.id;
+    this.saveSessions();
 
-    return session
+    return session;
   }
 
   getSession(sessionId: string): ConversationSession | undefined {
-    return this.sessions.get(sessionId)
+    return this.sessions.get(sessionId);
   }
 
   getCurrentSession(): ConversationSession | undefined {
-    if (!this.currentSessionId) return undefined
-    return this.sessions.get(this.currentSessionId)
+    if (!this.currentSessionId) return undefined;
+    return this.sessions.get(this.currentSessionId);
   }
 
   getAllSessions(): ConversationSession[] {
-    return Array.from(this.sessions.values()).sort((a, b) => b.updatedAt - a.updatedAt)
+    return Array.from(this.sessions.values()).sort((a, b) => b.updatedAt - a.updatedAt);
   }
 
   deleteSession(sessionId: string): boolean {
-    const deleted = this.sessions.delete(sessionId)
+    const deleted = this.sessions.delete(sessionId);
     if (deleted) {
       if (this.currentSessionId === sessionId) {
-        this.currentSessionId = null
+        this.currentSessionId = null;
       }
-      this.saveSessions()
+      this.saveSessions();
     }
-    return deleted
+    return deleted;
   }
 
-  addMessage(sessionId: string, role: 'user' | 'assistant' | 'system', content: string): ConversationMessage | null {
-    const session = this.sessions.get(sessionId)
-    if (!session) return null
+  addMessage(
+    sessionId: string,
+    role: 'user' | 'assistant' | 'system',
+    content: string
+  ): ConversationMessage | null {
+    const session = this.sessions.get(sessionId);
+    if (!session) return null;
 
     const message: ConversationMessage = {
       id: this.generateId(),
@@ -207,121 +211,125 @@ class AIConversationService {
       metadata: {
         model: this.currentModel,
       },
-    }
+    };
 
-    session.messages.push(message)
-    session.totalTokens += message.tokenCount || 0
-    session.updatedAt = Date.now()
+    session.messages.push(message);
+    session.totalTokens += message.tokenCount || 0;
+    session.updatedAt = Date.now();
 
-    this.saveSessions()
-    return message
+    this.saveSessions();
+    return message;
   }
 
   deleteMessage(sessionId: string, messageId: string): boolean {
-    const session = this.sessions.get(sessionId)
-    if (!session) return false
+    const session = this.sessions.get(sessionId);
+    if (!session) return false;
 
-    const index = session.messages.findIndex((m) => m.id === messageId)
-    if (index === -1) return false
+    const index = session.messages.findIndex((m) => m.id === messageId);
+    if (index === -1) return false;
 
-    const message = session.messages[index]
-    session.totalTokens -= message.tokenCount || 0
-    session.messages.splice(index, 1)
-    session.updatedAt = Date.now()
+    const message = session.messages[index];
+    session.totalTokens -= message.tokenCount || 0;
+    session.messages.splice(index, 1);
+    session.updatedAt = Date.now();
 
-    this.saveSessions()
-    return true
+    this.saveSessions();
+    return true;
   }
 
   getContextWindow(sessionId: string): ContextWindow {
-    const session = this.sessions.get(sessionId)
+    const session = this.sessions.get(sessionId);
     if (!session) {
       return {
         maxTokens: this.contextWindowSize,
         usedTokens: 0,
         availableTokens: this.contextWindowSize,
         messages: [],
-      }
+      };
     }
 
-    const messages = this.getOptimizedMessages(session)
-    const usedTokens = messages.reduce((sum, m) => sum + (m.tokenCount || 0), 0)
+    const messages = this.getOptimizedMessages(session);
+    const usedTokens = messages.reduce((sum, m) => sum + (m.tokenCount || 0), 0);
 
     return {
       maxTokens: this.contextWindowSize,
       usedTokens,
       availableTokens: this.contextWindowSize - usedTokens,
       messages,
-    }
+    };
   }
 
   optimizeContext(sessionId: string): void {
-    const session = this.sessions.get(sessionId)
-    if (!session) return
+    const session = this.sessions.get(sessionId);
+    if (!session) return;
 
-    const optimized = this.compressMessages(session.messages)
-    session.messages = optimized
-    session.totalTokens = optimized.reduce((sum, m) => sum + (m.tokenCount || 0), 0)
-    session.updatedAt = Date.now()
+    const optimized = this.compressMessages(session.messages);
+    session.messages = optimized;
+    session.totalTokens = optimized.reduce((sum, m) => sum + (m.tokenCount || 0), 0);
+    session.updatedAt = Date.now();
 
-    this.saveSessions()
+    this.saveSessions();
   }
 
   exportSession(sessionId: string): string | null {
-    const session = this.sessions.get(sessionId)
-    if (!session) return null
+    const session = this.sessions.get(sessionId);
+    if (!session) return null;
 
-    return JSON.stringify({
-      version: '1.0.0',
-      exportedAt: Date.now(),
-      session,
-    }, null, 2)
+    return JSON.stringify(
+      {
+        version: '1.0.0',
+        exportedAt: Date.now(),
+        session,
+      },
+      null,
+      2
+    );
   }
 
   importSession(json: string): ConversationSession | null {
     try {
-      const data = JSON.parse(json)
-      if (!data.session || !data.session.id) return null
+      const data = JSON.parse(json);
+      if (!data.session || !data.session.id) return null;
 
       const session: ConversationSession = {
         ...data.session,
         id: this.generateId(),
         createdAt: Date.now(),
         updatedAt: Date.now(),
-      }
+      };
 
-      this.sessions.set(session.id, session)
-      this.saveSessions()
+      this.sessions.set(session.id, session);
+      this.saveSessions();
 
-      return session
+      return session;
     } catch {
-      return null
+      return null;
     }
   }
 
   searchSessions(query: string): ConversationSession[] {
-    const lowerQuery = query.toLowerCase()
+    const lowerQuery = query.toLowerCase();
     return this.getAllSessions().filter((session) => {
-      if (session.title.toLowerCase().includes(lowerQuery)) return true
-      return session.messages.some((m) => m.content.toLowerCase().includes(lowerQuery))
-    })
+      if (session.title.toLowerCase().includes(lowerQuery)) return true;
+      return session.messages.some((m) => m.content.toLowerCase().includes(lowerQuery));
+    });
   }
 
   getStatistics(): {
-    totalSessions: number
-    totalMessages: number
-    totalTokens: number
-    averageMessagesPerSession: number
-    modelUsage: Record<string, number>
+    totalSessions: number;
+    totalMessages: number;
+    totalTokens: number;
+    averageMessagesPerSession: number;
+    modelUsage: Record<string, number>;
   } {
-    let totalMessages = 0
-    let totalTokens = 0
-    const modelUsage: Record<string, number> = {}
+    let totalMessages = 0;
+    let totalTokens = 0;
+    const modelUsage: Record<string, number> = {};
 
     for (const session of this.sessions.values()) {
-      totalMessages += session.messages.length
-      totalTokens += session.totalTokens
-      modelUsage[session.model] = (modelUsage[session.model] || 0) + 1
+      totalMessages += session.messages.length;
+      totalTokens += session.totalTokens;
+      modelUsage[session.model] = (modelUsage[session.model] || 0) + 1;
     }
 
     return {
@@ -330,31 +338,31 @@ class AIConversationService {
       totalTokens,
       averageMessagesPerSession: this.sessions.size > 0 ? totalMessages / this.sessions.size : 0,
       modelUsage,
-    }
+    };
   }
 
   private getOptimizedMessages(session: ConversationSession): ConversationMessage[] {
-    const messages = [...session.messages]
-    let totalTokens = messages.reduce((sum, m) => sum + (m.tokenCount || 0), 0)
+    const messages = [...session.messages];
+    let totalTokens = messages.reduce((sum, m) => sum + (m.tokenCount || 0), 0);
 
     while (totalTokens > this.contextWindowSize && messages.length > 2) {
-      const removed = messages.shift()
+      const removed = messages.shift();
       if (removed) {
-        totalTokens -= removed.tokenCount || 0
+        totalTokens -= removed.tokenCount || 0;
       }
     }
 
-    return messages
+    return messages;
   }
 
   private compressMessages(messages: ConversationMessage[]): ConversationMessage[] {
-    if (messages.length <= 4) return messages
+    if (messages.length <= 4) return messages;
 
-    const systemMessages = messages.filter((m) => m.role === 'system')
-    const recentMessages = messages.slice(-3)
-    const olderMessages = messages.slice(0, -3).filter((m) => m.role !== 'system')
+    const systemMessages = messages.filter((m) => m.role === 'system');
+    const recentMessages = messages.slice(-3);
+    const olderMessages = messages.slice(0, -3).filter((m) => m.role !== 'system');
 
-    if (olderMessages.length === 0) return messages
+    if (olderMessages.length === 0) return messages;
 
     const summary: ConversationMessage = {
       id: this.generateId(),
@@ -362,45 +370,45 @@ class AIConversationService {
       content: `[历史对话摘要] 共 ${olderMessages.length} 条消息`,
       timestamp: olderMessages[0].timestamp,
       tokenCount: 10,
-    }
+    };
 
-    return [...systemMessages, summary, ...recentMessages]
+    return [...systemMessages, summary, ...recentMessages];
   }
 
   private estimateTokenCount(content: string): number {
-    const chineseChars = (content.match(/[\u4e00-\u9fa5]/g) || []).length
-    const otherChars = content.length - chineseChars
-    return Math.ceil(chineseChars * 2 + otherChars / 4)
+    const chineseChars = (content.match(/[\u4e00-\u9fa5]/g) || []).length;
+    const otherChars = content.length - chineseChars;
+    return Math.ceil(chineseChars * 2 + otherChars / 4);
   }
 
   private generateId(): string {
-    return `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
+    return `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
   }
 
   private saveSessions(): void {
     try {
-      const data = Array.from(this.sessions.entries())
-      localStorage.setItem('yyc3_conversation_sessions', JSON.stringify(data))
+      const data = Array.from(this.sessions.entries());
+      localStorage.setItem('yyc3_conversation_sessions', JSON.stringify(data));
     } catch (error) {
-      console.warn('保存会话失败:', error)
+      console.warn('保存会话失败:', error);
     }
   }
 
   private loadSessions(): void {
     try {
-      const stored = localStorage.getItem('yyc3_conversation_sessions')
+      const stored = localStorage.getItem('yyc3_conversation_sessions');
       if (stored) {
-        const data = JSON.parse(stored) as [string, ConversationSession][]
+        const data = JSON.parse(stored) as [string, ConversationSession][];
         data.forEach(([id, session]) => {
-          this.sessions.set(id, session)
-        })
+          this.sessions.set(id, session);
+        });
       }
     } catch (error) {
-      console.warn('加载会话失败:', error)
+      console.warn('加载会话失败:', error);
     }
   }
 }
 
-export const aiConversationService = new AIConversationService()
+export const aiConversationService = new AIConversationService();
 
-export default AIConversationService
+export default AIConversationService;

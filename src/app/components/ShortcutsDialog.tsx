@@ -13,24 +13,24 @@
  * @tags component,shortcuts,keyboard,dialog
  */
 
-import { X, Keyboard } from 'lucide-react'
-import React from 'react'
+import { X, Keyboard } from 'lucide-react';
+import React from 'react';
 
-import { useAppStore } from '../store'
-import { getI18n } from '../utils/i18n'
-import { getThemeTokens } from '../utils/theme'
+import { useAppStore } from '../store';
+import { getI18n } from '../utils/i18n';
+import { getThemeTokens } from '../utils/theme';
 
 interface ShortcutGroup {
-  title: string
-  shortcuts: { keys: string; desc: string }[]
+  title: string;
+  shortcuts: { keys: string; desc: string }[];
 }
 
 export function ShortcutsDialog() {
-  const { theme, language, shortcutsDialogOpen, setShortcutsDialogOpen } = useAppStore()
-  const t = getThemeTokens(theme)
-  const i = getI18n(language)
+  const { theme, language, shortcutsDialogOpen, setShortcutsDialogOpen } = useAppStore();
+  const t = getThemeTokens(theme);
+  const i = getI18n(language);
 
-  if (!shortcutsDialogOpen) return null
+  if (!shortcutsDialogOpen) return null;
 
   const groups: ShortcutGroup[] = [
     {
@@ -39,7 +39,7 @@ export function ShortcutsDialog() {
         { keys: 'Esc', desc: i.scBackToCode },
         { keys: 'Ctrl+1', desc: i.scSwitchPreview },
         { keys: 'Ctrl+2', desc: i.scSwitchCode },
-      ]
+      ],
     },
     {
       title: i.scTerminalPanel,
@@ -48,7 +48,7 @@ export function ShortcutsDialog() {
         { keys: 'Ctrl+Shift+T', desc: i.scToggleTerminal },
         { keys: 'Ctrl+Shift+F', desc: i.scGlobalSearch },
         { keys: 'Ctrl+,', desc: i.scOpenSettings },
-      ]
+      ],
     },
     {
       title: i.scProjectOps,
@@ -59,7 +59,7 @@ export function ShortcutsDialog() {
         { keys: 'Ctrl+Shift+S', desc: i.scShareProject },
         { keys: 'Ctrl+Shift+D', desc: i.scDeploy },
         { keys: 'Ctrl+Shift+Q', desc: i.scQuickActions },
-      ]
+      ],
     },
     {
       title: i.scEditor,
@@ -69,7 +69,7 @@ export function ShortcutsDialog() {
         { keys: 'Ctrl+Shift+M', desc: i.scMoreMenu },
         { keys: 'Ctrl+Tab', desc: i.tsCycleNext },
         { keys: 'Ctrl+Shift+Tab', desc: i.tsCyclePrev },
-      ]
+      ],
     },
     {
       title: i.cpTools,
@@ -89,7 +89,7 @@ export function ShortcutsDialog() {
         { keys: 'Ctrl+Alt+R', desc: i.rcTitle },
         { keys: 'Ctrl+Alt+S', desc: i.sbTitle },
         { keys: 'Ctrl+Alt+Q', desc: i.vqTitle },
-      ]
+      ],
     },
     {
       title: i.scChat,
@@ -97,20 +97,29 @@ export function ShortcutsDialog() {
         { keys: 'Enter', desc: i.scSendMessage },
         { keys: 'Shift+Enter', desc: i.scNewline },
         { keys: '/', desc: i.scSlashCommands },
-      ]
+      ],
     },
-  ]
+  ];
 
   return (
     <>
-      <div className="fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm" onClick={() => setShortcutsDialogOpen(false)} />
+      <div
+        className="fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm"
+        onClick={() => setShortcutsDialogOpen(false)}
+      />
       <div className={`fixed inset-0 z-[61] flex items-center justify-center p-4`}>
-        <div className={`w-full max-w-lg max-h-[80vh] rounded-2xl overflow-hidden ${t.surface.popover} ${t.border.popover} shadow-2xl`}>
+        <div
+          className={`w-full max-w-lg max-h-[80vh] rounded-2xl overflow-hidden ${t.surface.popover} ${t.border.popover} shadow-2xl`}
+        >
           {/* Header */}
-          <div className={`flex items-center justify-between px-6 py-4 border-b ${t.border.subtle}`}>
+          <div
+            className={`flex items-center justify-between px-6 py-4 border-b ${t.border.subtle}`}
+          >
             <div className="flex items-center space-x-2.5">
               <Keyboard className={`w-5 h-5 ${t.accent.primary}`} />
-              <span className="text-[15px]" style={{ fontWeight: 600 }}>{i.shortcuts}</span>
+              <span className="text-[15px]" style={{ fontWeight: 600 }}>
+                {i.shortcuts}
+              </span>
             </div>
             <button
               onClick={() => setShortcutsDialogOpen(false)}
@@ -122,20 +131,31 @@ export function ShortcutsDialog() {
 
           {/* Content */}
           <div className="p-6 overflow-y-auto max-h-[calc(80vh-72px)] space-y-5">
-            {groups.map(group => (
+            {groups.map((group) => (
               <div key={group.title}>
-                <h3 className={`text-[11px] uppercase tracking-wider mb-2 ${t.text.muted}`} style={{ fontWeight: 600 }}>
+                <h3
+                  className={`text-[11px] uppercase tracking-wider mb-2 ${t.text.muted}`}
+                  style={{ fontWeight: 600 }}
+                >
                   {group.title}
                 </h3>
                 <div className="space-y-1">
-                  {group.shortcuts.map(s => (
-                    <div key={s.keys} className={`flex items-center justify-between px-3 py-2 rounded-lg ${t.isDark ? 'bg-slate-800/30' : 'bg-slate-50'}`}>
+                  {group.shortcuts.map((s) => (
+                    <div
+                      key={s.keys}
+                      className={`flex items-center justify-between px-3 py-2 rounded-lg ${t.isDark ? 'bg-slate-800/30' : 'bg-slate-50'}`}
+                    >
                       <span className={`text-[12px] ${t.text.secondary}`}>{s.desc}</span>
                       <div className="flex items-center space-x-1">
                         {s.keys.split('+').map((key, idx) => (
                           <React.Fragment key={idx}>
                             {idx > 0 && <span className={`text-[10px] ${t.text.dimmed}`}>+</span>}
-                            <kbd className={`px-2 py-0.5 rounded text-[10px] ${t.kbd}`} style={{ fontWeight: 500 }}>{key}</kbd>
+                            <kbd
+                              className={`px-2 py-0.5 rounded text-[10px] ${t.kbd}`}
+                              style={{ fontWeight: 500 }}
+                            >
+                              {key}
+                            </kbd>
                           </React.Fragment>
                         ))}
                       </div>
@@ -148,5 +168,5 @@ export function ShortcutsDialog() {
         </div>
       </div>
     </>
-  )
+  );
 }

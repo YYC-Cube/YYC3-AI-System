@@ -49,7 +49,9 @@ yyc3-ai-code/
 ## 核心配置
 
 ### Vite: port 3201, alias @/ -> src/, react plugin
+
 ### TypeScript: ES2020, strict, react-jsx, bundler resolution
+
 ### Tauri: allowlist fs/dialog/notification/shell, bundle all targets
 
 ## 验收标准

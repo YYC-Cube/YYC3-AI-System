@@ -11,6 +11,7 @@ tags: p3,testing,integration,e2e,playwright
 # YYC³ P3-测试-集成测试
 
 ## 集成测试 (Vitest + RTL)
+
 - 模块间交互: Store -> Service -> Bridge
 - API 集成: React Query hooks + msw mock
 - 数据库集成: StorageService + Dexie (fake-indexeddb)
@@ -18,6 +19,7 @@ tags: p3,testing,integration,e2e,playwright
 - 覆盖率目标: > 70%
 
 ## E2E 测试 (Playwright)
+
 ```typescript
 // playwright.config.ts
 export default defineConfig({
@@ -28,6 +30,7 @@ export default defineConfig({
 ```
 
 ## E2E 测试用例
+
 1. **文件浏览**: 打开/创建/重命名/删除文件
 2. **代码编辑**: 打开文件 -> 编辑 -> 保存 -> 验证
 3. **数据库连接**: 添加连接 -> 测试 -> 执行查询
@@ -38,10 +41,12 @@ export default defineConfig({
 8. **设置**: 主题切换/语言切换/快捷键配置
 
 ## data-testid 规范
+
 - 面板: `panel-{type}`, 按钮: `btn-{action}`, 输入: `input-{field}`
 - 列表项: `item-{id}`, 对话框: `dialog-{name}`
 
 ## CI 集成
+
 ```yaml
 - run: pnpm test:e2e
   env: { CI: true }

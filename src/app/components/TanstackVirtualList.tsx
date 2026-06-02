@@ -14,23 +14,23 @@
  * @tags component,virtual-scroll,performance,tanstack-virtual
  */
 
-import { useVirtualizer } from '@tanstack/react-virtual'
-import React, { useRef, useCallback, useMemo } from 'react'
+import { useVirtualizer } from '@tanstack/react-virtual';
+import React, { useRef, useCallback, useMemo } from 'react';
 
 interface TanstackVirtualListProps<T> {
-  items: T[]
+  items: T[];
   /** Estimate height of each item (for dynamic height, provide an estimator) */
-  estimateSize?: number | ((index: number) => number)
+  estimateSize?: number | ((index: number) => number);
   /** Number of items to render outside the visible area */
-  overscan?: number
-  className?: string
-  renderItem: (item: T, index: number) => React.ReactNode
-  getKey: (item: T, index: number) => string
-  emptyMessage?: string
+  overscan?: number;
+  className?: string;
+  renderItem: (item: T, index: number) => React.ReactNode;
+  getKey: (item: T, index: number) => string;
+  emptyMessage?: string;
   /** Scroll behavior: 'auto' | 'instant' | 'smooth' */
-  scrollBehavior?: ScrollBehavior
+  scrollBehavior?: ScrollBehavior;
   /** Enable smooth scrolling */
-  smoothScrolling?: boolean
+  smoothScrolling?: boolean;
 }
 
 export function TanstackVirtualList<T>({
@@ -42,7 +42,7 @@ export function TanstackVirtualList<T>({
   getKey,
   emptyMessage = '暂无数据',
 }: TanstackVirtualListProps<T>) {
-  const parentRef = useRef<HTMLDivElement>(null)
+  const parentRef = useRef<HTMLDivElement>(null);
 
   // Initialize the virtualizer
   const virtualizer = useVirtualizer({
@@ -50,15 +50,15 @@ export function TanstackVirtualList<T>({
     getScrollElement: () => parentRef.current,
     estimateSize: typeof estimateSize === 'function' ? estimateSize : () => estimateSize,
     overscan,
-  })
+  });
 
-  const virtualItems = virtualizer.getVirtualItems()
-  const totalSize = virtualizer.getTotalSize()
+  const virtualItems = virtualizer.getVirtualItems();
+  const totalSize = virtualizer.getTotalSize();
 
   // Memoize the rendered items
   const renderedItems = useMemo(() => {
     return virtualItems.map((virtualRow) => {
-      const item = items[virtualRow.index]
+      const item = items[virtualRow.index];
       return (
         <div
           key={getKey(item, virtualRow.index)}
@@ -74,16 +74,18 @@ export function TanstackVirtualList<T>({
         >
           {renderItem(item, virtualRow.index)}
         </div>
-      )
-    })
-  }, [items, virtualItems, renderItem, getKey, virtualizer])
+      );
+    });
+  }, [items, virtualItems, renderItem, getKey, virtualizer]);
 
   if (items.length === 0) {
     return (
-      <div className={`flex items-center justify-center h-full text-[11px] opacity-40 ${className}`}>
+      <div
+        className={`flex items-center justify-center h-full text-[11px] opacity-40 ${className}`}
+      >
         {emptyMessage}
       </div>
-    )
+    );
   }
 
   return (
@@ -105,7 +107,7 @@ export function TanstackVirtualList<T>({
         {renderedItems}
       </div>
     </div>
-  )
+  );
 }
 
 /**
@@ -122,48 +124,51 @@ export function TanstackVirtualListDynamic<T>({
   /** Provide initial estimate, will be refined dynamically */
   initialEstimate = 28,
 }: Omit<TanstackVirtualListProps<T>, 'estimateSize' | 'scrollBehavior' | 'smoothScrolling'> & {
-  initialEstimate?: number
+  initialEstimate?: number;
 }) {
-  const parentRef = useRef<HTMLDivElement>(null)
-  const sizeCache = useRef<Map<number, number>>(new Map())
+  const parentRef = useRef<HTMLDivElement>(null);
+  const sizeCache = useRef<Map<number, number>>(new Map());
 
   // Dynamic size estimator with cache
-  const estimateSize = useCallback((index: number) => {
-    // Return cached size if available
-    if (sizeCache.current.has(index)) {
-      return sizeCache.current.get(index)!
-    }
-    // Otherwise return initial estimate
-    return initialEstimate
-  }, [initialEstimate])
+  const estimateSize = useCallback(
+    (index: number) => {
+      // Return cached size if available
+      if (sizeCache.current.has(index)) {
+        return sizeCache.current.get(index)!;
+      }
+      // Otherwise return initial estimate
+      return initialEstimate;
+    },
+    [initialEstimate]
+  );
 
   // Update cache when element is measured
   const handleMeasure = useCallback((element: Element | null, index: number) => {
-    if (!element) return
-    const height = element.getBoundingClientRect().height
-    sizeCache.current.set(index, height)
-  }, [])
+    if (!element) return;
+    const height = element.getBoundingClientRect().height;
+    sizeCache.current.set(index, height);
+  }, []);
 
   const virtualizer = useVirtualizer({
     count: items.length,
     getScrollElement: () => parentRef.current,
     estimateSize,
     overscan,
-  })
+  });
 
-  const virtualItems = virtualizer.getVirtualItems()
-  const totalSize = virtualizer.getTotalSize()
+  const virtualItems = virtualizer.getVirtualItems();
+  const totalSize = virtualizer.getTotalSize();
 
   const renderedItems = useMemo(() => {
     return virtualItems.map((virtualRow) => {
-      const item = items[virtualRow.index]
+      const item = items[virtualRow.index];
       return (
         <div
           key={getKey(item, virtualRow.index)}
           data-index={virtualRow.index}
           ref={(el) => {
-            handleMeasure(el, virtualRow.index)
-            virtualizer.measureElement(el)
+            handleMeasure(el, virtualRow.index);
+            virtualizer.measureElement(el);
           }}
           style={{
             position: 'absolute',
@@ -175,16 +180,18 @@ export function TanstackVirtualListDynamic<T>({
         >
           {renderItem(item, virtualRow.index)}
         </div>
-      )
-    })
-  }, [items, virtualItems, renderItem, getKey, virtualizer, handleMeasure])
+      );
+    });
+  }, [items, virtualItems, renderItem, getKey, virtualizer, handleMeasure]);
 
   if (items.length === 0) {
     return (
-      <div className={`flex items-center justify-center h-full text-[11px] opacity-40 ${className}`}>
+      <div
+        className={`flex items-center justify-center h-full text-[11px] opacity-40 ${className}`}
+      >
         {emptyMessage}
       </div>
-    )
+    );
   }
 
   return (
@@ -206,7 +213,7 @@ export function TanstackVirtualListDynamic<T>({
         {renderedItems}
       </div>
     </div>
-  )
+  );
 }
 
 /**
@@ -215,9 +222,9 @@ export function TanstackVirtualListDynamic<T>({
  */
 interface VirtualListWithScrollMemoryProps<T> extends TanstackVirtualListProps<T> {
   /** Unique identifier for scroll position storage */
-  scrollId: string
+  scrollId: string;
   /** Save scroll position to localStorage/sessionStorage */
-  storageType?: 'localStorage' | 'sessionStorage'
+  storageType?: 'localStorage' | 'sessionStorage';
 }
 
 export function TanstackVirtualListWithScrollMemory<T>({
@@ -226,61 +233,65 @@ export function TanstackVirtualListWithScrollMemory<T>({
   storageType = 'sessionStorage',
   ...virtualListProps
 }: VirtualListWithScrollMemoryProps<T>) {
-  const parentRef = useRef<HTMLDivElement>(null)
+  const parentRef = useRef<HTMLDivElement>(null);
 
   // Save scroll position
-  const saveScrollPosition = useCallback((scrollTop: number) => {
-    try {
-      const storage = storageType === 'localStorage' ? window.localStorage : window.sessionStorage
-      storage.setItem(`virtual-scroll-${scrollId}`, String(scrollTop))
-    } catch (e) {
-      // Storage might be disabled
-      console.warn('Failed to save scroll position:', e)
-    }
-  }, [scrollId, storageType])
+  const saveScrollPosition = useCallback(
+    (scrollTop: number) => {
+      try {
+        const storage =
+          storageType === 'localStorage' ? window.localStorage : window.sessionStorage;
+        storage.setItem(`virtual-scroll-${scrollId}`, String(scrollTop));
+      } catch (e) {
+        // Storage might be disabled
+        console.warn('Failed to save scroll position:', e);
+      }
+    },
+    [scrollId, storageType]
+  );
 
   // Load scroll position
   const loadScrollPosition = useCallback(() => {
     try {
-      const storage = storageType === 'localStorage' ? window.localStorage : window.sessionStorage
-      const saved = storage.getItem(`virtual-scroll-${scrollId}`)
-      return saved ? Number.parseInt(saved, 10) : 0
+      const storage = storageType === 'localStorage' ? window.localStorage : window.sessionStorage;
+      const saved = storage.getItem(`virtual-scroll-${scrollId}`);
+      return saved ? Number.parseInt(saved, 10) : 0;
     } catch (e) {
-      return 0
+      return 0;
     }
-  }, [scrollId, storageType])
+  }, [scrollId, storageType]);
 
   const virtualizer = useVirtualizer({
     count: items.length,
     getScrollElement: () => parentRef.current,
     estimateSize: (index: number) => {
-      const size = virtualListProps.estimateSize
-      return typeof size === 'function' ? size(index) : (size ?? 28)
+      const size = virtualListProps.estimateSize;
+      return typeof size === 'function' ? size(index) : (size ?? 28);
     },
     overscan: virtualListProps.overscan ?? 8,
-  })
+  });
 
-  const virtualItems = virtualizer.getVirtualItems()
-  const totalSize = virtualizer.getTotalSize()
+  const virtualItems = virtualizer.getVirtualItems();
+  const totalSize = virtualizer.getTotalSize();
 
   // Restore scroll position on mount
   React.useEffect(() => {
-    const savedScrollTop = loadScrollPosition()
+    const savedScrollTop = loadScrollPosition();
     if (savedScrollTop > 0 && parentRef.current) {
-      parentRef.current.scrollTop = savedScrollTop
+      parentRef.current.scrollTop = savedScrollTop;
     }
-  }, [loadScrollPosition, items.length]) // Re-run when items change
+  }, [loadScrollPosition, items.length]); // Re-run when items change
 
   // Save scroll position on scroll
   const handleScroll = useCallback(() => {
     if (parentRef.current) {
-      saveScrollPosition(parentRef.current.scrollTop)
+      saveScrollPosition(parentRef.current.scrollTop);
     }
-  }, [saveScrollPosition])
+  }, [saveScrollPosition]);
 
   const renderedItems = useMemo(() => {
     return virtualItems.map((virtualRow) => {
-      const item = items[virtualRow.index]
+      const item = items[virtualRow.index];
       return (
         <div
           key={virtualListProps.getKey(item, virtualRow.index)}
@@ -296,16 +307,18 @@ export function TanstackVirtualListWithScrollMemory<T>({
         >
           {virtualListProps.renderItem(item, virtualRow.index)}
         </div>
-      )
-    })
-  }, [items, virtualItems, virtualListProps, virtualizer])
+      );
+    });
+  }, [items, virtualItems, virtualListProps, virtualizer]);
 
   if (items.length === 0) {
     return (
-      <div className={`flex items-center justify-center h-full text-[11px] opacity-40 ${virtualListProps.className}`}>
+      <div
+        className={`flex items-center justify-center h-full text-[11px] opacity-40 ${virtualListProps.className}`}
+      >
         {virtualListProps.emptyMessage}
       </div>
-    )
+    );
   }
 
   return (
@@ -328,5 +341,5 @@ export function TanstackVirtualListWithScrollMemory<T>({
         {renderedItems}
       </div>
     </div>
-  )
+  );
 }

@@ -11,6 +11,7 @@ tags: p3,deployment,cicd,github-actions
 # YYC³ P3-部署-CICD流程
 
 ## CI Pipeline (GitHub Actions)
+
 ```yaml
 name: Build & Test
 on: [push, pull_request]
@@ -58,17 +59,20 @@ jobs:
 ```
 
 ## 构建配置
+
 - Node.js: 20, pnpm: 8.x
 - Rust: stable, targets: x86_64-unknown-linux-gnu, aarch64-apple-darwin, x86_64-pc-windows-msvc
 - 签名: macOS notarization, Windows code signing
 - 自动更新: Tauri updater (可选)
 
 ## 目标
+
 - 二进制大小: < 12MB (Tauri)
 - 构建时间: < 15min (含所有平台)
 - 测试覆盖率: lint + typecheck + unit (80%) + e2e
 
 ## 发布流程
+
 1. 打 tag: `git tag v1.0.0`
 2. 推送: `git push --tags`
 3. CI 自动构建 3 平台

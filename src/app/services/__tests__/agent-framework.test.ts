@@ -11,20 +11,20 @@
  * @tags [test],[agent],[core],[protocol],[skills]
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('Agent框架测试', () => {
   describe('Agent核心框架', () => {
-    let agentManager: import('../agent-core').AgentManager
+    let agentManager: import('../agent-core').AgentManager;
 
     beforeEach(async () => {
-      const { AgentManager } = await import('../agent-core')
-      agentManager = new AgentManager()
-    })
+      const { AgentManager } = await import('../agent-core');
+      agentManager = new AgentManager();
+    });
 
     afterEach(async () => {
-      await agentManager.terminateAll()
-    })
+      await agentManager.terminateAll();
+    });
 
     it('应该正确创建Agent', () => {
       const agent = agentManager.createAgent({
@@ -35,12 +35,12 @@ describe('Agent框架测试', () => {
         timeout: 30000,
         retryCount: 2,
         retryDelay: 1000,
-      })
+      });
 
-      expect(agent.id).toBe('test-agent-1')
-      expect(agent.name).toBe('测试Agent')
-      expect(agent.currentState).toBe('idle')
-    })
+      expect(agent.id).toBe('test-agent-1');
+      expect(agent.name).toBe('测试Agent');
+      expect(agent.currentState).toBe('idle');
+    });
 
     it('应该拒绝重复创建相同ID的Agent', () => {
       agentManager.createAgent({
@@ -51,7 +51,7 @@ describe('Agent框架测试', () => {
         timeout: 30000,
         retryCount: 2,
         retryDelay: 1000,
-      })
+      });
 
       expect(() => {
         agentManager.createAgent({
@@ -62,9 +62,9 @@ describe('Agent框架测试', () => {
           timeout: 30000,
           retryCount: 2,
           retryDelay: 1000,
-        })
-      }).toThrow()
-    })
+        });
+      }).toThrow();
+    });
 
     it('应该正确初始化Agent', async () => {
       const agent = agentManager.createAgent({
@@ -75,12 +75,12 @@ describe('Agent框架测试', () => {
         timeout: 30000,
         retryCount: 2,
         retryDelay: 1000,
-      })
+      });
 
-      await agent.initialize()
+      await agent.initialize();
 
-      expect(agent.currentState).toBe('running')
-    })
+      expect(agent.currentState).toBe('running');
+    });
 
     it('应该正确注册任务执行器', async () => {
       const agent = agentManager.createAgent({
@@ -91,12 +91,12 @@ describe('Agent框架测试', () => {
         timeout: 30000,
         retryCount: 2,
         retryDelay: 1000,
-      })
+      });
 
-      const executor = vi.fn().mockResolvedValue({ result: 'success' })
-      agent.registerExecutor('test-task', executor)
+      const executor = vi.fn().mockResolvedValue({ result: 'success' });
+      agent.registerExecutor('test-task', executor);
 
-      await agent.initialize()
+      await agent.initialize();
       const taskId = agent.submitTask({
         name: 'test-task',
         priority: 'normal',
@@ -104,12 +104,12 @@ describe('Agent框架测试', () => {
         maxRetries: 0,
         timeout: 5000,
         dependencies: [],
-      })
+      });
 
-      await new Promise((resolve) => setTimeout(resolve, 100))
+      await new Promise((resolve) => setTimeout(resolve, 100));
 
-      expect(executor).toHaveBeenCalled()
-    })
+      expect(executor).toHaveBeenCalled();
+    });
 
     it('应该正确暂停和恢复Agent', async () => {
       const agent = agentManager.createAgent({
@@ -120,17 +120,17 @@ describe('Agent框架测试', () => {
         timeout: 30000,
         retryCount: 2,
         retryDelay: 1000,
-      })
+      });
 
-      await agent.initialize()
-      await agent.pause()
+      await agent.initialize();
+      await agent.pause();
 
-      expect(agent.currentState).toBe('paused')
+      expect(agent.currentState).toBe('paused');
 
-      await agent.resume()
+      await agent.resume();
 
-      expect(agent.currentState).toBe('running')
-    })
+      expect(agent.currentState).toBe('running');
+    });
 
     it('应该正确终止Agent', async () => {
       const agent = agentManager.createAgent({
@@ -141,13 +141,13 @@ describe('Agent框架测试', () => {
         timeout: 30000,
         retryCount: 2,
         retryDelay: 1000,
-      })
+      });
 
-      await agent.initialize()
-      await agent.terminate()
+      await agent.initialize();
+      await agent.terminate();
 
-      expect(agent.currentState).toBe('terminated')
-    })
+      expect(agent.currentState).toBe('terminated');
+    });
 
     it('应该正确获取Agent统计信息', async () => {
       const agent = agentManager.createAgent({
@@ -158,15 +158,15 @@ describe('Agent框架测试', () => {
         timeout: 30000,
         retryCount: 2,
         retryDelay: 1000,
-      })
+      });
 
-      await agent.initialize()
+      await agent.initialize();
 
-      const stats = agent.getStats()
+      const stats = agent.getStats();
 
-      expect(stats.totalTasks).toBe(0)
-      expect(stats.completedTasks).toBe(0)
-    })
+      expect(stats.totalTasks).toBe(0);
+      expect(stats.completedTasks).toBe(0);
+    });
 
     it('应该正确获取全局统计信息', async () => {
       agentManager.createAgent({
@@ -177,7 +177,7 @@ describe('Agent框架测试', () => {
         timeout: 30000,
         retryCount: 2,
         retryDelay: 1000,
-      })
+      });
 
       agentManager.createAgent({
         id: 'global-stats-2',
@@ -187,118 +187,122 @@ describe('Agent框架测试', () => {
         timeout: 30000,
         retryCount: 2,
         retryDelay: 1000,
-      })
+      });
 
-      const stats = agentManager.getGlobalStats()
+      const stats = agentManager.getGlobalStats();
 
-      expect(stats.totalAgents).toBe(2)
-    })
-  })
+      expect(stats.totalAgents).toBe(2);
+    });
+  });
 
   describe('Agent通信协议', () => {
-    let protocol: import('../agent-protocol').AgentProtocol
+    let protocol: import('../agent-protocol').AgentProtocol;
 
     beforeEach(async () => {
-      const { AgentProtocol } = await import('../agent-protocol')
-      protocol = new AgentProtocol()
-    })
+      const { AgentProtocol } = await import('../agent-protocol');
+      protocol = new AgentProtocol();
+    });
 
     afterEach(() => {
-      protocol.clearHistory()
-    })
+      protocol.clearHistory();
+    });
 
     it('应该正确订阅主题', () => {
-      const handler = vi.fn()
-      const subscriptionId = protocol.subscribe('test-topic', 'agent-1', handler)
+      const handler = vi.fn();
+      const subscriptionId = protocol.subscribe('test-topic', 'agent-1', handler);
 
-      expect(subscriptionId).toBeDefined()
-    })
+      expect(subscriptionId).toBeDefined();
+    });
 
     it('应该正确发布消息', () => {
-      const handler = vi.fn()
-      protocol.subscribe('publish-topic', 'agent-1', handler)
+      const handler = vi.fn();
+      protocol.subscribe('publish-topic', 'agent-1', handler);
 
-      protocol.publish('publish-topic', { message: 'hello' })
+      protocol.publish('publish-topic', { message: 'hello' });
 
-      expect(handler).toHaveBeenCalled()
-    })
+      expect(handler).toHaveBeenCalled();
+    });
 
     it('应该正确取消订阅', () => {
-      const handler = vi.fn()
-      const subscriptionId = protocol.subscribe('unsubscribe-topic', 'agent-1', handler)
+      const handler = vi.fn();
+      const subscriptionId = protocol.subscribe('unsubscribe-topic', 'agent-1', handler);
 
-      protocol.unsubscribe(subscriptionId)
-      protocol.publish('unsubscribe-topic', { message: 'test' })
+      protocol.unsubscribe(subscriptionId);
+      protocol.publish('unsubscribe-topic', { message: 'test' });
 
-      expect(handler).not.toHaveBeenCalled()
-    })
+      expect(handler).not.toHaveBeenCalled();
+    });
 
     it('应该正确发送请求并等待响应', async () => {
       protocol.subscribe('request-topic', 'agent-2', async (message) => {
-        protocol.respond(message.id, { response: 'ok' }, { from: 'agent-2' })
-      })
+        protocol.respond(message.id, { response: 'ok' }, { from: 'agent-2' });
+      });
 
-      const response = await protocol.request('agent-2', { request: 'test' }, { topic: 'request-topic', timeout: 5000 })
+      const response = await protocol.request(
+        'agent-2',
+        { request: 'test' },
+        { topic: 'request-topic', timeout: 5000 }
+      );
 
-      expect(response.success).toBe(true)
-      expect(response.payload).toEqual({ response: 'ok' })
-    })
+      expect(response.success).toBe(true);
+      expect(response.payload).toEqual({ response: 'ok' });
+    });
 
     it('应该正确广播消息', () => {
-      const handler1 = vi.fn()
-      const handler2 = vi.fn()
+      const handler1 = vi.fn();
+      const handler2 = vi.fn();
 
-      protocol.subscribe('broadcast-topic', 'agent-1', handler1)
-      protocol.subscribe('broadcast-topic', 'agent-2', handler2)
+      protocol.subscribe('broadcast-topic', 'agent-1', handler1);
+      protocol.subscribe('broadcast-topic', 'agent-2', handler2);
 
-      protocol.broadcast('broadcast-topic', { message: 'broadcast' })
+      protocol.broadcast('broadcast-topic', { message: 'broadcast' });
 
-      expect(handler1).toHaveBeenCalled()
-      expect(handler2).toHaveBeenCalled()
-    })
+      expect(handler1).toHaveBeenCalled();
+      expect(handler2).toHaveBeenCalled();
+    });
 
     it('应该正确过滤消息', () => {
-      const handler = vi.fn()
+      const handler = vi.fn();
       protocol.subscribe('filter-topic', 'agent-1', handler, {
         from: 'allowed-agent',
-      })
+      });
 
-      protocol.publish('filter-topic', { message: 'test' }, { from: 'allowed-agent' })
-      protocol.publish('filter-topic', { message: 'test' }, { from: 'blocked-agent' })
+      protocol.publish('filter-topic', { message: 'test' }, { from: 'allowed-agent' });
+      protocol.publish('filter-topic', { message: 'test' }, { from: 'blocked-agent' });
 
-      expect(handler).toHaveBeenCalledTimes(1)
-    })
+      expect(handler).toHaveBeenCalledTimes(1);
+    });
 
     it('应该正确获取消息历史', () => {
-      protocol.publish('history-topic', { message: 'msg1' })
-      protocol.publish('history-topic', { message: 'msg2' })
+      protocol.publish('history-topic', { message: 'msg1' });
+      protocol.publish('history-topic', { message: 'msg2' });
 
-      const history = protocol.getMessageHistory({ topic: 'history-topic' })
+      const history = protocol.getMessageHistory({ topic: 'history-topic' });
 
-      expect(history.length).toBe(2)
-    })
+      expect(history.length).toBe(2);
+    });
 
     it('应该正确获取队列统计', () => {
-      protocol.publish('stats-topic', { message: 'test' })
+      protocol.publish('stats-topic', { message: 'test' });
 
-      const stats = protocol.getQueueStats()
+      const stats = protocol.getQueueStats();
 
-      expect(stats.pending).toBeDefined()
-      expect(stats.completed).toBeDefined()
-    })
-  })
+      expect(stats.pending).toBeDefined();
+      expect(stats.completed).toBeDefined();
+    });
+  });
 
   describe('Agent能力扩展', () => {
-    let skillRegistry: import('../agent-skills').SkillRegistry
-    let toolRegistry: import('../agent-skills').ToolRegistry
-    let knowledgeBase: import('../agent-skills').KnowledgeBase
+    let skillRegistry: import('../agent-skills').SkillRegistry;
+    let toolRegistry: import('../agent-skills').ToolRegistry;
+    let knowledgeBase: import('../agent-skills').KnowledgeBase;
 
     beforeEach(async () => {
-      const { SkillRegistry, ToolRegistry, KnowledgeBase } = await import('../agent-skills')
-      skillRegistry = new SkillRegistry()
-      toolRegistry = new ToolRegistry()
-      knowledgeBase = new KnowledgeBase()
-    })
+      const { SkillRegistry, ToolRegistry, KnowledgeBase } = await import('../agent-skills');
+      skillRegistry = new SkillRegistry();
+      toolRegistry = new ToolRegistry();
+      knowledgeBase = new KnowledgeBase();
+    });
 
     describe('技能注册系统', () => {
       it('应该正确注册技能', () => {
@@ -313,11 +317,11 @@ describe('Agent框架测试', () => {
           handler: async () => ({ success: true }),
           enabled: true,
           priority: 1,
-        })
+        });
 
-        expect(skillId).toBeDefined()
-        expect(skillRegistry.get(skillId)).toBeDefined()
-      })
+        expect(skillId).toBeDefined();
+        expect(skillRegistry.get(skillId)).toBeDefined();
+      });
 
       it('应该正确注销技能', () => {
         const skillId = skillRegistry.register({
@@ -331,13 +335,13 @@ describe('Agent框架测试', () => {
           handler: async () => ({ success: true }),
           enabled: true,
           priority: 1,
-        })
+        });
 
-        const result = skillRegistry.unregister(skillId)
+        const result = skillRegistry.unregister(skillId);
 
-        expect(result).toBe(true)
-        expect(skillRegistry.get(skillId)).toBeUndefined()
-      })
+        expect(result).toBe(true);
+        expect(skillRegistry.get(skillId)).toBeUndefined();
+      });
 
       it('应该正确按类别获取技能', () => {
         skillRegistry.register({
@@ -351,13 +355,13 @@ describe('Agent框架测试', () => {
           handler: async () => ({ success: true }),
           enabled: true,
           priority: 1,
-        })
+        });
 
-        const skills = skillRegistry.getByCategory('analysis')
+        const skills = skillRegistry.getByCategory('analysis');
 
-        expect(skills.length).toBeGreaterThan(0)
-        expect(skills[0].category).toBe('analysis')
-      })
+        expect(skills.length).toBeGreaterThan(0);
+        expect(skills[0].category).toBe('analysis');
+      });
 
       it('应该正确搜索技能', () => {
         skillRegistry.register({
@@ -371,12 +375,12 @@ describe('Agent框架测试', () => {
           handler: async () => ({ success: true }),
           enabled: true,
           priority: 1,
-        })
+        });
 
-        const results = skillRegistry.search('代码')
+        const results = skillRegistry.search('代码');
 
-        expect(results.length).toBeGreaterThan(0)
-      })
+        expect(results.length).toBeGreaterThan(0);
+      });
 
       it('应该正确执行技能', async () => {
         const skillId = skillRegistry.register({
@@ -390,7 +394,7 @@ describe('Agent框架测试', () => {
           handler: async () => ({ success: true, data: { result: 'ok' } }),
           enabled: true,
           priority: 1,
-        })
+        });
 
         const context = {
           agentId: 'test-agent',
@@ -403,13 +407,13 @@ describe('Agent框架测试', () => {
             warn: vi.fn(),
             error: vi.fn(),
           },
-        }
+        };
 
-        const result = await skillRegistry.execute(skillId, {}, context)
+        const result = await skillRegistry.execute(skillId, {}, context);
 
-        expect(result.success).toBe(true)
-        expect(result.data).toEqual({ result: 'ok' })
-      })
+        expect(result.success).toBe(true);
+        expect(result.data).toEqual({ result: 'ok' });
+      });
 
       it('应该正确获取技能统计', () => {
         skillRegistry.register({
@@ -423,14 +427,14 @@ describe('Agent框架测试', () => {
           handler: async () => ({ success: true }),
           enabled: true,
           priority: 1,
-        })
+        });
 
-        const stats = skillRegistry.getStats()
+        const stats = skillRegistry.getStats();
 
-        expect(stats.total).toBeGreaterThan(0)
-        expect(stats.enabled).toBeGreaterThan(0)
-      })
-    })
+        expect(stats.total).toBeGreaterThan(0);
+        expect(stats.enabled).toBeGreaterThan(0);
+      });
+    });
 
     describe('工具注册系统', () => {
       it('应该正确注册工具', () => {
@@ -441,11 +445,11 @@ describe('Agent框架测试', () => {
           config: {},
           handler: async () => ({ result: 'ok' }),
           enabled: true,
-        })
+        });
 
-        expect(toolId).toBeDefined()
-        expect(toolRegistry.get(toolId)).toBeDefined()
-      })
+        expect(toolId).toBeDefined();
+        expect(toolRegistry.get(toolId)).toBeDefined();
+      });
 
       it('应该正确调用工具', async () => {
         const toolId = toolRegistry.register({
@@ -455,12 +459,12 @@ describe('Agent框架测试', () => {
           config: {},
           handler: async (params) => ({ received: params }),
           enabled: true,
-        })
+        });
 
-        const result = await toolRegistry.invoke(toolId, { test: 'data' })
+        const result = await toolRegistry.invoke(toolId, { test: 'data' });
 
-        expect(result).toEqual({ received: { test: 'data' } })
-      })
+        expect(result).toEqual({ received: { test: 'data' } });
+      });
 
       it('应该正确按类型获取工具', () => {
         toolRegistry.register({
@@ -470,14 +474,14 @@ describe('Agent框架测试', () => {
           config: {},
           handler: async () => null,
           enabled: true,
-        })
+        });
 
-        const tools = toolRegistry.getByType('api')
+        const tools = toolRegistry.getByType('api');
 
-        expect(tools.length).toBeGreaterThan(0)
-        expect(tools[0].type).toBe('api')
-      })
-    })
+        expect(tools.length).toBeGreaterThan(0);
+        expect(tools[0].type).toBe('api');
+      });
+    });
 
     describe('知识库系统', () => {
       it('应该正确添加知识条目', () => {
@@ -487,11 +491,11 @@ describe('Agent框架测试', () => {
           category: 'test',
           tags: ['test'],
           metadata: {},
-        })
+        });
 
-        expect(entryId).toBeDefined()
-        expect(knowledgeBase.get(entryId)).toBeDefined()
-      })
+        expect(entryId).toBeDefined();
+        expect(knowledgeBase.get(entryId)).toBeDefined();
+      });
 
       it('应该正确查询知识', () => {
         knowledgeBase.add({
@@ -500,13 +504,13 @@ describe('Agent框架测试', () => {
           category: 'programming',
           tags: ['python', 'language'],
           metadata: {},
-        })
+        });
 
-        const results = knowledgeBase.query({ query: 'Python' })
+        const results = knowledgeBase.query({ query: 'Python' });
 
-        expect(results.length).toBeGreaterThan(0)
-        expect(results[0].title).toContain('Python')
-      })
+        expect(results.length).toBeGreaterThan(0);
+        expect(results[0].title).toContain('Python');
+      });
 
       it('应该正确按类别获取知识', () => {
         knowledgeBase.add({
@@ -515,12 +519,12 @@ describe('Agent框架测试', () => {
           category: 'category-test',
           tags: ['test'],
           metadata: {},
-        })
+        });
 
-        const entries = knowledgeBase.getByCategory('category-test')
+        const entries = knowledgeBase.getByCategory('category-test');
 
-        expect(entries.length).toBeGreaterThan(0)
-      })
+        expect(entries.length).toBeGreaterThan(0);
+      });
 
       it('应该正确更新知识条目', () => {
         const entryId = knowledgeBase.add({
@@ -529,13 +533,13 @@ describe('Agent框架测试', () => {
           category: 'test',
           tags: ['test'],
           metadata: {},
-        })
+        });
 
-        knowledgeBase.update(entryId, { content: '更新后的内容' })
+        knowledgeBase.update(entryId, { content: '更新后的内容' });
 
-        const entry = knowledgeBase.get(entryId)
-        expect(entry?.content).toBe('更新后的内容')
-      })
+        const entry = knowledgeBase.get(entryId);
+        expect(entry?.content).toBe('更新后的内容');
+      });
 
       it('应该正确删除知识条目', () => {
         const entryId = knowledgeBase.add({
@@ -544,12 +548,12 @@ describe('Agent框架测试', () => {
           category: 'test',
           tags: ['test'],
           metadata: {},
-        })
+        });
 
-        knowledgeBase.remove(entryId)
+        knowledgeBase.remove(entryId);
 
-        expect(knowledgeBase.get(entryId)).toBeUndefined()
-      })
+        expect(knowledgeBase.get(entryId)).toBeUndefined();
+      });
 
       it('应该正确获取知识库统计', () => {
         knowledgeBase.add({
@@ -558,23 +562,23 @@ describe('Agent框架测试', () => {
           category: 'stats-test',
           tags: ['test'],
           metadata: {},
-        })
+        });
 
-        const stats = knowledgeBase.getStats()
+        const stats = knowledgeBase.getStats();
 
-        expect(stats.total).toBeGreaterThan(0)
-      })
-    })
-  })
-})
+        expect(stats.total).toBeGreaterThan(0);
+      });
+    });
+  });
+});
 
 describe('Agent系统集成测试', () => {
   it('Agent核心与通信协议集成', async () => {
-    const { AgentManager } = await import('../agent-core')
-    const { AgentProtocol } = await import('../agent-protocol')
+    const { AgentManager } = await import('../agent-core');
+    const { AgentProtocol } = await import('../agent-protocol');
 
-    const manager = new AgentManager()
-    const protocol = new AgentProtocol()
+    const manager = new AgentManager();
+    const protocol = new AgentProtocol();
 
     const agent = manager.createAgent({
       id: 'integration-agent',
@@ -584,28 +588,28 @@ describe('Agent系统集成测试', () => {
       timeout: 30000,
       retryCount: 2,
       retryDelay: 1000,
-    })
+    });
 
-    const handler = vi.fn()
-    protocol.subscribe('agent-events', 'integration-agent', handler)
+    const handler = vi.fn();
+    protocol.subscribe('agent-events', 'integration-agent', handler);
 
     agent.on('initialized', async () => {
-      protocol.publish('agent-events', { type: 'initialized', agentId: agent.id })
-    })
+      protocol.publish('agent-events', { type: 'initialized', agentId: agent.id });
+    });
 
-    await agent.initialize()
+    await agent.initialize();
 
-    expect(handler).toHaveBeenCalled()
+    expect(handler).toHaveBeenCalled();
 
-    await manager.terminateAll()
-  })
+    await manager.terminateAll();
+  });
 
   it('Agent核心与技能系统集成', async () => {
-    const { AgentManager } = await import('../agent-core')
-    const { SkillRegistry } = await import('../agent-skills')
+    const { AgentManager } = await import('../agent-core');
+    const { SkillRegistry } = await import('../agent-skills');
 
-    const manager = new AgentManager()
-    const skillRegistry = new SkillRegistry()
+    const manager = new AgentManager();
+    const skillRegistry = new SkillRegistry();
 
     const skillId = skillRegistry.register({
       name: '集成测试技能',
@@ -618,7 +622,7 @@ describe('Agent系统集成测试', () => {
       handler: async () => ({ success: true, data: 'integrated' }),
       enabled: true,
       priority: 1,
-    })
+    });
 
     const agent = manager.createAgent({
       id: 'skill-integration-agent',
@@ -628,7 +632,7 @@ describe('Agent系统集成测试', () => {
       timeout: 30000,
       retryCount: 2,
       retryDelay: 1000,
-    })
+    });
 
     agent.registerExecutor('skill-task', async (task) => {
       const context = {
@@ -642,11 +646,11 @@ describe('Agent系统集成测试', () => {
           warn: () => {},
           error: () => {},
         },
-      }
-      return skillRegistry.execute(skillId, task.payload, context)
-    })
+      };
+      return skillRegistry.execute(skillId, task.payload, context);
+    });
 
-    await agent.initialize()
+    await agent.initialize();
 
     const taskId = agent.submitTask({
       name: 'skill-task',
@@ -655,10 +659,10 @@ describe('Agent系统集成测试', () => {
       maxRetries: 0,
       timeout: 5000,
       dependencies: [],
-    })
+    });
 
-    expect(taskId).toBeDefined()
+    expect(taskId).toBeDefined();
 
-    await manager.terminateAll()
-  })
-})
+    await manager.terminateAll();
+  });
+});

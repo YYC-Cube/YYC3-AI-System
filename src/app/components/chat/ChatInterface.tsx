@@ -11,80 +11,76 @@
  * @tags component,chat,ai,mvp
  */
 
-import { Send, Trash2, Copy, RotateCcw, MoreVertical } from 'lucide-react'
-import React, { useState, useRef, useEffect } from 'react'
+import { Send, Trash2, Copy, RotateCcw, MoreVertical } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
 
-import { useAIProvider } from '../../services/hooks'
+import { useAIProvider } from '../../services/hooks';
 
 export interface Message {
-  id: string
-  role: 'user' | 'assistant' | 'system'
-  content: string
-  timestamp: number
-  isStreaming?: boolean
+  id: string;
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+  timestamp: number;
+  isStreaming?: boolean;
 }
 
 export interface ChatInterfaceProps {
-  className?: string
-  onMessageSent?: (message: Message) => void
-  onClearChat?: () => void
+  className?: string;
+  onMessageSent?: (message: Message) => void;
+  onClearChat?: () => void;
 }
 
-export function ChatInterface({
-  className = '',
-  onMessageSent,
-  onClearChat,
-}: ChatInterfaceProps) {
-  const [messages, setMessages] = useState<Message[]>([])
-  const [input, setInput] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null)
-  const messagesEndRef = useRef<HTMLDivElement>(null)
-  const inputRef = useRef<HTMLTextAreaElement>(null)
-  const { service: aiService } = useAIProvider()
+export function ChatInterface({ className = '', onMessageSent, onClearChat }: ChatInterfaceProps) {
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const { service: aiService } = useAIProvider();
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages])
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   // Save draft to localStorage
   useEffect(() => {
-    const savedDraft = localStorage.getItem('chat-draft')
+    const savedDraft = localStorage.getItem('chat-draft');
     if (savedDraft && !input) {
-      setInput(savedDraft)
+      setInput(savedDraft);
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
     if (input) {
-      localStorage.setItem('chat-draft', input)
+      localStorage.setItem('chat-draft', input);
     } else {
-      localStorage.removeItem('chat-draft')
+      localStorage.removeItem('chat-draft');
     }
-  }, [input])
+  }, [input]);
 
   const handleSend = async () => {
-    if (!input.trim() || isLoading) return
+    if (!input.trim() || isLoading) return;
 
     const userMessage: Message = {
       id: crypto.randomUUID(),
       role: 'user',
       content: input.trim(),
       timestamp: Date.now(),
-    }
+    };
 
-    setMessages(prev => [...prev, userMessage])
-    setInput('')
-    setIsLoading(true)
+    setMessages((prev) => [...prev, userMessage]);
+    setInput('');
+    setIsLoading(true);
 
     if (onMessageSent) {
-      onMessageSent(userMessage)
+      onMessageSent(userMessage);
     }
 
     try {
-      const result = await aiService.chat([{ role: 'user', content: input.trim() }])
-      const response = result.choices?.[0]?.message?.content ?? ''
+      const result = await aiService.chat([{ role: 'user', content: input.trim() }]);
+      const response = result.choices?.[0]?.message?.content ?? '';
 
       const assistantMessage: Message = {
         id: crypto.randomUUID(),
@@ -92,75 +88,75 @@ export function ChatInterface({
         content: response,
         timestamp: Date.now(),
         isStreaming: false,
-      }
+      };
 
-      setMessages(prev => [...prev, assistantMessage])
+      setMessages((prev) => [...prev, assistantMessage]);
     } catch (error) {
-      console.error('Failed to generate response:', error)
+      console.error('Failed to generate response:', error);
 
       const errorMessage: Message = {
         id: crypto.randomUUID(),
         role: 'assistant',
         content: '抱歉，我遇到了一些问题。请稍后再试。',
         timestamp: Date.now(),
-      }
+      };
 
-      setMessages(prev => [...prev, errorMessage])
+      setMessages((prev) => [...prev, errorMessage]);
     } finally {
-      setIsLoading(false)
-      inputRef.current?.focus()
+      setIsLoading(false);
+      inputRef.current?.focus();
     }
-  }
+  };
 
   const handleRegenerate = async (messageId: string) => {
-    const messageIndex = messages.findIndex(m => m.id === messageId)
-    if (messageIndex === -1) return
+    const messageIndex = messages.findIndex((m) => m.id === messageId);
+    if (messageIndex === -1) return;
 
-    const userMessage = messages[messageIndex - 1]
-    if (!userMessage || userMessage.role !== 'user') return
+    const userMessage = messages[messageIndex - 1];
+    if (!userMessage || userMessage.role !== 'user') return;
 
     // Remove all messages after this message
-    setMessages(prev => prev.slice(0, messageIndex))
-    setIsLoading(true)
+    setMessages((prev) => prev.slice(0, messageIndex));
+    setIsLoading(true);
 
     try {
-      const result = await aiService.chat([{ role: 'user', content: userMessage.content }])
-      const response = result.choices?.[0]?.message?.content ?? ''
+      const result = await aiService.chat([{ role: 'user', content: userMessage.content }]);
+      const response = result.choices?.[0]?.message?.content ?? '';
 
       const assistantMessage: Message = {
         id: crypto.randomUUID(),
         role: 'assistant',
         content: response,
         timestamp: Date.now(),
-      }
+      };
 
-      setMessages(prev => [...prev, assistantMessage])
+      setMessages((prev) => [...prev, assistantMessage]);
     } catch (error) {
-      console.error('Failed to regenerate response:', error)
+      console.error('Failed to regenerate response:', error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleCopy = async (content: string, messageId: string) => {
-    await navigator.clipboard.writeText(content)
-    setCopiedMessageId(messageId)
-    setTimeout(() => setCopiedMessageId(null), 2000)
-  }
+    await navigator.clipboard.writeText(content);
+    setCopiedMessageId(messageId);
+    setTimeout(() => setCopiedMessageId(null), 2000);
+  };
 
   const handleClear = () => {
-    setMessages([])
+    setMessages([]);
     if (onClearChat) {
-      onClearChat()
+      onClearChat();
     }
-  }
+  };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-      handleSend()
+      e.preventDefault();
+      handleSend();
     }
-  }
+  };
 
   const formatMessage = (content: string) => {
     // Simple markdown-like formatting
@@ -169,16 +165,14 @@ export function ChatInterface({
       .replace(/`([^`]+)`/g, '<code>$1</code>')
       .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
       .replace(/\*([^*]+)\*/g, '<em>$1</em>')
-      .replace(/\n/g, '<br/>')
-  }
+      .replace(/\n/g, '<br/>');
+  };
 
   return (
     <div className={`flex flex-col h-full bg-white dark:bg-gray-900 ${className}`}>
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-        <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-          AI 助手
-        </h2>
+        <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200">AI 助手</h2>
         {messages.length > 0 && (
           <button
             onClick={handleClear}
@@ -263,9 +257,18 @@ export function ChatInterface({
               <div className="flex justify-start">
                 <div className="bg-gray-100 dark:bg-gray-800 rounded-2xl px-4 py-3">
                   <div className="flex space-x-2">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                    <div
+                      className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                      style={{ animationDelay: '0ms' }}
+                    ></div>
+                    <div
+                      className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                      style={{ animationDelay: '150ms' }}
+                    ></div>
+                    <div
+                      className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                      style={{ animationDelay: '300ms' }}
+                    ></div>
                   </div>
                 </div>
               </div>
@@ -300,5 +303,5 @@ export function ChatInterface({
         </div>
       </div>
     </div>
-  )
+  );
 }

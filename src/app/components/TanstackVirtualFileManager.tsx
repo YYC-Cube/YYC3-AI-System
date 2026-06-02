@@ -13,33 +13,31 @@
  * @tags component,virtual-scroll,performance,tanstack-virtual,file-manager
  */
 
-import { useVirtualizer } from '@tanstack/react-virtual'
-import {
-  ChevronRight, ChevronDown, MoreVertical,
-} from 'lucide-react'
-import React, { useRef, useMemo, useCallback, ReactNode } from 'react'
+import { useVirtualizer } from '@tanstack/react-virtual';
+import { ChevronRight, ChevronDown, MoreVertical } from 'lucide-react';
+import React, { useRef, useMemo, useCallback, ReactNode } from 'react';
 
-import { getThemeTokens, type ThemeMode } from '../utils/theme'
+import { getThemeTokens, type ThemeMode } from '../utils/theme';
 
 interface FileNode {
-  name: string
-  type: 'folder' | 'file'
-  expanded?: boolean
-  children?: FileNode[]
-  language?: string
-  key: string
-  level: number
-  path: number[]
+  name: string;
+  type: 'folder' | 'file';
+  expanded?: boolean;
+  children?: FileNode[];
+  language?: string;
+  key: string;
+  level: number;
+  path: number[];
 }
 
 interface TanstackVirtualFileManagerProps {
-  flatNodes: FileNode[]
-  selectedFile: string | null
-  theme: ThemeMode
-  toggleFolder: (path: number[]) => void
-  setSelectedFile: (file: string) => void
-  handleContextMenu: (e: React.MouseEvent, node: FileNode) => void
-  getFileIcon: (name: string, language?: string, theme?: ThemeMode) => ReactNode
+  flatNodes: FileNode[];
+  selectedFile: string | null;
+  theme: ThemeMode;
+  toggleFolder: (path: number[]) => void;
+  setSelectedFile: (file: string) => void;
+  handleContextMenu: (e: React.MouseEvent, node: FileNode) => void;
+  getFileIcon: (name: string, language?: string, theme?: ThemeMode) => ReactNode;
 }
 
 export function TanstackVirtualFileManager({
@@ -51,7 +49,7 @@ export function TanstackVirtualFileManager({
   handleContextMenu,
   getFileIcon,
 }: TanstackVirtualFileManagerProps) {
-  const parentRef = useRef<HTMLDivElement>(null)
+  const parentRef = useRef<HTMLDivElement>(null);
 
   // Initialize virtualizer with dynamic height estimation
   const virtualizer = useVirtualizer({
@@ -60,22 +58,22 @@ export function TanstackVirtualFileManager({
     estimateSize: useCallback((_index) => {
       // Estimate height based on item content
       // Base height is 28px (py-[5px] = 10px + content 18px)
-      return 28
+      return 28;
     }, []),
     overscan: 8, // Render 8 extra items outside viewport
-  })
+  });
 
-  const virtualItems = virtualizer.getVirtualItems()
-  const totalSize = virtualizer.getTotalSize()
-  const t = getThemeTokens(theme)
+  const virtualItems = virtualizer.getVirtualItems();
+  const totalSize = virtualizer.getTotalSize();
+  const t = getThemeTokens(theme);
 
   // Memoize rendered items to avoid unnecessary re-renders
   const renderedItems = useMemo(() => {
     return virtualItems.map((virtualRow) => {
-      const node = flatNodes[virtualRow.index]
-      if (!node) return null
+      const node = flatNodes[virtualRow.index];
+      if (!node) return null;
 
-      const isSelected = node.type === 'file' && node.name === selectedFile
+      const isSelected = node.type === 'file' && node.name === selectedFile;
 
       return (
         <div
@@ -98,38 +96,54 @@ export function TanstackVirtualFileManager({
             }`}
             style={{ paddingLeft: `${node.level * 14 + 8}px`, fontWeight: isSelected ? 500 : 400 }}
             onClick={() => {
-              if (node.type === 'folder') toggleFolder(node.path)
-              else setSelectedFile(node.name)
+              if (node.type === 'folder') toggleFolder(node.path);
+              else setSelectedFile(node.name);
             }}
             onContextMenu={(e) => handleContextMenu(e, node)}
           >
             {node.type === 'folder' ? (
-              node.expanded
-                ? <ChevronDown className="w-3.5 h-3.5 opacity-50 flex-shrink-0" />
-                : <ChevronRight className="w-3.5 h-3.5 opacity-50 flex-shrink-0" />
+              node.expanded ? (
+                <ChevronDown className="w-3.5 h-3.5 opacity-50 flex-shrink-0" />
+              ) : (
+                <ChevronRight className="w-3.5 h-3.5 opacity-50 flex-shrink-0" />
+              )
             ) : (
               <div className="w-3.5 flex-shrink-0" />
             )}
             {getFileIcon(node.name, node.language, theme)}
             <span className="truncate">{node.name}</span>
             <div className="ml-auto opacity-0 group-hover:opacity-100 flex items-center space-x-0.5 flex-shrink-0">
-              <button className={`p-0.5 rounded ${t.interactive.hoverBg}`}
-                onClick={(e) => { e.stopPropagation(); handleContextMenu(e, node) }}>
+              <button
+                className={`p-0.5 rounded ${t.interactive.hoverBg}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleContextMenu(e, node);
+                }}
+              >
                 <MoreVertical className="w-3 h-3" />
               </button>
             </div>
           </div>
         </div>
-      )
-    })
-  }, [flatNodes, virtualItems, selectedFile, theme, t, toggleFolder, setSelectedFile, handleContextMenu, getFileIcon, virtualizer])
+      );
+    });
+  }, [
+    flatNodes,
+    virtualItems,
+    selectedFile,
+    theme,
+    t,
+    toggleFolder,
+    setSelectedFile,
+    handleContextMenu,
+    getFileIcon,
+    virtualizer,
+  ]);
 
   if (flatNodes.length === 0) {
     return (
-      <div className="flex items-center justify-center h-full text-[11px] opacity-40">
-        暂无文件
-      </div>
-    )
+      <div className="flex items-center justify-center h-full text-[11px] opacity-40">暂无文件</div>
+    );
   }
 
   return (
@@ -151,7 +165,7 @@ export function TanstackVirtualFileManager({
         {renderedItems}
       </div>
     </div>
-  )
+  );
 }
 
 /**
@@ -159,10 +173,10 @@ export function TanstackVirtualFileManager({
  * Performance Comparison Report Component
  */
 interface PerformanceReportProps {
-  renderTimeBefore: number
-  renderTimeAfter: number
-  itemsCount: number
-  memoryReduction?: number
+  renderTimeBefore: number;
+  renderTimeAfter: number;
+  itemsCount: number;
+  memoryReduction?: number;
 }
 
 export function VirtualPerformanceReport({
@@ -171,13 +185,13 @@ export function VirtualPerformanceReport({
   itemsCount,
   memoryReduction,
 }: PerformanceReportProps) {
-  const improvement = ((renderTimeBefore - renderTimeAfter) / renderTimeBefore) * 100
-  const speedup = renderTimeBefore / renderTimeAfter
+  const improvement = ((renderTimeBefore - renderTimeAfter) / renderTimeBefore) * 100;
+  const speedup = renderTimeBefore / renderTimeAfter;
 
   return (
     <div className="space-y-4 p-4 text-xs">
       <div className="font-bold text-sm mb-3">🚀 虚拟滚动性能对比报告</div>
-      
+
       <div className="grid grid-cols-2 gap-3">
         {/* Render Time Comparison */}
         <div className="space-y-2">
@@ -206,7 +220,9 @@ export function VirtualPerformanceReport({
           <div className="text-slate-400">内存占用</div>
           {memoryReduction ? (
             <>
-              <div className="font-bold text-lg text-purple-300">-{memoryReduction.toFixed(1)}%</div>
+              <div className="font-bold text-lg text-purple-300">
+                -{memoryReduction.toFixed(1)}%
+              </div>
               <div className="text-slate-400">内存减少</div>
             </>
           ) : (
@@ -227,5 +243,5 @@ export function VirtualPerformanceReport({
         </ul>
       </div>
     </div>
-  )
+  );
 }

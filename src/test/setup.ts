@@ -23,13 +23,13 @@
  * notes: 在所有测试文件之前运行
  */
 
-import '@testing-library/jest-dom'
-import 'fake-indexeddb/auto'
+import '@testing-library/jest-dom';
+import 'fake-indexeddb/auto';
 
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
-  value: vi.fn().mockImplementation(query => ({
+  value: vi.fn().mockImplementation((query) => ({
     matches: false,
     media: query,
     onchange: null,
@@ -39,37 +39,37 @@ Object.defineProperty(window, 'matchMedia', {
     removeEventListener: vi.fn(),
     dispatchEvent: vi.fn(),
   })),
-})
+});
 
 // Mock ResizeObserver (required for Radix UI components)
 class ResizeObserverMock {
-  observe = vi.fn()
-  unobserve = vi.fn()
-  disconnect = vi.fn()
+  observe = vi.fn();
+  unobserve = vi.fn();
+  disconnect = vi.fn();
 }
 
 Object.defineProperty(window, 'ResizeObserver', {
   writable: true,
   value: ResizeObserverMock,
-})
+});
 
 // Mock IntersectionObserver
 class IntersectionObserverMock {
-  observe = vi.fn()
-  unobserve = vi.fn()
-  disconnect = vi.fn()
-  root = null
-  rootMargin = ''
-  thresholds = []
+  observe = vi.fn();
+  unobserve = vi.fn();
+  disconnect = vi.fn();
+  root = null;
+  rootMargin = '';
+  thresholds = [];
 }
 
 Object.defineProperty(window, 'IntersectionObserver', {
   writable: true,
   value: IntersectionObserverMock,
-})
+});
 
 // Mock Element.scrollIntoView
-Element.prototype.scrollIntoView = vi.fn()
+Element.prototype.scrollIntoView = vi.fn();
 
 // Mock localStorage
 const localStorageMock = {
@@ -79,11 +79,11 @@ const localStorageMock = {
   clear: vi.fn(),
   length: 0,
   key: vi.fn(),
-}
+};
 
 Object.defineProperty(window, 'localStorage', {
   value: localStorageMock,
-})
+});
 
 // Mock sessionStorage
 const sessionStorageMock = {
@@ -93,27 +93,27 @@ const sessionStorageMock = {
   clear: vi.fn(),
   length: 0,
   key: vi.fn(),
-}
+};
 
 Object.defineProperty(window, 'sessionStorage', {
   value: sessionStorageMock,
-})
+});
 
 // fake-indexeddb 已经通过 'fake-indexeddb/auto' 自动设置
 // 无需手动 mock IndexedDB 相关类型
 
 // Mock fetch
-global.fetch = vi.fn()
+global.fetch = vi.fn();
 
 // Mock console.error to suppress expected test warnings
-const originalConsoleError = console.error
+const originalConsoleError = console.error;
 console.error = (...args: any[]) => {
   if (
     args[0]?.includes?.('Warning:') ||
     args[0]?.includes?.('Error:') ||
     args[0]?.includes?.('MODULE_NOT_FOUND')
   ) {
-    return
+    return;
   }
-  originalConsoleError(...args)
-}
+  originalConsoleError(...args);
+};

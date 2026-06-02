@@ -20,254 +20,260 @@
  * - 模板管理
  */
 
-export type NodeType = 
-  | 'start' 
-  | 'end' 
-  | 'task' 
-  | 'condition' 
-  | 'parallel' 
-  | 'loop' 
-  | 'subworkflow' 
-  | 'delay' 
-  | 'webhook' 
-  | 'script'
+export type NodeType =
+  | 'start'
+  | 'end'
+  | 'task'
+  | 'condition'
+  | 'parallel'
+  | 'loop'
+  | 'subworkflow'
+  | 'delay'
+  | 'webhook'
+  | 'script';
 
-export type NodeStatus = 
-  | 'pending' 
-  | 'running' 
-  | 'completed' 
-  | 'failed' 
-  | 'skipped' 
-  | 'waiting'
+export type NodeStatus = 'pending' | 'running' | 'completed' | 'failed' | 'skipped' | 'waiting';
 
-export type WorkflowStatus = 
-  | 'draft' 
-  | 'published' 
-  | 'running' 
-  | 'completed' 
-  | 'failed' 
-  | 'cancelled' 
-  | 'paused'
+export type WorkflowStatus =
+  | 'draft'
+  | 'published'
+  | 'running'
+  | 'completed'
+  | 'failed'
+  | 'cancelled'
+  | 'paused';
 
 export interface Position {
-  x: number
-  y: number
+  x: number;
+  y: number;
 }
 
 export interface WorkflowNode {
-  id: string
-  type: NodeType
-  name: string
-  description?: string
-  position: Position
-  config: NodeConfig
-  inputs: NodeInput[]
-  outputs: NodeOutput[]
-  status: NodeStatus
-  error?: string
-  metadata?: Record<string, unknown>
+  id: string;
+  type: NodeType;
+  name: string;
+  description?: string;
+  position: Position;
+  config: NodeConfig;
+  inputs: NodeInput[];
+  outputs: NodeOutput[];
+  status: NodeStatus;
+  error?: string;
+  metadata?: Record<string, unknown>;
 }
 
 export interface NodeConfig {
-  timeout?: number
-  retryCount?: number
-  retryDelay?: number
-  continueOnError?: boolean
-  condition?: ConditionExpression
-  [key: string]: unknown
+  timeout?: number;
+  retryCount?: number;
+  retryDelay?: number;
+  continueOnError?: boolean;
+  condition?: ConditionExpression;
+  [key: string]: unknown;
 }
 
 export interface NodeInput {
-  name: string
-  type: 'string' | 'number' | 'boolean' | 'object' | 'array' | 'any'
-  required: boolean
-  default?: unknown
-  value?: unknown
-  source?: InputSource
+  name: string;
+  type: 'string' | 'number' | 'boolean' | 'object' | 'array' | 'any';
+  required: boolean;
+  default?: unknown;
+  value?: unknown;
+  source?: InputSource;
 }
 
 export interface InputSource {
-  type: 'static' | 'variable' | 'node_output'
-  nodeId?: string
-  outputName?: string
-  variableName?: string
+  type: 'static' | 'variable' | 'node_output';
+  nodeId?: string;
+  outputName?: string;
+  variableName?: string;
 }
 
 export interface NodeOutput {
-  name: string
-  type: 'string' | 'number' | 'boolean' | 'object' | 'array' | 'any'
-  description?: string
+  name: string;
+  type: 'string' | 'number' | 'boolean' | 'object' | 'array' | 'any';
+  description?: string;
 }
 
 export interface WorkflowEdge {
-  id: string
-  source: string
-  target: string
-  label?: string
-  condition?: ConditionExpression
-  type: 'default' | 'condition_true' | 'condition_false'
+  id: string;
+  source: string;
+  target: string;
+  label?: string;
+  condition?: ConditionExpression;
+  type: 'default' | 'condition_true' | 'condition_false';
 }
 
 export interface ConditionExpression {
-  type: 'equals' | 'not_equals' | 'contains' | 'greater_than' | 'less_than' | 'and' | 'or' | 'not' | 'custom'
-  left: ConditionOperand
-  right?: ConditionOperand
-  operands?: ConditionExpression[]
-  customExpression?: string
+  type:
+    | 'equals'
+    | 'not_equals'
+    | 'contains'
+    | 'greater_than'
+    | 'less_than'
+    | 'and'
+    | 'or'
+    | 'not'
+    | 'custom';
+  left: ConditionOperand;
+  right?: ConditionOperand;
+  operands?: ConditionExpression[];
+  customExpression?: string;
 }
 
 export interface ConditionOperand {
-  type: 'value' | 'variable' | 'node_output'
-  value?: unknown
-  variableName?: string
-  nodeId?: string
-  outputName?: string
+  type: 'value' | 'variable' | 'node_output';
+  value?: unknown;
+  variableName?: string;
+  nodeId?: string;
+  outputName?: string;
 }
 
 export interface WorkflowVariable {
-  name: string
-  type: 'string' | 'number' | 'boolean' | 'object' | 'array'
-  value: unknown
-  scope: 'global' | 'workflow' | 'node'
-  description?: string
+  name: string;
+  type: 'string' | 'number' | 'boolean' | 'object' | 'array';
+  value: unknown;
+  scope: 'global' | 'workflow' | 'node';
+  description?: string;
 }
 
 export interface WorkflowDefinition {
-  id: string
-  name: string
-  description?: string
-  version: string
-  status: WorkflowStatus
-  nodes: WorkflowNode[]
-  edges: WorkflowEdge[]
-  variables: WorkflowVariable[]
-  triggers: WorkflowTrigger[]
-  metadata: WorkflowMetadata
+  id: string;
+  name: string;
+  description?: string;
+  version: string;
+  status: WorkflowStatus;
+  nodes: WorkflowNode[];
+  edges: WorkflowEdge[];
+  variables: WorkflowVariable[];
+  triggers: WorkflowTrigger[];
+  metadata: WorkflowMetadata;
 }
 
 export interface WorkflowTrigger {
-  id: string
-  type: 'manual' | 'schedule' | 'webhook' | 'event' | 'api'
-  config: Record<string, unknown>
-  enabled: boolean
+  id: string;
+  type: 'manual' | 'schedule' | 'webhook' | 'event' | 'api';
+  config: Record<string, unknown>;
+  enabled: boolean;
 }
 
 export interface WorkflowMetadata {
-  author?: string
-  createdAt: number
-  updatedAt: number
-  tags: string[]
-  category?: string
-  icon?: string
-  documentation?: string
+  author?: string;
+  createdAt: number;
+  updatedAt: number;
+  tags: string[];
+  category?: string;
+  icon?: string;
+  documentation?: string;
 }
 
 export interface WorkflowTemplate {
-  id: string
-  name: string
-  description: string
-  category: string
-  definition: Omit<WorkflowDefinition, 'id' | 'metadata'>
-  icon?: string
-  popularity: number
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  definition: Omit<WorkflowDefinition, 'id' | 'metadata'>;
+  icon?: string;
+  popularity: number;
 }
 
 class WorkflowValidator {
   validate(definition: WorkflowDefinition): ValidationResult {
-    const errors: ValidationError[] = []
-    const warnings: ValidationWarning[] = []
+    const errors: ValidationError[] = [];
+    const warnings: ValidationWarning[] = [];
 
-    const startNodes = definition.nodes.filter((n) => n.type === 'start')
+    const startNodes = definition.nodes.filter((n) => n.type === 'start');
     if (startNodes.length === 0) {
-      errors.push({ code: 'NO_START_NODE', message: '工作流必须包含开始节点' })
+      errors.push({ code: 'NO_START_NODE', message: '工作流必须包含开始节点' });
     } else if (startNodes.length > 1) {
-      errors.push({ code: 'MULTIPLE_START_NODES', message: '工作流只能有一个开始节点' })
+      errors.push({ code: 'MULTIPLE_START_NODES', message: '工作流只能有一个开始节点' });
     }
 
-    const endNodes = definition.nodes.filter((n) => n.type === 'end')
+    const endNodes = definition.nodes.filter((n) => n.type === 'end');
     if (endNodes.length === 0) {
-      warnings.push({ code: 'NO_END_NODE', message: '建议添加结束节点' })
+      warnings.push({ code: 'NO_END_NODE', message: '建议添加结束节点' });
     }
 
-    const nodeIds = new Set(definition.nodes.map((n) => n.id))
+    const nodeIds = new Set(definition.nodes.map((n) => n.id));
     for (const edge of definition.edges) {
       if (!nodeIds.has(edge.source)) {
-        errors.push({ code: 'INVALID_EDGE_SOURCE', message: `边的源节点不存在: ${edge.source}` })
+        errors.push({ code: 'INVALID_EDGE_SOURCE', message: `边的源节点不存在: ${edge.source}` });
       }
       if (!nodeIds.has(edge.target)) {
-        errors.push({ code: 'INVALID_EDGE_TARGET', message: `边的目标节点不存在: ${edge.target}` })
+        errors.push({ code: 'INVALID_EDGE_TARGET', message: `边的目标节点不存在: ${edge.target}` });
       }
     }
 
-    const cycles = this.detectCycles(definition)
+    const cycles = this.detectCycles(definition);
     if (cycles.length > 0) {
-      errors.push({ code: 'CYCLE_DETECTED', message: `检测到循环依赖: ${cycles.join(' -> ')}` })
+      errors.push({ code: 'CYCLE_DETECTED', message: `检测到循环依赖: ${cycles.join(' -> ')}` });
     }
 
     for (const node of definition.nodes) {
-      const nodeErrors = this.validateNode(node, definition)
-      errors.push(...nodeErrors)
+      const nodeErrors = this.validateNode(node, definition);
+      errors.push(...nodeErrors);
     }
 
     return {
       valid: errors.length === 0,
       errors,
       warnings,
-    }
+    };
   }
 
   private validateNode(node: WorkflowNode, definition: WorkflowDefinition): ValidationError[] {
-    const errors: ValidationError[] = []
+    const errors: ValidationError[] = [];
 
     if (!node.id || node.id.trim() === '') {
-      errors.push({ code: 'EMPTY_NODE_ID', message: '节点ID不能为空' })
+      errors.push({ code: 'EMPTY_NODE_ID', message: '节点ID不能为空' });
     }
 
     if (!node.name || node.name.trim() === '') {
-      errors.push({ code: 'EMPTY_NODE_NAME', message: `节点名称不能为空: ${node.id}` })
+      errors.push({ code: 'EMPTY_NODE_NAME', message: `节点名称不能为空: ${node.id}` });
     }
 
     if (node.type === 'task' && !node.config.executor) {
-      errors.push({ code: 'MISSING_EXECUTOR', message: `任务节点缺少执行器配置: ${node.id}` })
+      errors.push({ code: 'MISSING_EXECUTOR', message: `任务节点缺少执行器配置: ${node.id}` });
     }
 
     if (node.type === 'condition') {
       if (!node.config.condition) {
-        errors.push({ code: 'MISSING_CONDITION', message: `条件节点缺少条件表达式: ${node.id}` })
+        errors.push({ code: 'MISSING_CONDITION', message: `条件节点缺少条件表达式: ${node.id}` });
       }
 
-      const outgoingEdges = definition.edges.filter((e) => e.source === node.id)
+      const outgoingEdges = definition.edges.filter((e) => e.source === node.id);
       if (outgoingEdges.length < 2) {
-        warnings.push({ code: 'INCOMPLETE_BRANCHES', message: `条件节点应至少有两个分支: ${node.id}` })
+        warnings.push({
+          code: 'INCOMPLETE_BRANCHES',
+          message: `条件节点应至少有两个分支: ${node.id}`,
+        });
       }
     }
 
-    return errors
+    return errors;
   }
 
   private detectCycles(definition: WorkflowDefinition): string[] {
-    const adjacencyList = new Map<string, string[]>()
+    const adjacencyList = new Map<string, string[]>();
 
     for (const node of definition.nodes) {
-      adjacencyList.set(node.id, [])
+      adjacencyList.set(node.id, []);
     }
 
     for (const edge of definition.edges) {
-      adjacencyList.get(edge.source)?.push(edge.target)
+      adjacencyList.get(edge.source)?.push(edge.target);
     }
 
-    const visited = new Set<string>()
-    const recursionStack = new Set<string>()
-    const path: string[] = []
+    const visited = new Set<string>();
+    const recursionStack = new Set<string>();
+    const path: string[] = [];
 
     for (const node of definition.nodes) {
-      const cycle = this.dfs(node.id, adjacencyList, visited, recursionStack, path)
+      const cycle = this.dfs(node.id, adjacencyList, visited, recursionStack, path);
       if (cycle.length > 0) {
-        return cycle
+        return cycle;
       }
     }
 
-    return []
+    return [];
   }
 
   private dfs(
@@ -278,56 +284,56 @@ class WorkflowValidator {
     path: string[]
   ): string[] {
     if (recursionStack.has(nodeId)) {
-      const cycleStart = path.indexOf(nodeId)
-      return path.slice(cycleStart)
+      const cycleStart = path.indexOf(nodeId);
+      return path.slice(cycleStart);
     }
 
     if (visited.has(nodeId)) {
-      return []
+      return [];
     }
 
-    visited.add(nodeId)
-    recursionStack.add(nodeId)
-    path.push(nodeId)
+    visited.add(nodeId);
+    recursionStack.add(nodeId);
+    path.push(nodeId);
 
-    const neighbors = adjacencyList.get(nodeId) || []
+    const neighbors = adjacencyList.get(nodeId) || [];
     for (const neighbor of neighbors) {
-      const cycle = this.dfs(neighbor, adjacencyList, visited, recursionStack, path)
+      const cycle = this.dfs(neighbor, adjacencyList, visited, recursionStack, path);
       if (cycle.length > 0) {
-        return cycle
+        return cycle;
       }
     }
 
-    recursionStack.delete(nodeId)
-    path.pop()
+    recursionStack.delete(nodeId);
+    path.pop();
 
-    return []
+    return [];
   }
 }
 
 interface ValidationResult {
-  valid: boolean
-  errors: ValidationError[]
-  warnings: ValidationWarning[]
+  valid: boolean;
+  errors: ValidationError[];
+  warnings: ValidationWarning[];
 }
 
 interface ValidationError {
-  code: string
-  message: string
-  nodeId?: string
+  code: string;
+  message: string;
+  nodeId?: string;
 }
 
 interface ValidationWarning {
-  code: string
-  message: string
-  nodeId?: string
+  code: string;
+  message: string;
+  nodeId?: string;
 }
 
-const warnings: ValidationWarning[] = []
+const warnings: ValidationWarning[] = [];
 
 class WorkflowDefinitionBuilder {
-  private definition: WorkflowDefinition
-  private validator: WorkflowValidator
+  private definition: WorkflowDefinition;
+  private validator: WorkflowValidator;
 
   constructor() {
     this.definition = {
@@ -344,90 +350,90 @@ class WorkflowDefinitionBuilder {
         updatedAt: Date.now(),
         tags: [],
       },
-    }
-    this.validator = new WorkflowValidator()
+    };
+    this.validator = new WorkflowValidator();
   }
 
   setId(id: string): this {
-    this.definition.id = id
-    return this
+    this.definition.id = id;
+    return this;
   }
 
   setName(name: string): this {
-    this.definition.name = name
-    return this
+    this.definition.name = name;
+    return this;
   }
 
   setDescription(description: string): this {
-    this.definition.description = description
-    return this
+    this.definition.description = description;
+    return this;
   }
 
   setVersion(version: string): this {
-    this.definition.version = version
-    return this
+    this.definition.version = version;
+    return this;
   }
 
   addNode(node: Omit<WorkflowNode, 'status'> & { status?: NodeStatus }): this {
     const fullNode: WorkflowNode = {
       ...node,
       status: node.status || 'pending',
-    }
-    this.definition.nodes.push(fullNode)
-    return this
+    };
+    this.definition.nodes.push(fullNode);
+    return this;
   }
 
   removeNode(nodeId: string): this {
-    this.definition.nodes = this.definition.nodes.filter((n) => n.id !== nodeId)
+    this.definition.nodes = this.definition.nodes.filter((n) => n.id !== nodeId);
     this.definition.edges = this.definition.edges.filter(
       (e) => e.source !== nodeId && e.target !== nodeId
-    )
-    return this
+    );
+    return this;
   }
 
   updateNode(nodeId: string, updates: Partial<WorkflowNode>): this {
-    const index = this.definition.nodes.findIndex((n) => n.id === nodeId)
+    const index = this.definition.nodes.findIndex((n) => n.id === nodeId);
     if (index !== -1) {
       this.definition.nodes[index] = {
         ...this.definition.nodes[index],
         ...updates,
-      }
+      };
     }
-    return this
+    return this;
   }
 
   addEdge(edge: Omit<WorkflowEdge, 'id'>): this {
     const fullEdge: WorkflowEdge = {
       ...edge,
       id: this.generateId(),
-    }
-    this.definition.edges.push(fullEdge)
-    return this
+    };
+    this.definition.edges.push(fullEdge);
+    return this;
   }
 
   removeEdge(edgeId: string): this {
-    this.definition.edges = this.definition.edges.filter((e) => e.id !== edgeId)
-    return this
+    this.definition.edges = this.definition.edges.filter((e) => e.id !== edgeId);
+    return this;
   }
 
   addVariable(variable: WorkflowVariable): this {
-    this.definition.variables.push(variable)
-    return this
+    this.definition.variables.push(variable);
+    return this;
   }
 
   removeVariable(name: string): this {
-    this.definition.variables = this.definition.variables.filter((v) => v.name !== name)
-    return this
+    this.definition.variables = this.definition.variables.filter((v) => v.name !== name);
+    return this;
   }
 
   addTrigger(trigger: WorkflowTrigger): this {
-    this.definition.triggers.push(trigger)
-    return this
+    this.definition.triggers.push(trigger);
+    return this;
   }
 
   removeTrigger(triggerId: string): this {
-    this.definition.triggers = this.definition.triggers.filter((t) => t.id !== triggerId)
-    return this
+    this.definition.triggers = this.definition.triggers.filter((t) => t.id !== triggerId);
+    return this;
   }
 
   setMetadata(metadata: Partial<WorkflowMetadata>): this {
@@ -435,29 +441,29 @@ class WorkflowDefinitionBuilder {
       ...this.definition.metadata,
       ...metadata,
       updatedAt: Date.now(),
-    }
-    return this
+    };
+    return this;
   }
 
   build(): WorkflowDefinition {
-    this.definition.metadata.updatedAt = Date.now()
-    return { ...this.definition }
+    this.definition.metadata.updatedAt = Date.now();
+    return { ...this.definition };
   }
 
   validate(): ValidationResult {
-    return this.validator.validate(this.definition)
+    return this.validator.validate(this.definition);
   }
 
   private generateId(): string {
-    return `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
+    return `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
   }
 }
 
 class WorkflowTemplateManager {
-  private templates: Map<string, WorkflowTemplate> = new Map()
+  private templates: Map<string, WorkflowTemplate> = new Map();
 
   constructor() {
-    this.initializeDefaultTemplates()
+    this.initializeDefaultTemplates();
   }
 
   private initializeDefaultTemplates(): void {
@@ -487,7 +493,7 @@ class WorkflowTemplateManager {
         triggers: [{ id: 'trigger-1', type: 'manual', config: {}, enabled: true }],
       },
       popularity: 100,
-    })
+    });
 
     this.register({
       id: 'template-linear',
@@ -538,7 +544,7 @@ class WorkflowTemplateManager {
         triggers: [{ id: 'trigger-1', type: 'manual', config: {}, enabled: true }],
       },
       popularity: 90,
-    })
+    });
 
     this.register({
       id: 'template-conditional',
@@ -608,17 +614,42 @@ class WorkflowTemplateManager {
           },
         ],
         edges: [
-          { id: 'edge-start-1-condition-1', source: 'start-1', target: 'condition-1', type: 'default' },
-          { id: 'edge-condition-1-task-success', source: 'condition-1', target: 'task-success', type: 'condition_true' },
-          { id: 'edge-condition-1-task-failure', source: 'condition-1', target: 'task-failure', type: 'condition_false' },
-          { id: 'edge-task-success-end-1', source: 'task-success', target: 'end-1', type: 'default' },
-          { id: 'edge-task-failure-end-1', source: 'task-failure', target: 'end-1', type: 'default' },
+          {
+            id: 'edge-start-1-condition-1',
+            source: 'start-1',
+            target: 'condition-1',
+            type: 'default',
+          },
+          {
+            id: 'edge-condition-1-task-success',
+            source: 'condition-1',
+            target: 'task-success',
+            type: 'condition_true',
+          },
+          {
+            id: 'edge-condition-1-task-failure',
+            source: 'condition-1',
+            target: 'task-failure',
+            type: 'condition_false',
+          },
+          {
+            id: 'edge-task-success-end-1',
+            source: 'task-success',
+            target: 'end-1',
+            type: 'default',
+          },
+          {
+            id: 'edge-task-failure-end-1',
+            source: 'task-failure',
+            target: 'end-1',
+            type: 'default',
+          },
         ],
         variables: [{ name: 'status', type: 'string', value: '', scope: 'workflow' }],
         triggers: [{ id: 'trigger-1', type: 'manual', config: {}, enabled: true }],
       },
       popularity: 85,
-    })
+    });
 
     this.register({
       id: 'template-parallel',
@@ -702,41 +733,66 @@ class WorkflowTemplateManager {
           },
         ],
         edges: [
-          { id: 'edge-start-1-parallel-1', source: 'start-1', target: 'parallel-1', type: 'default' },
+          {
+            id: 'edge-start-1-parallel-1',
+            source: 'start-1',
+            target: 'parallel-1',
+            type: 'default',
+          },
           { id: 'edge-parallel-1-task-1', source: 'parallel-1', target: 'task-1', type: 'default' },
           { id: 'edge-parallel-1-task-2', source: 'parallel-1', target: 'task-2', type: 'default' },
           { id: 'edge-parallel-1-task-3', source: 'parallel-1', target: 'task-3', type: 'default' },
-          { id: 'edge-task-1-parallel-join', source: 'task-1', target: 'parallel-join', type: 'default' },
-          { id: 'edge-task-2-parallel-join', source: 'task-2', target: 'parallel-join', type: 'default' },
-          { id: 'edge-task-3-parallel-join', source: 'task-3', target: 'parallel-join', type: 'default' },
-          { id: 'edge-parallel-join-end-1', source: 'parallel-join', target: 'end-1', type: 'default' },
+          {
+            id: 'edge-task-1-parallel-join',
+            source: 'task-1',
+            target: 'parallel-join',
+            type: 'default',
+          },
+          {
+            id: 'edge-task-2-parallel-join',
+            source: 'task-2',
+            target: 'parallel-join',
+            type: 'default',
+          },
+          {
+            id: 'edge-task-3-parallel-join',
+            source: 'task-3',
+            target: 'parallel-join',
+            type: 'default',
+          },
+          {
+            id: 'edge-parallel-join-end-1',
+            source: 'parallel-join',
+            target: 'end-1',
+            type: 'default',
+          },
         ],
         variables: [],
         triggers: [{ id: 'trigger-1', type: 'manual', config: {}, enabled: true }],
       },
       popularity: 80,
-    })
+    });
   }
 
   register(template: WorkflowTemplate): void {
-    this.templates.set(template.id, template)
+    this.templates.set(template.id, template);
   }
 
   get(templateId: string): WorkflowTemplate | undefined {
-    return this.templates.get(templateId)
+    return this.templates.get(templateId);
   }
 
   getAll(): WorkflowTemplate[] {
-    return Array.from(this.templates.values()).sort((a, b) => b.popularity - a.popularity)
+    return Array.from(this.templates.values()).sort((a, b) => b.popularity - a.popularity);
   }
 
   getByCategory(category: string): WorkflowTemplate[] {
-    return this.getAll().filter((t) => t.category === category)
+    return this.getAll().filter((t) => t.category === category);
   }
 
   createFromTemplate(templateId: string): WorkflowDefinition | null {
-    const template = this.templates.get(templateId)
-    if (!template) return null
+    const template = this.templates.get(templateId);
+    if (!template) return null;
 
     return {
       ...template.definition,
@@ -746,17 +802,17 @@ class WorkflowTemplateManager {
         updatedAt: Date.now(),
         tags: [],
       },
-    }
+    };
   }
 
   private generateId(): string {
-    return `wf-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`
+    return `wf-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
   }
 }
 
-export const workflowValidator = new WorkflowValidator()
-export const workflowTemplateManager = new WorkflowTemplateManager()
+export const workflowValidator = new WorkflowValidator();
+export const workflowTemplateManager = new WorkflowTemplateManager();
 
-export { WorkflowValidator, WorkflowDefinitionBuilder, WorkflowTemplateManager }
+export { WorkflowValidator, WorkflowDefinitionBuilder, WorkflowTemplateManager };
 
-export default WorkflowDefinition
+export default WorkflowDefinition;

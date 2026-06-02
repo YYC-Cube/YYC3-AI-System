@@ -13,18 +13,18 @@
  * @tags i18n,internationalization,localization
  */
 
-export type { I18nStrings, Language } from './i18n-types'
+export type { I18nStrings, Language } from './i18n-types';
 
-export { getI18n } from './i18n-data'
+export { getI18n } from './i18n-data';
 
-import type { Language, I18nStrings } from './i18n-types'
+import type { Language, I18nStrings } from './i18n-types';
 
 export function nextLanguage(current: Language): Language {
-  const order: Language[] = ['zh', 'en', 'ja', 'ko']
-  const idx = order.indexOf(current)
-  return order[(idx + 1) % order.length]
+  const order: Language[] = ['zh', 'en', 'ja', 'ko'];
+  const idx = order.indexOf(current);
+  return order[(idx + 1) % order.length];
 }
 
 export function resolveKey(i: I18nStrings, key: string): string {
-  return (i as unknown as Record<string, string>)[key] ?? key
+  return (i as unknown as Record<string, string>)[key] ?? key;
 }

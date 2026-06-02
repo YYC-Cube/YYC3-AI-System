@@ -14,19 +14,17 @@
  * @tags utils,ai,simulator,demo
  */
 
-import type { Language } from './i18n'
-import { getI18n } from './i18n'
+import type { Language } from './i18n';
+import { getI18n } from './i18n';
 
 function getResponseForInput(input: string, lang: Language): string {
-  const i = getI18n(lang)
-  const lower = input.toLowerCase()
-  if (lower.includes('代码') || lower.includes('code') || lower.includes('/code'))
-    return i.simCode
+  const i = getI18n(lang);
+  const lower = input.toLowerCase();
+  if (lower.includes('代码') || lower.includes('code') || lower.includes('/code')) return i.simCode;
   if (lower.includes('架构') || lower.includes('arch') || lower.includes('/arch'))
-    return i.simArchitecture
-  if (lower.includes('帮助') || lower.includes('help') || lower.includes('/help'))
-    return i.simHelp
-  return i.simDefault
+    return i.simArchitecture;
+  if (lower.includes('帮助') || lower.includes('help') || lower.includes('/help')) return i.simHelp;
+  return i.simDefault;
 }
 
 export async function simulateStreamResponse(
@@ -35,22 +33,22 @@ export async function simulateStreamResponse(
   onComplete: () => void,
   lang: Language = 'zh'
 ): Promise<void> {
-  const fullResponse = getResponseForInput(input, lang)
-  const chars = [...fullResponse]
-  let index = 0
+  const fullResponse = getResponseForInput(input, lang);
+  const chars = [...fullResponse];
+  let index = 0;
 
   return new Promise((resolve) => {
     const interval = setInterval(() => {
       if (index < chars.length) {
-        const chunkSize = Math.floor(Math.random() * 3) + 1
-        const chunk = chars.slice(index, index + chunkSize).join('')
-        onChunk(chunk)
-        index += chunkSize
+        const chunkSize = Math.floor(Math.random() * 3) + 1;
+        const chunk = chars.slice(index, index + chunkSize).join('');
+        onChunk(chunk);
+        index += chunkSize;
       } else {
-        clearInterval(interval)
-        onComplete()
-        resolve()
+        clearInterval(interval);
+        onComplete();
+        resolve();
       }
-    }, 20)
-  })
+    }, 20);
+  });
 }

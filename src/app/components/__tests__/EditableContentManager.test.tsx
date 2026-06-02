@@ -12,49 +12,49 @@
  * @tags test,editable-content,manager,components
  */
 
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
-import '@testing-library/jest-dom'
-import React from 'react'
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import React from 'react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 const mockLocalStorage = (() => {
-  let store: Record<string, string> = {}
+  let store: Record<string, string> = {};
   return {
     getItem: vi.fn((key: string) => store[key] || null),
     setItem: vi.fn((key: string, value: string) => {
-      store[key] = value
+      store[key] = value;
     }),
     removeItem: vi.fn((key: string) => {
-      delete store[key]
+      delete store[key];
     }),
     clear: vi.fn(() => {
-      store = {}
-    })
-  }
-})()
+      store = {};
+    }),
+  };
+})();
 
 Object.defineProperty(window, 'localStorage', {
-  value: mockLocalStorage
-})
+  value: mockLocalStorage,
+});
 
 vi.mock('../../store', () => ({
   useAppStore: vi.fn((selector) => {
     const state = {
       theme: 'dark',
-      language: 'zh-CN'
-    }
-    return selector(state)
-  })
-}))
+      language: 'zh-CN',
+    };
+    return selector(state);
+  }),
+}));
 
 vi.mock('../../utils/theme', () => ({
   getThemeTokens: vi.fn(() => ({
     isDark: true,
     bg: { primary: 'bg-slate-900', secondary: 'bg-slate-800' },
     text: { primary: 'text-white', secondary: 'text-slate-300', muted: 'text-slate-400' },
-    border: { primary: 'border-white/10', secondary: 'border-white/5' }
-  }))
-}))
+    border: { primary: 'border-white/10', secondary: 'border-white/5' },
+  })),
+}));
 
 vi.mock('../../utils/i18n', () => ({
   getI18n: vi.fn(() => ({
@@ -95,74 +95,70 @@ vi.mock('../../utils/i18n', () => ({
     ecExport: '导出',
     ecImport: '导入',
     ecImportSuccess: '导入成功',
-    ecImportError: '导入失败'
-  }))
-}))
+    ecImportError: '导入失败',
+  })),
+}));
 
 vi.mock('sonner', () => ({
   toast: {
     success: vi.fn(),
     error: vi.fn(),
-    info: vi.fn()
-  }
-}))
+    info: vi.fn(),
+  },
+}));
 
 describe('EditableContentManager', () => {
   beforeEach(() => {
-    mockLocalStorage.clear()
-    vi.clearAllMocks()
-  })
+    mockLocalStorage.clear();
+    vi.clearAllMocks();
+  });
 
   afterEach(() => {
-    vi.clearAllTimers()
-  })
+    vi.clearAllTimers();
+  });
 
   describe('Component Rendering', () => {
     it('should render the manager when open', async () => {
-      const { EditableContentManager } = await import('../EditableContentManager')
-      
-      const { container } = render(
-        <EditableContentManager open={true} onClose={() => {}} />
-      )
-      
-      expect(container).toBeDefined()
-    })
+      const { EditableContentManager } = await import('../EditableContentManager');
+
+      const { container } = render(<EditableContentManager open={true} onClose={() => {}} />);
+
+      expect(container).toBeDefined();
+    });
 
     it('should not render when closed', async () => {
-      const { EditableContentManager } = await import('../EditableContentManager')
-      
-      const { container } = render(
-        <EditableContentManager open={false} onClose={() => {}} />
-      )
-      
-      expect(container.firstChild).toBeNull()
-    })
+      const { EditableContentManager } = await import('../EditableContentManager');
+
+      const { container } = render(<EditableContentManager open={false} onClose={() => {}} />);
+
+      expect(container.firstChild).toBeNull();
+    });
 
     it('should display title and subtitle', async () => {
-      const { EditableContentManager } = await import('../EditableContentManager')
-      
-      const { container } = render(<EditableContentManager open={true} onClose={() => {}} />)
-      
-      expect(container).toBeDefined()
-      expect(container.textContent).toBeDefined()
-    })
+      const { EditableContentManager } = await import('../EditableContentManager');
+
+      const { container } = render(<EditableContentManager open={true} onClose={() => {}} />);
+
+      expect(container).toBeDefined();
+      expect(container.textContent).toBeDefined();
+    });
 
     it('should show add button', async () => {
-      const { EditableContentManager } = await import('../EditableContentManager')
-      
-      const { container } = render(<EditableContentManager open={true} onClose={() => {}} />)
-      
-      expect(container).toBeDefined()
-    })
+      const { EditableContentManager } = await import('../EditableContentManager');
+
+      const { container } = render(<EditableContentManager open={true} onClose={() => {}} />);
+
+      expect(container).toBeDefined();
+    });
 
     it('should show search input', async () => {
-      const { EditableContentManager } = await import('../EditableContentManager')
-      
-      const { container } = render(<EditableContentManager open={true} onClose={() => {}} />)
-      
-      expect(container).toBeDefined()
-    })
-  })
+      const { EditableContentManager } = await import('../EditableContentManager');
+
+      const { container } = render(<EditableContentManager open={true} onClose={() => {}} />);
+
+      expect(container).toBeDefined();
+    });
+  });
 
   describe('Data Management', () => {
     it('should load items from localStorage', async () => {
@@ -179,35 +175,35 @@ describe('EditableContentManager', () => {
           isRequired: false,
           lastModified: Date.now(),
           version: 1,
-          syncStatus: 'synced'
-        }
-      ]
-      
-      mockLocalStorage.getItem.mockReturnValue(JSON.stringify(mockItems))
-      
-      const { EditableContentManager } = await import('../EditableContentManager')
-      const { container } = render(<EditableContentManager open={true} onClose={() => {}} />)
-      
-      expect(container).toBeDefined()
-    })
+          syncStatus: 'synced',
+        },
+      ];
+
+      mockLocalStorage.getItem.mockReturnValue(JSON.stringify(mockItems));
+
+      const { EditableContentManager } = await import('../EditableContentManager');
+      const { container } = render(<EditableContentManager open={true} onClose={() => {}} />);
+
+      expect(container).toBeDefined();
+    });
 
     it('should save new items to localStorage', async () => {
-      const { EditableContentManager } = await import('../EditableContentManager')
-      
-      const { container } = render(<EditableContentManager open={true} onClose={() => {}} />)
-      
-      expect(container).toBeDefined()
-    })
+      const { EditableContentManager } = await import('../EditableContentManager');
+
+      const { container } = render(<EditableContentManager open={true} onClose={() => {}} />);
+
+      expect(container).toBeDefined();
+    });
 
     it('should handle empty state', async () => {
-      mockLocalStorage.getItem.mockReturnValue(null)
-      
-      const { EditableContentManager } = await import('../EditableContentManager')
-      const { container } = render(<EditableContentManager open={true} onClose={() => {}} />)
-      
-      expect(container).toBeDefined()
-    })
-  })
+      mockLocalStorage.getItem.mockReturnValue(null);
+
+      const { EditableContentManager } = await import('../EditableContentManager');
+      const { container } = render(<EditableContentManager open={true} onClose={() => {}} />);
+
+      expect(container).toBeDefined();
+    });
+  });
 
   describe('Search and Filter', () => {
     it('should filter items by search term', async () => {
@@ -224,7 +220,7 @@ describe('EditableContentManager', () => {
           isRequired: false,
           lastModified: Date.now(),
           version: 1,
-          syncStatus: 'synced'
+          syncStatus: 'synced',
         },
         {
           id: 'test-2',
@@ -238,22 +234,22 @@ describe('EditableContentManager', () => {
           isRequired: false,
           lastModified: Date.now(),
           version: 1,
-          syncStatus: 'synced'
-        }
-      ]
-      
-      mockLocalStorage.getItem.mockReturnValue(JSON.stringify(mockItems))
-      
-      const { EditableContentManager } = await import('../EditableContentManager')
-      render(<EditableContentManager open={true} onClose={() => {}} />)
-      
-      const searchInput = screen.getByPlaceholderText('搜索...')
-      fireEvent.change(searchInput, { target: { value: 'API' } })
-      
+          syncStatus: 'synced',
+        },
+      ];
+
+      mockLocalStorage.getItem.mockReturnValue(JSON.stringify(mockItems));
+
+      const { EditableContentManager } = await import('../EditableContentManager');
+      render(<EditableContentManager open={true} onClose={() => {}} />);
+
+      const searchInput = screen.getByPlaceholderText('搜索...');
+      fireEvent.change(searchInput, { target: { value: 'API' } });
+
       await waitFor(() => {
-        expect(screen.getByText('API Key 1')).toBeDefined()
-      })
-    })
+        expect(screen.getByText('API Key 1')).toBeDefined();
+      });
+    });
 
     it('should filter items by category', async () => {
       const mockItems = [
@@ -269,18 +265,18 @@ describe('EditableContentManager', () => {
           isRequired: false,
           lastModified: Date.now(),
           version: 1,
-          syncStatus: 'synced'
-        }
-      ]
-      
-      mockLocalStorage.getItem.mockReturnValue(JSON.stringify(mockItems))
-      
-      const { EditableContentManager } = await import('../EditableContentManager')
-      render(<EditableContentManager open={true} onClose={() => {}} />)
-      
-      expect(mockLocalStorage.getItem).toHaveBeenCalled()
-    })
-  })
+          syncStatus: 'synced',
+        },
+      ];
+
+      mockLocalStorage.getItem.mockReturnValue(JSON.stringify(mockItems));
+
+      const { EditableContentManager } = await import('../EditableContentManager');
+      render(<EditableContentManager open={true} onClose={() => {}} />);
+
+      expect(mockLocalStorage.getItem).toHaveBeenCalled();
+    });
+  });
 
   describe('Edit Operations', () => {
     it('should enter edit mode on click', async () => {
@@ -297,22 +293,22 @@ describe('EditableContentManager', () => {
           isRequired: false,
           lastModified: Date.now(),
           version: 1,
-          syncStatus: 'synced'
-        }
-      ]
-      
-      mockLocalStorage.getItem.mockReturnValue(JSON.stringify(mockItems))
-      
-      const { EditableContentManager } = await import('../EditableContentManager')
-      render(<EditableContentManager open={true} onClose={() => {}} />)
-      
+          syncStatus: 'synced',
+        },
+      ];
+
+      mockLocalStorage.getItem.mockReturnValue(JSON.stringify(mockItems));
+
+      const { EditableContentManager } = await import('../EditableContentManager');
+      render(<EditableContentManager open={true} onClose={() => {}} />);
+
       await waitFor(() => {
-        expect(screen.getByText('API Key 1')).toBeDefined()
-      })
-    })
+        expect(screen.getByText('API Key 1')).toBeDefined();
+      });
+    });
 
     it('should save edited value', async () => {
-      const { toast } = await import('sonner')
+      const { toast } = await import('sonner');
       const mockItems = [
         {
           id: 'test-1',
@@ -326,19 +322,19 @@ describe('EditableContentManager', () => {
           isRequired: false,
           lastModified: Date.now(),
           version: 1,
-          syncStatus: 'synced'
-        }
-      ]
-      
-      mockLocalStorage.getItem.mockReturnValue(JSON.stringify(mockItems))
-      
-      const { EditableContentManager } = await import('../EditableContentManager')
-      render(<EditableContentManager open={true} onClose={() => {}} />)
-      
+          syncStatus: 'synced',
+        },
+      ];
+
+      mockLocalStorage.getItem.mockReturnValue(JSON.stringify(mockItems));
+
+      const { EditableContentManager } = await import('../EditableContentManager');
+      render(<EditableContentManager open={true} onClose={() => {}} />);
+
       await waitFor(() => {
-        expect(screen.getByText('API Key 1')).toBeDefined()
-      })
-    })
+        expect(screen.getByText('API Key 1')).toBeDefined();
+      });
+    });
 
     it('should cancel edit on escape', async () => {
       const mockItems = [
@@ -354,24 +350,24 @@ describe('EditableContentManager', () => {
           isRequired: false,
           lastModified: Date.now(),
           version: 1,
-          syncStatus: 'synced'
-        }
-      ]
-      
-      mockLocalStorage.getItem.mockReturnValue(JSON.stringify(mockItems))
-      
-      const { EditableContentManager } = await import('../EditableContentManager')
-      render(<EditableContentManager open={true} onClose={() => {}} />)
-      
+          syncStatus: 'synced',
+        },
+      ];
+
+      mockLocalStorage.getItem.mockReturnValue(JSON.stringify(mockItems));
+
+      const { EditableContentManager } = await import('../EditableContentManager');
+      render(<EditableContentManager open={true} onClose={() => {}} />);
+
       await waitFor(() => {
-        expect(screen.getByText('API Key 1')).toBeDefined()
-      })
-    })
-  })
+        expect(screen.getByText('API Key 1')).toBeDefined();
+      });
+    });
+  });
 
   describe('Delete Operations', () => {
     it('should delete item after confirmation', async () => {
-      const { toast } = await import('sonner')
+      const { toast } = await import('sonner');
       const mockItems = [
         {
           id: 'test-1',
@@ -385,24 +381,24 @@ describe('EditableContentManager', () => {
           isRequired: false,
           lastModified: Date.now(),
           version: 1,
-          syncStatus: 'synced'
-        }
-      ]
-      
-      mockLocalStorage.getItem.mockReturnValue(JSON.stringify(mockItems))
-      
-      const { EditableContentManager } = await import('../EditableContentManager')
-      render(<EditableContentManager open={true} onClose={() => {}} />)
-      
+          syncStatus: 'synced',
+        },
+      ];
+
+      mockLocalStorage.getItem.mockReturnValue(JSON.stringify(mockItems));
+
+      const { EditableContentManager } = await import('../EditableContentManager');
+      render(<EditableContentManager open={true} onClose={() => {}} />);
+
       await waitFor(() => {
-        expect(screen.getByText('API Key 1')).toBeDefined()
-      })
-    })
-  })
+        expect(screen.getByText('API Key 1')).toBeDefined();
+      });
+    });
+  });
 
   describe('Import/Export', () => {
     it('should export items to JSON', async () => {
-      const { toast } = await import('sonner')
+      const { toast } = await import('sonner');
       const mockItems = [
         {
           id: 'test-1',
@@ -416,58 +412,58 @@ describe('EditableContentManager', () => {
           isRequired: false,
           lastModified: Date.now(),
           version: 1,
-          syncStatus: 'synced'
-        }
-      ]
-      
-      mockLocalStorage.getItem.mockReturnValue(JSON.stringify(mockItems))
-      
-      const { EditableContentManager } = await import('../EditableContentManager')
-      render(<EditableContentManager open={true} onClose={() => {}} />)
-      
+          syncStatus: 'synced',
+        },
+      ];
+
+      mockLocalStorage.getItem.mockReturnValue(JSON.stringify(mockItems));
+
+      const { EditableContentManager } = await import('../EditableContentManager');
+      render(<EditableContentManager open={true} onClose={() => {}} />);
+
       await waitFor(() => {
-        expect(screen.getByText('API Key 1')).toBeDefined()
-      })
-    })
+        expect(screen.getByText('API Key 1')).toBeDefined();
+      });
+    });
 
     it('should import items from JSON', async () => {
-      const { toast } = await import('sonner')
-      
-      const { EditableContentManager } = await import('../EditableContentManager')
-      render(<EditableContentManager open={true} onClose={() => {}} />)
-      
+      const { toast } = await import('sonner');
+
+      const { EditableContentManager } = await import('../EditableContentManager');
+      render(<EditableContentManager open={true} onClose={() => {}} />);
+
       await waitFor(() => {
-        expect(screen.getByText('可编辑内容管理')).toBeDefined()
-      })
-    })
-  })
+        expect(screen.getByText('可编辑内容管理')).toBeDefined();
+      });
+    });
+  });
 
   describe('Validation', () => {
     it('should validate required fields', async () => {
-      const { EditableContentManager } = await import('../EditableContentManager')
-      const { container } = render(<EditableContentManager open={true} onClose={() => {}} />)
-      
-      expect(container).toBeDefined()
-    })
+      const { EditableContentManager } = await import('../EditableContentManager');
+      const { container } = render(<EditableContentManager open={true} onClose={() => {}} />);
+
+      expect(container).toBeDefined();
+    });
 
     it('should validate pattern for API keys', async () => {
-      const { EditableContentManager } = await import('../EditableContentManager')
-      render(<EditableContentManager open={true} onClose={() => {}} />)
-      
+      const { EditableContentManager } = await import('../EditableContentManager');
+      render(<EditableContentManager open={true} onClose={() => {}} />);
+
       await waitFor(() => {
-        expect(screen.getByText('可编辑内容管理')).toBeDefined()
-      })
-    })
+        expect(screen.getByText('可编辑内容管理')).toBeDefined();
+      });
+    });
 
     it('should show error for invalid format', async () => {
-      const { EditableContentManager } = await import('../EditableContentManager')
-      render(<EditableContentManager open={true} onClose={() => {}} />)
-      
+      const { EditableContentManager } = await import('../EditableContentManager');
+      render(<EditableContentManager open={true} onClose={() => {}} />);
+
       await waitFor(() => {
-        expect(screen.getByText('可编辑内容管理')).toBeDefined()
-      })
-    })
-  })
+        expect(screen.getByText('可编辑内容管理')).toBeDefined();
+      });
+    });
+  });
 
   describe('Secret Management', () => {
     it('should hide secret values by default', async () => {
@@ -484,19 +480,19 @@ describe('EditableContentManager', () => {
           isRequired: false,
           lastModified: Date.now(),
           version: 1,
-          syncStatus: 'synced'
-        }
-      ]
-      
-      mockLocalStorage.getItem.mockReturnValue(JSON.stringify(mockItems))
-      
-      const { EditableContentManager } = await import('../EditableContentManager')
-      render(<EditableContentManager open={true} onClose={() => {}} />)
-      
+          syncStatus: 'synced',
+        },
+      ];
+
+      mockLocalStorage.getItem.mockReturnValue(JSON.stringify(mockItems));
+
+      const { EditableContentManager } = await import('../EditableContentManager');
+      render(<EditableContentManager open={true} onClose={() => {}} />);
+
       await waitFor(() => {
-        expect(screen.getByText('API Key 1')).toBeDefined()
-      })
-    })
+        expect(screen.getByText('API Key 1')).toBeDefined();
+      });
+    });
 
     it('should toggle secret visibility', async () => {
       const mockItems = [
@@ -512,20 +508,20 @@ describe('EditableContentManager', () => {
           isRequired: false,
           lastModified: Date.now(),
           version: 1,
-          syncStatus: 'synced'
-        }
-      ]
-      
-      mockLocalStorage.getItem.mockReturnValue(JSON.stringify(mockItems))
-      
-      const { EditableContentManager } = await import('../EditableContentManager')
-      render(<EditableContentManager open={true} onClose={() => {}} />)
-      
+          syncStatus: 'synced',
+        },
+      ];
+
+      mockLocalStorage.getItem.mockReturnValue(JSON.stringify(mockItems));
+
+      const { EditableContentManager } = await import('../EditableContentManager');
+      render(<EditableContentManager open={true} onClose={() => {}} />);
+
       await waitFor(() => {
-        expect(screen.getByText('API Key 1')).toBeDefined()
-      })
-    })
-  })
+        expect(screen.getByText('API Key 1')).toBeDefined();
+      });
+    });
+  });
 
   describe('Version History', () => {
     it('should track version changes', async () => {
@@ -542,19 +538,19 @@ describe('EditableContentManager', () => {
           isRequired: false,
           lastModified: Date.now(),
           version: 2,
-          syncStatus: 'synced'
-        }
-      ]
-      
-      mockLocalStorage.getItem.mockReturnValue(JSON.stringify(mockItems))
-      
-      const { EditableContentManager } = await import('../EditableContentManager')
-      render(<EditableContentManager open={true} onClose={() => {}} />)
-      
+          syncStatus: 'synced',
+        },
+      ];
+
+      mockLocalStorage.getItem.mockReturnValue(JSON.stringify(mockItems));
+
+      const { EditableContentManager } = await import('../EditableContentManager');
+      render(<EditableContentManager open={true} onClose={() => {}} />);
+
       await waitFor(() => {
-        expect(screen.getByText('API Key 1')).toBeDefined()
-      })
-    })
+        expect(screen.getByText('API Key 1')).toBeDefined();
+      });
+    });
 
     it('should increment version on edit', async () => {
       const mockItems = [
@@ -570,20 +566,20 @@ describe('EditableContentManager', () => {
           isRequired: false,
           lastModified: Date.now(),
           version: 1,
-          syncStatus: 'synced'
-        }
-      ]
-      
-      mockLocalStorage.getItem.mockReturnValue(JSON.stringify(mockItems))
-      
-      const { EditableContentManager } = await import('../EditableContentManager')
-      render(<EditableContentManager open={true} onClose={() => {}} />)
-      
+          syncStatus: 'synced',
+        },
+      ];
+
+      mockLocalStorage.getItem.mockReturnValue(JSON.stringify(mockItems));
+
+      const { EditableContentManager } = await import('../EditableContentManager');
+      render(<EditableContentManager open={true} onClose={() => {}} />);
+
       await waitFor(() => {
-        expect(screen.getByText('API Key 1')).toBeDefined()
-      })
-    })
-  })
+        expect(screen.getByText('API Key 1')).toBeDefined();
+      });
+    });
+  });
 
   describe('Sync Status', () => {
     it('should display synced status', async () => {
@@ -600,19 +596,19 @@ describe('EditableContentManager', () => {
           isRequired: false,
           lastModified: Date.now(),
           version: 1,
-          syncStatus: 'synced'
-        }
-      ]
-      
-      mockLocalStorage.getItem.mockReturnValue(JSON.stringify(mockItems))
-      
-      const { EditableContentManager } = await import('../EditableContentManager')
-      render(<EditableContentManager open={true} onClose={() => {}} />)
-      
+          syncStatus: 'synced',
+        },
+      ];
+
+      mockLocalStorage.getItem.mockReturnValue(JSON.stringify(mockItems));
+
+      const { EditableContentManager } = await import('../EditableContentManager');
+      render(<EditableContentManager open={true} onClose={() => {}} />);
+
       await waitFor(() => {
-        expect(screen.getByText('API Key 1')).toBeDefined()
-      })
-    })
+        expect(screen.getByText('API Key 1')).toBeDefined();
+      });
+    });
 
     it('should display pending status', async () => {
       const mockItems = [
@@ -628,19 +624,19 @@ describe('EditableContentManager', () => {
           isRequired: false,
           lastModified: Date.now(),
           version: 1,
-          syncStatus: 'pending'
-        }
-      ]
-      
-      mockLocalStorage.getItem.mockReturnValue(JSON.stringify(mockItems))
-      
-      const { EditableContentManager } = await import('../EditableContentManager')
-      render(<EditableContentManager open={true} onClose={() => {}} />)
-      
+          syncStatus: 'pending',
+        },
+      ];
+
+      mockLocalStorage.getItem.mockReturnValue(JSON.stringify(mockItems));
+
+      const { EditableContentManager } = await import('../EditableContentManager');
+      render(<EditableContentManager open={true} onClose={() => {}} />);
+
       await waitFor(() => {
-        expect(screen.getByText('API Key 1')).toBeDefined()
-      })
-    })
+        expect(screen.getByText('API Key 1')).toBeDefined();
+      });
+    });
 
     it('should display conflict status', async () => {
       const mockItems = [
@@ -656,40 +652,40 @@ describe('EditableContentManager', () => {
           isRequired: false,
           lastModified: Date.now(),
           version: 1,
-          syncStatus: 'conflict'
-        }
-      ]
-      
-      mockLocalStorage.getItem.mockReturnValue(JSON.stringify(mockItems))
-      
-      const { EditableContentManager } = await import('../EditableContentManager')
-      render(<EditableContentManager open={true} onClose={() => {}} />)
-      
+          syncStatus: 'conflict',
+        },
+      ];
+
+      mockLocalStorage.getItem.mockReturnValue(JSON.stringify(mockItems));
+
+      const { EditableContentManager } = await import('../EditableContentManager');
+      render(<EditableContentManager open={true} onClose={() => {}} />);
+
       await waitFor(() => {
-        expect(screen.getByText('API Key 1')).toBeDefined()
-      })
-    })
-  })
+        expect(screen.getByText('API Key 1')).toBeDefined();
+      });
+    });
+  });
 
   describe('Accessibility', () => {
     it('should have proper ARIA labels', async () => {
-      const { EditableContentManager } = await import('../EditableContentManager')
-      
-      render(<EditableContentManager open={true} onClose={() => {}} />)
-      
-      const searchInput = screen.getByPlaceholderText('搜索...')
-      expect(searchInput).toBeDefined()
-    })
+      const { EditableContentManager } = await import('../EditableContentManager');
+
+      render(<EditableContentManager open={true} onClose={() => {}} />);
+
+      const searchInput = screen.getByPlaceholderText('搜索...');
+      expect(searchInput).toBeDefined();
+    });
 
     it('should support keyboard navigation', async () => {
-      const { EditableContentManager } = await import('../EditableContentManager')
-      
-      render(<EditableContentManager open={true} onClose={() => {}} />)
-      
-      const addButton = screen.getByText('添加项目')
-      expect(addButton).toBeDefined()
-    })
-  })
+      const { EditableContentManager } = await import('../EditableContentManager');
+
+      render(<EditableContentManager open={true} onClose={() => {}} />);
+
+      const addButton = screen.getByText('添加项目');
+      expect(addButton).toBeDefined();
+    });
+  });
 
   describe('Performance', () => {
     it('should handle large datasets efficiently', async () => {
@@ -705,20 +701,20 @@ describe('EditableContentManager', () => {
         isRequired: false,
         lastModified: Date.now(),
         version: 1,
-        syncStatus: 'synced'
-      }))
-      
-      mockLocalStorage.getItem.mockReturnValue(JSON.stringify(mockItems))
-      
-      const startTime = performance.now()
-      
-      const { EditableContentManager } = await import('../EditableContentManager')
-      render(<EditableContentManager open={true} onClose={() => {}} />)
-      
-      const endTime = performance.now()
-      const renderTime = endTime - startTime
-      
-      expect(renderTime).toBeLessThan(1000)
-    })
-  })
-})
+        syncStatus: 'synced',
+      }));
+
+      mockLocalStorage.getItem.mockReturnValue(JSON.stringify(mockItems));
+
+      const startTime = performance.now();
+
+      const { EditableContentManager } = await import('../EditableContentManager');
+      render(<EditableContentManager open={true} onClose={() => {}} />);
+
+      const endTime = performance.now();
+      const renderTime = endTime - startTime;
+
+      expect(renderTime).toBeLessThan(1000);
+    });
+  });
+});

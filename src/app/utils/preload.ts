@@ -13,12 +13,12 @@
  */
 
 export interface PreloadConfig {
-  priority: 'high' | 'low' | 'idle'
-  timeout?: number
+  priority: 'high' | 'low' | 'idle';
+  timeout?: number;
 }
 
-const preloadQueue: Array<() => Promise<unknown>> = []
-let isProcessing = false
+const preloadQueue: Array<() => Promise<unknown>> = [];
+let isProcessing = false;
 
 export function preloadComponent(
   importFn: () => Promise<{ default: React.ComponentType }>,
@@ -26,149 +26,153 @@ export function preloadComponent(
 ): void {
   const task = async () => {
     try {
-      await importFn()
+      await importFn();
     } catch (error) {
-      console.warn('[Preload] Failed to preload component:', error)
+      console.warn('[Preload] Failed to preload component:', error);
     }
-  }
+  };
 
   if (config.priority === 'high') {
-    task()
+    task();
   } else if (config.priority === 'low') {
-    setTimeout(task, 100)
+    setTimeout(task, 100);
   } else {
-    preloadQueue.push(task)
-    processQueue()
+    preloadQueue.push(task);
+    processQueue();
   }
 }
 
 async function processQueue(): Promise<void> {
-  if (isProcessing || preloadQueue.length === 0) return
+  if (isProcessing || preloadQueue.length === 0) return;
 
-  isProcessing = true
+  isProcessing = true;
 
   while (preloadQueue.length > 0) {
-    const task = preloadQueue.shift()
+    const task = preloadQueue.shift();
     if (task) {
-      await task()
-      await new Promise(resolve => requestIdleCallback(resolve, { timeout: 50 }))
+      await task();
+      await new Promise((resolve) => requestIdleCallback(resolve, { timeout: 50 }));
     }
   }
 
-  isProcessing = false
+  isProcessing = false;
 }
 
 export function preloadRoute(routeName: string): void {
   const routeModules: Record<string, () => Promise<unknown>> = {
-    'ide': () => import('../components/IDELayout'),
-    'settings': () => import('../components/SettingsPage'),
-    'home': () => import('../components/HomePage'),
-  }
+    ide: () => import('../components/IDELayout'),
+    settings: () => import('../components/SettingsPage'),
+    home: () => import('../components/HomePage'),
+  };
 
-  const moduleLoader = routeModules[routeName]
+  const moduleLoader = routeModules[routeName];
   if (moduleLoader) {
-    preloadComponent(moduleLoader as () => Promise<{ default: React.ComponentType }>, { priority: 'low' })
+    preloadComponent(moduleLoader as () => Promise<{ default: React.ComponentType }>, {
+      priority: 'low',
+    });
   }
 }
 
 export function preloadCriticalResources(): void {
   preloadComponent(
-    () => import('../components/CodeEditor').then(m => ({ default: m.CodeEditor })),
+    () => import('../components/CodeEditor').then((m) => ({ default: m.CodeEditor })),
     { priority: 'high' }
-  )
+  );
 
   preloadComponent(
-    () => import('../components/ChatInterface').then(m => ({ default: m.ChatInterface })),
+    () => import('../components/ChatInterface').then((m) => ({ default: m.ChatInterface })),
     { priority: 'high' }
-  )
+  );
 
   preloadComponent(
-    () => import('../components/FileManager').then(m => ({ default: m.FileManager })),
+    () => import('../components/FileManager').then((m) => ({ default: m.FileManager })),
     { priority: 'high' }
-  )
+  );
 }
 
 export function preloadSecondaryResources(): void {
   const secondaryModules = [
-    () => import('../components/ModelSettings').then(m => ({ default: m.ModelSettings })),
-    () => import('../components/SearchPanel').then(m => ({ default: m.SearchPanel })),
-    () => import('../components/NotificationCenter').then(m => ({ default: m.NotificationCenter })),
-    () => import('../components/GitPanel').then(m => ({ default: m.GitPanel })),
-    () => import('../components/PerformanceMonitor').then(m => ({ default: m.PerformanceMonitor })),
-  ]
+    () => import('../components/ModelSettings').then((m) => ({ default: m.ModelSettings })),
+    () => import('../components/SearchPanel').then((m) => ({ default: m.SearchPanel })),
+    () =>
+      import('../components/NotificationCenter').then((m) => ({ default: m.NotificationCenter })),
+    () => import('../components/GitPanel').then((m) => ({ default: m.GitPanel })),
+    () =>
+      import('../components/PerformanceMonitor').then((m) => ({ default: m.PerformanceMonitor })),
+  ];
 
-  secondaryModules.forEach(importFn => {
-    preloadComponent(importFn, { priority: 'idle' })
-  })
+  secondaryModules.forEach((importFn) => {
+    preloadComponent(importFn, { priority: 'idle' });
+  });
 }
 
 export function prefetchOnHover(href: string): void {
-  const link = document.createElement('link')
-  link.rel = 'prefetch'
-  link.href = href
-  link.as = 'document'
-  document.head.appendChild(link)
+  const link = document.createElement('link');
+  link.rel = 'prefetch';
+  link.href = href;
+  link.as = 'document';
+  document.head.appendChild(link);
 }
 
 export function preloadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
-    const img = new Image()
-    img.onload = () => resolve(img)
-    img.onerror = reject
-    img.src = src
-  })
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
 }
 
 export function preloadFonts(fonts: string[]): Promise<void[]> {
   return Promise.all(
-    fonts.map(font => {
-      const link = document.createElement('link')
-      link.rel = 'preload'
-      link.as = 'font'
-      link.href = font
-      link.crossOrigin = 'anonymous'
-      document.head.appendChild(link)
-      return Promise.resolve()
+    fonts.map((font) => {
+      const link = document.createElement('link');
+      link.rel = 'preload';
+      link.as = 'font';
+      link.href = font;
+      link.crossOrigin = 'anonymous';
+      document.head.appendChild(link);
+      return Promise.resolve();
     })
-  )
+  );
 }
 
 export function initializePreloading(): void {
   if (document.readyState === 'complete') {
-    schedulePreloading()
+    schedulePreloading();
   } else {
-    window.addEventListener('load', schedulePreloading)
+    window.addEventListener('load', schedulePreloading);
   }
 }
 
 function schedulePreloading(): void {
   setTimeout(() => {
-    preloadCriticalResources()
-  }, 100)
+    preloadCriticalResources();
+  }, 100);
 
   setTimeout(() => {
-    preloadSecondaryResources()
-  }, 2000)
+    preloadSecondaryResources();
+  }, 2000);
 }
 
 if (typeof window !== 'undefined') {
-  initializePreloading()
+  initializePreloading();
 }
 
 declare function requestIdleCallback(
   callback: IdleRequestCallback,
   options?: IdleRequestOptions
-): number
+): number;
 
 interface IdleRequestCallback {
-  (deadline: IdleDeadline): void
+  (deadline: IdleDeadline): void;
 }
 
 interface IdleDeadline {
-  didTimeout: boolean
-  timeRemaining(): number
+  didTimeout: boolean;
+  timeRemaining(): number;
 }
 
 interface IdleRequestOptions {
-  timeout?: number
+  timeout?: number;
 }

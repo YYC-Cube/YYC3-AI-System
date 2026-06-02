@@ -24,7 +24,7 @@ tags: p0,architecture,build,vite,tauri
 
 - target: ES2020, module: ESNext, jsx: react-jsx
 - strict: true, noUnusedLocals/Parameters
-- paths: @/* -> ./src/*
+- paths: @/_ -> ./src/_
 
 ## Tauri 配置
 

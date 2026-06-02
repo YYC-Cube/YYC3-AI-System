@@ -9,12 +9,12 @@
  * @tags integration,test,editor,filemanager
  */
 
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 
-import '@testing-library/jest-dom'
-import { CodeEditor } from '../CodeEditor'
-import { FileManager } from '../FileManager'
+import '@testing-library/jest-dom';
+import { CodeEditor } from '../CodeEditor';
+import { FileManager } from '../FileManager';
 
 // Mock Monaco Editor
 vi.mock('@monaco-editor/react', () => ({
@@ -26,7 +26,7 @@ vi.mock('@monaco-editor/react', () => ({
       {...props}
     />
   ),
-}))
+}));
 
 // Mock store
 vi.mock('../store', () => ({
@@ -39,25 +39,25 @@ vi.mock('../store', () => ({
     addFile: vi.fn(),
     deleteFile: vi.fn(),
   })),
-}))
+}));
 
 describe('Editor and File Manager Integration', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
-  })
+    vi.clearAllMocks();
+  });
 
   afterEach(() => {
-    vi.clearAllTimers()
-  })
+    vi.clearAllTimers();
+  });
 
   describe('1. File Selection and Loading', () => {
     it('should load file content into editor when file is selected', () => {
-      const mockSetCurrentFile = vi.fn()
+      const mockSetCurrentFile = vi.fn();
       const mockFiles = [
         { name: 'test.ts', path: '/test.ts', content: 'const x = 1' },
         { name: 'app.tsx', path: '/app.tsx', content: 'export default App' },
-      ]
-      
+      ];
+
       vi.mocked(require('../store').useAppStore).mockReturnValue({
         theme: 'dark',
         files: mockFiles,
@@ -66,20 +66,20 @@ describe('Editor and File Manager Integration', () => {
         updateFileContent: vi.fn(),
         addFile: vi.fn(),
         deleteFile: vi.fn(),
-      })
+      });
 
       render(
         <div>
           <FileManager />
           <CodeEditor />
         </div>
-      )
+      );
 
-      expect(mockSetCurrentFile).toBeDefined()
-    })
+      expect(mockSetCurrentFile).toBeDefined();
+    });
 
     it('should handle file content updates from editor', () => {
-      const mockUpdateFileContent = vi.fn()
+      const mockUpdateFileContent = vi.fn();
       vi.mocked(require('../store').useAppStore).mockReturnValue({
         theme: 'dark',
         files: [{ name: 'test.ts', path: '/test.ts', content: 'const x = 1' }],
@@ -88,28 +88,28 @@ describe('Editor and File Manager Integration', () => {
         updateFileContent: mockUpdateFileContent,
         addFile: vi.fn(),
         deleteFile: vi.fn(),
-      })
+      });
 
       render(
         <div>
           <FileManager />
           <CodeEditor />
         </div>
-      )
+      );
 
-      const editor = screen.getByTestId('monaco-editor')
-      fireEvent.change(editor, { target: { value: 'const y = 2' } })
-      
-      expect(mockUpdateFileContent).toBeDefined()
-    })
+      const editor = screen.getByTestId('monaco-editor');
+      fireEvent.change(editor, { target: { value: 'const y = 2' } });
+
+      expect(mockUpdateFileContent).toBeDefined();
+    });
 
     it('should maintain editor state when switching files', () => {
-      const mockSetCurrentFile = vi.fn()
+      const mockSetCurrentFile = vi.fn();
       const mockFiles = [
         { name: 'file1.ts', path: '/file1.ts', content: 'content1' },
         { name: 'file2.ts', path: '/file2.ts', content: 'content2' },
-      ]
-      
+      ];
+
       vi.mocked(require('../store').useAppStore).mockReturnValue({
         theme: 'dark',
         files: mockFiles,
@@ -118,24 +118,24 @@ describe('Editor and File Manager Integration', () => {
         updateFileContent: vi.fn(),
         addFile: vi.fn(),
         deleteFile: vi.fn(),
-      })
+      });
 
       render(
         <div>
           <FileManager />
           <CodeEditor />
         </div>
-      )
+      );
 
-      expect(mockSetCurrentFile).toBeDefined()
-    })
-  })
+      expect(mockSetCurrentFile).toBeDefined();
+    });
+  });
 
   describe('2. File Creation and Deletion', () => {
     it('should create new file and open in editor', () => {
-      const mockAddFile = vi.fn()
-      const mockSetCurrentFile = vi.fn()
-      
+      const mockAddFile = vi.fn();
+      const mockSetCurrentFile = vi.fn();
+
       vi.mocked(require('../store').useAppStore).mockReturnValue({
         theme: 'dark',
         files: [],
@@ -144,22 +144,22 @@ describe('Editor and File Manager Integration', () => {
         updateFileContent: vi.fn(),
         addFile: mockAddFile,
         deleteFile: vi.fn(),
-      })
+      });
 
       render(
         <div>
           <FileManager />
           <CodeEditor />
         </div>
-      )
+      );
 
-      expect(mockAddFile).toBeDefined()
-    })
+      expect(mockAddFile).toBeDefined();
+    });
 
     it('should close editor when current file is deleted', () => {
-      const mockDeleteFile = vi.fn()
-      const mockSetCurrentFile = vi.fn()
-      
+      const mockDeleteFile = vi.fn();
+      const mockSetCurrentFile = vi.fn();
+
       vi.mocked(require('../store').useAppStore).mockReturnValue({
         theme: 'dark',
         files: [{ name: 'test.ts', path: '/test.ts', content: 'content' }],
@@ -168,21 +168,21 @@ describe('Editor and File Manager Integration', () => {
         updateFileContent: vi.fn(),
         addFile: vi.fn(),
         deleteFile: mockDeleteFile,
-      })
+      });
 
       render(
         <div>
           <FileManager />
           <CodeEditor />
         </div>
-      )
+      );
 
-      expect(mockDeleteFile).toBeDefined()
-    })
+      expect(mockDeleteFile).toBeDefined();
+    });
 
     it('should handle file renaming with editor update', () => {
-      const mockUpdateFileContent = vi.fn()
-      
+      const mockUpdateFileContent = vi.fn();
+
       vi.mocked(require('../store').useAppStore).mockReturnValue({
         theme: 'dark',
         files: [{ name: 'old.ts', path: '/old.ts', content: 'content' }],
@@ -191,23 +191,23 @@ describe('Editor and File Manager Integration', () => {
         updateFileContent: mockUpdateFileContent,
         addFile: vi.fn(),
         deleteFile: vi.fn(),
-      })
+      });
 
       render(
         <div>
           <FileManager />
           <CodeEditor />
         </div>
-      )
+      );
 
-      expect(mockUpdateFileContent).toBeDefined()
-    })
-  })
+      expect(mockUpdateFileContent).toBeDefined();
+    });
+  });
 
   describe('3. File Tree and Editor Sync', () => {
     it('should update file tree when editor saves content', () => {
-      const mockUpdateFileContent = vi.fn()
-      
+      const mockUpdateFileContent = vi.fn();
+
       vi.mocked(require('../store').useAppStore).mockReturnValue({
         theme: 'dark',
         files: [{ name: 'test.ts', path: '/test.ts', content: 'content' }],
@@ -216,17 +216,17 @@ describe('Editor and File Manager Integration', () => {
         updateFileContent: mockUpdateFileContent,
         addFile: vi.fn(),
         deleteFile: vi.fn(),
-      })
+      });
 
       render(
         <div>
           <FileManager />
           <CodeEditor />
         </div>
-      )
+      );
 
-      expect(mockUpdateFileContent).toBeDefined()
-    })
+      expect(mockUpdateFileContent).toBeDefined();
+    });
 
     it('should display file modification indicators', () => {
       vi.mocked(require('../store').useAppStore).mockReturnValue({
@@ -237,26 +237,26 @@ describe('Editor and File Manager Integration', () => {
         updateFileContent: vi.fn(),
         addFile: vi.fn(),
         deleteFile: vi.fn(),
-      })
+      });
 
       render(
         <div>
           <FileManager />
           <CodeEditor />
         </div>
-      )
+      );
 
-      const editor = screen.getByTestId('monaco-editor')
-      expect(editor).toBeInTheDocument()
-    })
+      const editor = screen.getByTestId('monaco-editor');
+      expect(editor).toBeInTheDocument();
+    });
 
     it('should handle multiple open files with tabs', () => {
       const mockFiles = [
         { name: 'file1.ts', path: '/file1.ts', content: 'content1' },
         { name: 'file2.ts', path: '/file2.ts', content: 'content2' },
         { name: 'file3.ts', path: '/file3.ts', content: 'content3' },
-      ]
-      
+      ];
+
       vi.mocked(require('../store').useAppStore).mockReturnValue({
         theme: 'dark',
         files: mockFiles,
@@ -265,16 +265,16 @@ describe('Editor and File Manager Integration', () => {
         updateFileContent: vi.fn(),
         addFile: vi.fn(),
         deleteFile: vi.fn(),
-      })
+      });
 
       render(
         <div>
           <FileManager />
           <CodeEditor />
         </div>
-      )
+      );
 
-      expect(mockFiles).toHaveLength(3)
-    })
-  })
-})
+      expect(mockFiles).toHaveLength(3);
+    });
+  });
+});

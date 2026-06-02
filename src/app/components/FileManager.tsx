@@ -13,31 +13,44 @@
  */
 
 import {
-  Folder, File, ChevronRight, ChevronDown, Plus, Search,
-  MoreVertical, FileCode2, Image as ImageIcon, FileText,
-  FolderPlus, Trash2, Edit3, Copy, FileJson, Paintbrush,
-  Clock, RotateCcw
-} from 'lucide-react'
-import React, { useState, useCallback, useEffect, useMemo } from 'react'
-import { toast } from 'sonner'
+  Folder,
+  File,
+  ChevronRight,
+  ChevronDown,
+  Plus,
+  Search,
+  MoreVertical,
+  FileCode2,
+  Image as ImageIcon,
+  FileText,
+  FolderPlus,
+  Trash2,
+  Edit3,
+  Copy,
+  FileJson,
+  Paintbrush,
+  Clock,
+  RotateCcw,
+} from 'lucide-react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import { toast } from 'sonner';
 
-import { storageService } from '../services/storage-service'
-import { syncService } from '../services/sync-service'
-import { useAppStore } from '../store'
-import { validateFileName } from '../utils/file-validator'
-import { getI18n } from '../utils/i18n'
-import { getThemeTokens, type ThemeMode } from '../utils/theme'
+import { storageService } from '../services/storage-service';
+import { syncService } from '../services/sync-service';
+import { useAppStore } from '../store';
+import { validateFileName } from '../utils/file-validator';
+import { getI18n } from '../utils/i18n';
+import { getThemeTokens, type ThemeMode } from '../utils/theme';
 
-
-import { TanstackVirtualListDynamic } from './TanstackVirtualList'
+import { TanstackVirtualListDynamic } from './TanstackVirtualList';
 
 type FileNode = {
-  name: string
-  type: 'folder' | 'file'
-  expanded?: boolean
-  children?: FileNode[]
-  language?: string
-}
+  name: string;
+  type: 'folder' | 'file';
+  expanded?: boolean;
+  children?: FileNode[];
+  language?: string;
+};
 
 const initialFiles: FileNode[] = [
   {
@@ -77,9 +90,9 @@ const initialFiles: FileNode[] = [
                   { name: 'LeftToolbar.tsx', type: 'file', language: 'tsx' },
                   { name: 'MiddleToolbar.tsx', type: 'file', language: 'tsx' },
                   { name: 'RightToolbar.tsx', type: 'file', language: 'tsx' },
-                ]
-              }
-            ]
+                ],
+              },
+            ],
           },
           {
             name: 'utils',
@@ -89,9 +102,9 @@ const initialFiles: FileNode[] = [
               { name: 'i18n.ts', type: 'file', language: 'ts' },
               { name: 'ai-simulator.ts', type: 'file', language: 'ts' },
               { name: 'collaboration.ts', type: 'file', language: 'ts' },
-            ]
-          }
-        ]
+            ],
+          },
+        ],
       },
       {
         name: 'styles',
@@ -100,7 +113,7 @@ const initialFiles: FileNode[] = [
           { name: 'theme.css', type: 'file', language: 'css' },
           { name: 'fonts.css', type: 'file', language: 'css' },
           { name: 'index.css', type: 'file', language: 'css' },
-        ]
+        ],
       },
       {
         name: 'docs',
@@ -113,441 +126,470 @@ const initialFiles: FileNode[] = [
           { name: '05-YYC3-图标系统-设计规范.md', type: 'file', language: 'md' },
           { name: '06-YYC3-技术实现-开发规范.md', type: 'file', language: 'md' },
           { name: '07-YYC3-数据模型-架构设计.md', type: 'file', language: 'md' },
-        ]
+        ],
       },
       {
         name: 'assets',
         type: 'folder',
-        children: [
-          { name: 'logo.svg', type: 'file', language: 'svg' },
-        ]
-      }
-    ]
+        children: [{ name: 'logo.svg', type: 'file', language: 'svg' }],
+      },
+    ],
   },
   { name: 'package.json', type: 'file', language: 'json' },
   { name: 'tsconfig.json', type: 'file', language: 'json' },
   { name: 'README.md', type: 'file', language: 'md' },
   { name: 'Guidelines.md', type: 'file', language: 'md' },
-]
+];
 
 const getFileIcon = (_name: string, language?: string, theme: ThemeMode = 'dark') => {
-  const t = getThemeTokens(theme)
-  if (language === 'tsx' || language === 'ts') return <FileCode2 className={`w-4 h-4 ${t.fileIcon.tsx}`} />
-  if (language === 'css') return <Paintbrush className={`w-4 h-4 ${t.fileIcon.css}`} />
-  if (language === 'json') return <FileJson className={`w-4 h-4 ${t.fileIcon.json}`} />
-  if (language === 'md') return <FileText className={`w-4 h-4 ${t.fileIcon.md}`} />
-  if (language === 'svg') return <ImageIcon className={`w-4 h-4 ${t.fileIcon.svg}`} />
-  return <File className={`w-4 h-4 ${t.fileIcon.default}`} />
-}
+  const t = getThemeTokens(theme);
+  if (language === 'tsx' || language === 'ts')
+    return <FileCode2 className={`w-4 h-4 ${t.fileIcon.tsx}`} />;
+  if (language === 'css') return <Paintbrush className={`w-4 h-4 ${t.fileIcon.css}`} />;
+  if (language === 'json') return <FileJson className={`w-4 h-4 ${t.fileIcon.json}`} />;
+  if (language === 'md') return <FileText className={`w-4 h-4 ${t.fileIcon.md}`} />;
+  if (language === 'svg') return <ImageIcon className={`w-4 h-4 ${t.fileIcon.svg}`} />;
+  return <File className={`w-4 h-4 ${t.fileIcon.default}`} />;
+};
 
 export function FileManager() {
-  const { theme, language, selectedFile, setSelectedFile } = useAppStore()
-  const t = getThemeTokens(theme)
-  const ii = getI18n(language)
-  const [files, setFiles] = useState(initialFiles)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [showSearch, setShowSearch] = useState(false)
-  const [contextMenu, setContextMenu] = useState<{ x: number, y: number, node: FileNode } | null>(null)
-  const [showVersions, setShowVersions] = useState(false)
-  const [fileVersions, setFileVersions] = useState<{ id: string; path: string; createdAt: number; createdBy: string }[]>([])
-  const [versionLoading, setVersionLoading] = useState(false)
-  const [showNewFileDialog, setShowNewFileDialog] = useState(false)
-  const [showRenameDialog, setShowRenameDialog] = useState(false)
-  const [newFileName, setNewFileName] = useState('')
-  const [validationError, setValidationError] = useState<string | null>(null)
-  const [targetNode, setTargetNode] = useState<FileNode | null>(null)
-  const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set())
-  const [batchMode, setBatchMode] = useState(false)
+  const { theme, language, selectedFile, setSelectedFile } = useAppStore();
+  const t = getThemeTokens(theme);
+  const ii = getI18n(language);
+  const [files, setFiles] = useState(initialFiles);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showSearch, setShowSearch] = useState(false);
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number; node: FileNode } | null>(
+    null
+  );
+  const [showVersions, setShowVersions] = useState(false);
+  const [fileVersions, setFileVersions] = useState<
+    { id: string; path: string; createdAt: number; createdBy: string }[]
+  >([]);
+  const [versionLoading, setVersionLoading] = useState(false);
+  const [showNewFileDialog, setShowNewFileDialog] = useState(false);
+  const [showRenameDialog, setShowRenameDialog] = useState(false);
+  const [newFileName, setNewFileName] = useState('');
+  const [validationError, setValidationError] = useState<string | null>(null);
+  const [targetNode, setTargetNode] = useState<FileNode | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
+  const [batchMode, setBatchMode] = useState(false);
 
   // Track file selection in IndexedDB + sync service
   useEffect(() => {
-    if (!selectedFile) return
-    syncService.trackChange('file', selectedFile, 'update')
+    if (!selectedFile) return;
+    syncService.trackChange('file', selectedFile, 'update');
     // Load version history for selected file
     if (showVersions) {
-      setVersionLoading(true)
-      storageService.getVersions(selectedFile).then(v => {
-        setFileVersions(v.map(vv => ({ id: vv.id, path: vv.path, createdAt: vv.createdAt, createdBy: vv.createdBy })))
-        setVersionLoading(false)
-      }).catch(() => setVersionLoading(false))
+      setVersionLoading(true);
+      storageService
+        .getVersions(selectedFile)
+        .then((v) => {
+          setFileVersions(
+            v.map((vv) => ({
+              id: vv.id,
+              path: vv.path,
+              createdAt: vv.createdAt,
+              createdBy: vv.createdBy,
+            }))
+          );
+          setVersionLoading(false);
+        })
+        .catch(() => setVersionLoading(false));
     }
-  }, [selectedFile, showVersions])
+  }, [selectedFile, showVersions]);
 
   const toggleFolder = useCallback((path: number[]) => {
-    setFiles(prev => {
-      const next = JSON.parse(JSON.stringify(prev))
-      let node = next
+    setFiles((prev) => {
+      const next = JSON.parse(JSON.stringify(prev));
+      let node = next;
       for (let i = 0; i < path.length - 1; i++) {
-        node = node[path[i]].children
+        node = node[path[i]].children;
       }
-      const target = node[path[path.length - 1]]
+      const target = node[path[path.length - 1]];
       if (target.type === 'folder') {
-        target.expanded = !target.expanded
+        target.expanded = !target.expanded;
       }
-      return next
-    })
-  }, [])
+      return next;
+    });
+  }, []);
 
   const handleContextMenu = (e: React.MouseEvent, node: FileNode) => {
-    e.preventDefault()
-    setContextMenu({ x: e.clientX, y: e.clientY, node })
-  }
+    e.preventDefault();
+    setContextMenu({ x: e.clientX, y: e.clientY, node });
+  };
 
   const handleNewFile = (parentFolder: FileNode) => {
-    setTargetNode(parentFolder)
-    setNewFileName('')
-    setValidationError(null)
-    setShowNewFileDialog(true)
-    setContextMenu(null)
-  }
+    setTargetNode(parentFolder);
+    setNewFileName('');
+    setValidationError(null);
+    setShowNewFileDialog(true);
+    setContextMenu(null);
+  };
 
   const handleRename = (node: FileNode) => {
-    setTargetNode(node)
-    setNewFileName(node.name)
-    setValidationError(null)
-    setShowRenameDialog(true)
-    setContextMenu(null)
-  }
+    setTargetNode(node);
+    setNewFileName(node.name);
+    setValidationError(null);
+    setShowRenameDialog(true);
+    setContextMenu(null);
+  };
 
   const handleFileNameChange = (value: string) => {
-    setNewFileName(value)
-    const result = validateFileName(value, { allowNoExtension: false })
-    setValidationError(result.valid ? null : result.error || null)
-  }
+    setNewFileName(value);
+    const result = validateFileName(value, { allowNoExtension: false });
+    setValidationError(result.valid ? null : result.error || null);
+  };
 
   const handleCreateFile = () => {
     if (!newFileName.trim()) {
-      setValidationError('文件名不能为空')
-      return
+      setValidationError('文件名不能为空');
+      return;
     }
 
-    const result = validateFileName(newFileName, { allowNoExtension: false })
+    const result = validateFileName(newFileName, { allowNoExtension: false });
     if (!result.valid) {
-      setValidationError(result.error || '文件名无效')
-      return
+      setValidationError(result.error || '文件名无效');
+      return;
     }
 
-    const fileName = result.sanitizedName || newFileName
-    
+    const fileName = result.sanitizedName || newFileName;
+
     if (targetNode && targetNode.type === 'folder') {
       const newFile: FileNode = {
         name: fileName,
         type: 'file',
         language: getFileExtension(fileName),
-      }
-      
-      setFiles(prev => {
-        const next = JSON.parse(JSON.stringify(prev))
+      };
+
+      setFiles((prev) => {
+        const next = JSON.parse(JSON.stringify(prev));
         const findAndAdd = (nodes: FileNode[]): boolean => {
           for (let i = 0; i < nodes.length; i++) {
-            const node = nodes[i]
+            const node = nodes[i];
             if (node === targetNode) {
-              if (!node.children) node.children = []
-              node.children.push(newFile)
-              return true
+              if (!node.children) node.children = [];
+              node.children.push(newFile);
+              return true;
             }
             if (node.children && findAndAdd(node.children)) {
-              return true
+              return true;
             }
           }
-          return false
-        }
-        findAndAdd(next)
-        return next
-      })
-      
-      toast.success(`文件 "${fileName}" 创建成功`)
-      syncService.trackChange('file', fileName, 'create')
+          return false;
+        };
+        findAndAdd(next);
+        return next;
+      });
+
+      toast.success(`文件 "${fileName}" 创建成功`);
+      syncService.trackChange('file', fileName, 'create');
     }
-    
-    setShowNewFileDialog(false)
-    setNewFileName('')
-    setValidationError(null)
-    setTargetNode(null)
-  }
+
+    setShowNewFileDialog(false);
+    setNewFileName('');
+    setValidationError(null);
+    setTargetNode(null);
+  };
 
   const handleConfirmRename = () => {
     if (!newFileName.trim()) {
-      setValidationError('文件名不能为空')
-      return
+      setValidationError('文件名不能为空');
+      return;
     }
 
-    const result = validateFileName(newFileName, { allowNoExtension: false })
+    const result = validateFileName(newFileName, { allowNoExtension: false });
     if (!result.valid) {
-      setValidationError(result.error || '文件名无效')
-      return
+      setValidationError(result.error || '文件名无效');
+      return;
     }
 
-    const fileName = result.sanitizedName || newFileName
-    
+    const fileName = result.sanitizedName || newFileName;
+
     if (targetNode) {
-      const oldName = targetNode.name
-      targetNode.name = fileName
-      
-      setFiles(prev => {
-        const next = JSON.parse(JSON.stringify(prev))
+      const oldName = targetNode.name;
+      targetNode.name = fileName;
+
+      setFiles((prev) => {
+        const next = JSON.parse(JSON.stringify(prev));
         const findAndRename = (nodes: FileNode[]): boolean => {
           for (let i = 0; i < nodes.length; i++) {
             if (nodes[i] === targetNode) {
-              nodes[i].name = fileName
-              return true
+              nodes[i].name = fileName;
+              return true;
             }
             if (nodes[i].children && findAndRename(nodes[i].children!)) {
-              return true
+              return true;
             }
           }
-          return false
-        }
-        findAndRename(next)
-        return next
-      })
-      
-      toast.success(`重命名成功: ${oldName} → ${fileName}`)
-      syncService.trackChange('file', fileName, 'update')
+          return false;
+        };
+        findAndRename(next);
+        return next;
+      });
+
+      toast.success(`重命名成功: ${oldName} → ${fileName}`);
+      syncService.trackChange('file', fileName, 'update');
     }
-    
-    setShowRenameDialog(false)
-    setNewFileName('')
-    setValidationError(null)
-    setTargetNode(null)
-  }
+
+    setShowRenameDialog(false);
+    setNewFileName('');
+    setValidationError(null);
+    setTargetNode(null);
+  };
 
   const getFileExtension = (filename: string): string => {
-    const ext = filename.split('.').pop()?.toLowerCase() || ''
+    const ext = filename.split('.').pop()?.toLowerCase() || '';
     const languageMap: Record<string, string> = {
-      'ts': 'ts', 'tsx': 'tsx', 'js': 'js', 'jsx': 'jsx',
-      'css': 'css', 'scss': 'scss', 'html': 'html',
-      'json': 'json', 'md': 'md', 'py': 'py', 'go': 'go',
-      'rs': 'rs', 'java': 'java', 'vue': 'vue', 'svg': 'svg',
-    }
-    return languageMap[ext] || ext
-  }
+      ts: 'ts',
+      tsx: 'tsx',
+      js: 'js',
+      jsx: 'jsx',
+      css: 'css',
+      scss: 'scss',
+      html: 'html',
+      json: 'json',
+      md: 'md',
+      py: 'py',
+      go: 'go',
+      rs: 'rs',
+      java: 'java',
+      vue: 'vue',
+      svg: 'svg',
+    };
+    return languageMap[ext] || ext;
+  };
 
   const toggleFileSelection = (fileName: string) => {
-    setSelectedFiles(prev => {
-      const next = new Set(prev)
+    setSelectedFiles((prev) => {
+      const next = new Set(prev);
       if (next.has(fileName)) {
-        next.delete(fileName)
+        next.delete(fileName);
       } else {
-        next.add(fileName)
+        next.add(fileName);
       }
-      return next
-    })
-  }
+      return next;
+    });
+  };
 
   const selectAllFiles = () => {
-    const allFiles = new Set<string>()
+    const allFiles = new Set<string>();
     const collectFiles = (nodes: FileNode[]) => {
-      nodes.forEach(node => {
+      nodes.forEach((node) => {
         if (node.type === 'file') {
-          allFiles.add(node.name)
+          allFiles.add(node.name);
         }
         if (node.children) {
-          collectFiles(node.children)
+          collectFiles(node.children);
         }
-      })
-    }
-    collectFiles(files)
-    setSelectedFiles(allFiles)
-    toast.success(`已选择 ${allFiles.size} 个文件`)
-  }
+      });
+    };
+    collectFiles(files);
+    setSelectedFiles(allFiles);
+    toast.success(`已选择 ${allFiles.size} 个文件`);
+  };
 
   const clearSelection = () => {
-    setSelectedFiles(new Set())
-    setBatchMode(false)
-  }
+    setSelectedFiles(new Set());
+    setBatchMode(false);
+  };
 
   const batchDeleteFiles = () => {
     if (selectedFiles.size === 0) {
-      toast.warning('请先选择要删除的文件')
-      return
+      toast.warning('请先选择要删除的文件');
+      return;
     }
 
-    const count = selectedFiles.size
-    setFiles(prev => {
-      const next = JSON.parse(JSON.stringify(prev))
+    const count = selectedFiles.size;
+    setFiles((prev) => {
+      const next = JSON.parse(JSON.stringify(prev));
       const deleteSelected = (nodes: FileNode[]): FileNode[] => {
-        return nodes.filter(node => {
+        return nodes.filter((node) => {
           if (node.type === 'file' && selectedFiles.has(node.name)) {
-            return false
+            return false;
           }
           if (node.children) {
-            node.children = deleteSelected(node.children)
+            node.children = deleteSelected(node.children);
           }
-          return true
-        })
-      }
-      return deleteSelected(next)
-    })
+          return true;
+        });
+      };
+      return deleteSelected(next);
+    });
 
-    toast.success(`已删除 ${count} 个文件`)
-    selectedFiles.forEach(file => {
-      syncService.trackChange('file', file, 'delete')
-    })
-    clearSelection()
-  }
+    toast.success(`已删除 ${count} 个文件`);
+    selectedFiles.forEach((file) => {
+      syncService.trackChange('file', file, 'delete');
+    });
+    clearSelection();
+  };
 
   const batchDuplicateFiles = () => {
     if (selectedFiles.size === 0) {
-      toast.warning('请先选择要复制的文件')
-      return
+      toast.warning('请先选择要复制的文件');
+      return;
     }
 
-    let duplicatedCount = 0
-    setFiles(prev => {
-      const next = JSON.parse(JSON.stringify(prev))
+    let duplicatedCount = 0;
+    setFiles((prev) => {
+      const next = JSON.parse(JSON.stringify(prev));
       const duplicateSelected = (nodes: FileNode[]) => {
-        nodes.forEach(node => {
+        nodes.forEach((node) => {
           if (node.type === 'file' && selectedFiles.has(node.name)) {
-            const parent = findParentNode(next, node.name)
+            const parent = findParentNode(next, node.name);
             if (parent && parent.children) {
-              const newName = `${node.name.replace(/\.[^.]+$/, '')}-copy.${getFileExtension(node.name)}`
+              const newName = `${node.name.replace(/\.[^.]+$/, '')}-copy.${getFileExtension(node.name)}`;
               parent.children.push({
                 ...node,
                 name: newName,
-              })
-              duplicatedCount++
+              });
+              duplicatedCount++;
             }
           }
           if (node.children) {
-            duplicateSelected(node.children)
+            duplicateSelected(node.children);
           }
-        })
-      }
-      duplicateSelected(next)
-      return next
-    })
+        });
+      };
+      duplicateSelected(next);
+      return next;
+    });
 
-    toast.success(`已复制 ${duplicatedCount} 个文件`)
-    clearSelection()
-  }
+    toast.success(`已复制 ${duplicatedCount} 个文件`);
+    clearSelection();
+  };
 
   const findParentNode = (nodes: FileNode[], targetName: string): FileNode | null => {
     for (const node of nodes) {
       if (node.children) {
-        if (node.children.some(child => child.type === 'file' && child.name === targetName)) {
-          return node
+        if (node.children.some((child) => child.type === 'file' && child.name === targetName)) {
+          return node;
         }
-        const found = findParentNode(node.children, targetName)
-        if (found) return found
+        const found = findParentNode(node.children, targetName);
+        if (found) return found;
       }
     }
-    return null
-  }
+    return null;
+  };
 
   const _batchMoveToFolder = (targetFolderName: string) => {
     if (selectedFiles.size === 0) {
-      toast.warning('请先选择要移动的文件')
-      return
+      toast.warning('请先选择要移动的文件');
+      return;
     }
 
-    let movedCount = 0
-    setFiles(prev => {
-      const next = JSON.parse(JSON.stringify(prev))
-      const targetFolder = findFolderByName(next, targetFolderName)
+    let movedCount = 0;
+    setFiles((prev) => {
+      const next = JSON.parse(JSON.stringify(prev));
+      const targetFolder = findFolderByName(next, targetFolderName);
       if (!targetFolder) {
-        toast.error('目标文件夹不存在')
-        return prev
+        toast.error('目标文件夹不存在');
+        return prev;
       }
 
-      const filesToMove: FileNode[] = []
+      const filesToMove: FileNode[] = [];
       const removeSelected = (nodes: FileNode[]): FileNode[] => {
-        return nodes.filter(node => {
+        return nodes.filter((node) => {
           if (node.type === 'file' && selectedFiles.has(node.name)) {
-            filesToMove.push({ ...node })
-            movedCount++
-            return false
+            filesToMove.push({ ...node });
+            movedCount++;
+            return false;
           }
           if (node.children) {
-            node.children = removeSelected(node.children)
+            node.children = removeSelected(node.children);
           }
-          return true
-        })
-      }
+          return true;
+        });
+      };
 
-      removeSelected(next)
+      removeSelected(next);
       if (!targetFolder.children) {
-        targetFolder.children = []
+        targetFolder.children = [];
       }
-      targetFolder.children.push(...filesToMove)
-      return next
-    })
+      targetFolder.children.push(...filesToMove);
+      return next;
+    });
 
     if (movedCount > 0) {
-      toast.success(`已移动 ${movedCount} 个文件到 ${targetFolderName}`)
-      clearSelection()
+      toast.success(`已移动 ${movedCount} 个文件到 ${targetFolderName}`);
+      clearSelection();
     }
-  }
-  void _batchMoveToFolder
+  };
+  void _batchMoveToFolder;
 
   const findFolderByName = (nodes: FileNode[], name: string): FileNode | null => {
     for (const node of nodes) {
       if (node.type === 'folder' && node.name === name) {
-        return node
+        return node;
       }
       if (node.children) {
-        const found = findFolderByName(node.children, name)
-        if (found) return found
+        const found = findFolderByName(node.children, name);
+        if (found) return found;
       }
     }
-    return null
-  }
+    return null;
+  };
 
   const _getAllFolders = (): string[] => {
-    const folders: string[] = []
+    const folders: string[] = [];
     const collectFolders = (nodes: FileNode[]) => {
-      nodes.forEach(node => {
+      nodes.forEach((node) => {
         if (node.type === 'folder') {
-          folders.push(node.name)
+          folders.push(node.name);
         }
         if (node.children) {
-          collectFolders(node.children)
+          collectFolders(node.children);
         }
-      })
-    }
-    collectFolders(files)
-    return folders
-  }
-  void _getAllFolders
+      });
+    };
+    collectFolders(files);
+    return folders;
+  };
+  void _getAllFolders;
 
   const matchesSearch = (node: FileNode): boolean => {
-    if (!searchQuery) return true
-    const q = searchQuery.toLowerCase()
-    if (node.name.toLowerCase().includes(q)) return true
-    if (node.children) return node.children.some(c => matchesSearch(c))
-    return false
-  }
+    if (!searchQuery) return true;
+    const q = searchQuery.toLowerCase();
+    if (node.name.toLowerCase().includes(q)) return true;
+    if (node.children) return node.children.some((c) => matchesSearch(c));
+    return false;
+  };
 
   // ── Flatten tree for virtual scrolling (used when tree > 50 nodes) ──
   interface FlatNode {
-    key: string
-    node: FileNode
-    level: number
-    path: number[]
+    key: string;
+    node: FileNode;
+    level: number;
+    path: number[];
   }
 
-  const flattenTree = useCallback((nodes: FileNode[], level = 0, path: number[] = []): FlatNode[] => {
-    const result: FlatNode[] = []
-    nodes.filter(n => matchesSearch(n)).forEach((node, i) => {
-      const currentPath = [...path, i]
-      result.push({ key: `${level}-${i}-${node.name}`, node, level, path: currentPath })
-      if (node.type === 'folder' && node.expanded && node.children) {
-        result.push(...flattenTree(node.children, level + 1, currentPath))
-      }
-    })
-    return result
-  }, [searchQuery])  
+  const flattenTree = useCallback(
+    (nodes: FileNode[], level = 0, path: number[] = []): FlatNode[] => {
+      const result: FlatNode[] = [];
+      nodes
+        .filter((n) => matchesSearch(n))
+        .forEach((node, i) => {
+          const currentPath = [...path, i];
+          result.push({ key: `${level}-${i}-${node.name}`, node, level, path: currentPath });
+          if (node.type === 'folder' && node.expanded && node.children) {
+            result.push(...flattenTree(node.children, level + 1, currentPath));
+          }
+        });
+      return result;
+    },
+    [searchQuery]
+  );
 
-  const flatNodes = useMemo(() => flattenTree(files), [files, flattenTree])
-  const useVirtualScroll = flatNodes.length > 50 // Threshold for using virtual scroll
+  const flatNodes = useMemo(() => flattenTree(files), [files, flattenTree]);
+  const useVirtualScroll = flatNodes.length > 50; // Threshold for using virtual scroll
 
   const renderTree = (nodes: FileNode[], level = 0, path: number[] = []) => {
     return nodes
-      .filter(node => matchesSearch(node))
+      .filter((node) => matchesSearch(node))
       .map((node, i) => {
-        const currentPath = [...path, i]
-        const isSelected = node.type === 'file' && node.name === selectedFile
-        const isBatchSelected = node.type === 'file' && selectedFiles.has(node.name)
+        const currentPath = [...path, i];
+        const isSelected = node.type === 'file' && node.name === selectedFile;
+        const isBatchSelected = node.type === 'file' && selectedFiles.has(node.name);
 
         return (
           <div key={`${level}-${i}-${node.name}`}>
@@ -562,39 +604,51 @@ export function FileManager() {
               style={{ paddingLeft: `${level * 14 + 8}px`, fontWeight: isSelected ? 500 : 400 }}
               onClick={() => {
                 if (batchMode && node.type === 'file') {
-                  toggleFileSelection(node.name)
+                  toggleFileSelection(node.name);
                 } else if (node.type === 'folder') {
-                  toggleFolder(currentPath)
+                  toggleFolder(currentPath);
                 } else {
-                  setSelectedFile(node.name)
+                  setSelectedFile(node.name);
                 }
               }}
               onContextMenu={(e) => handleContextMenu(e, node)}
             >
               {batchMode && node.type === 'file' && (
-                <div className={`w-3.5 h-3.5 rounded border flex-shrink-0 flex items-center justify-center ${
-                  isBatchSelected
-                    ? `${t.accent.primaryBg} border-transparent`
-                    : `${t.isDark ? 'border-slate-500' : 'border-slate-300'}`
-                }`}>
+                <div
+                  className={`w-3.5 h-3.5 rounded border flex-shrink-0 flex items-center justify-center ${
+                    isBatchSelected
+                      ? `${t.accent.primaryBg} border-transparent`
+                      : `${t.isDark ? 'border-slate-500' : 'border-slate-300'}`
+                  }`}
+                >
                   {isBatchSelected && (
-                    <svg className="w-2.5 h-2.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                    <svg
+                      className="w-2.5 h-2.5 text-white"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                    >
                       <polyline points="20 6 9 17 4 12" />
                     </svg>
                   )}
                 </div>
               )}
               {node.type === 'folder' ? (
-                node.expanded
-                  ? <ChevronDown className="w-3.5 h-3.5 opacity-50 flex-shrink-0" />
-                  : <ChevronRight className="w-3.5 h-3.5 opacity-50 flex-shrink-0" />
+                node.expanded ? (
+                  <ChevronDown className="w-3.5 h-3.5 opacity-50 flex-shrink-0" />
+                ) : (
+                  <ChevronRight className="w-3.5 h-3.5 opacity-50 flex-shrink-0" />
+                )
               ) : (
                 !batchMode && <div className="w-3.5 flex-shrink-0" />
               )}
               {node.type === 'folder' ? (
-                <Folder className={`w-4 h-4 flex-shrink-0 ${
-                  node.expanded ? t.fileIcon.folder : t.fileIcon.folderClosed
-                }`} />
+                <Folder
+                  className={`w-4 h-4 flex-shrink-0 ${
+                    node.expanded ? t.fileIcon.folder : t.fileIcon.folderClosed
+                  }`}
+                />
               ) : (
                 getFileIcon(node.name, node.language, theme as ThemeMode)
               )}
@@ -606,7 +660,9 @@ export function FileManager() {
                   {node.type === 'folder' && (
                     <button
                       className={`p-0.5 rounded ${t.interactive.hoverBg}`}
-                      onClick={(e) => { e.stopPropagation() }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
                       title={ii.newFile}
                       style={{ fontSize: '11px' }}
                     >
@@ -615,7 +671,10 @@ export function FileManager() {
                   )}
                   <button
                     className={`p-0.5 rounded ${t.interactive.hoverBg}`}
-                    onClick={(e) => { e.stopPropagation(); handleContextMenu(e, node) }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleContextMenu(e, node);
+                    }}
                     style={{ fontSize: '11px' }}
                   >
                     <MoreVertical className="w-3 h-3" />
@@ -627,19 +686,27 @@ export function FileManager() {
               <div>{renderTree(node.children, level + 1, currentPath)}</div>
             )}
           </div>
-        )
-      })
-  }
+        );
+      });
+  };
 
   return (
-    <div className={`flex flex-col h-full relative overflow-hidden rounded-xl ${t.surface.glass} ${t.isDark ? 'border border-white/8' : 'border border-slate-200/40'} shadow-inner`}>
+    <div
+      className={`flex flex-col h-full relative overflow-hidden rounded-xl ${t.surface.glass} ${t.isDark ? 'border border-white/8' : 'border border-slate-200/40'} shadow-inner`}
+    >
       {/* Header */}
-      <div className={`flex items-center justify-between px-3 py-2.5 border-b ${t.border.subtle} ${t.surface.inset}`}>
+      <div
+        className={`flex items-center justify-between px-3 py-2.5 border-b ${t.border.subtle} ${t.surface.inset}`}
+      >
         <div className="flex items-center space-x-2">
           <Folder className={`w-4 h-4 ${t.accent.primary}`} />
-          <span className="text-[13px] tracking-wide" style={{ fontWeight: 600 }}>{ii.explorer}</span>
+          <span className="text-[13px] tracking-wide" style={{ fontWeight: 600 }}>
+            {ii.explorer}
+          </span>
           {batchMode && selectedFiles.size > 0 && (
-            <span className={`text-[10px] px-1.5 py-0.5 rounded ${t.accent.primaryBg} ${t.accent.primaryText}`}>
+            <span
+              className={`text-[10px] px-1.5 py-0.5 rounded ${t.accent.primaryBg} ${t.accent.primaryText}`}
+            >
               {selectedFiles.size} 已选
             </span>
           )}
@@ -647,19 +714,23 @@ export function FileManager() {
         <div className="flex space-x-0.5">
           <button
             onClick={() => {
-              setBatchMode(!batchMode)
+              setBatchMode(!batchMode);
               if (batchMode) {
-                clearSelection()
+                clearSelection();
               }
             }}
             className={`p-1.5 rounded ${t.transition} ${
-              batchMode
-                ? `${t.accent.primaryBg} ${t.accent.primary}`
-                : t.interactive.iconBtn
+              batchMode ? `${t.accent.primaryBg} ${t.accent.primary}` : t.interactive.iconBtn
             }`}
             title={batchMode ? '退出批量选择' : '批量选择'}
           >
-            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg
+              className="w-3.5 h-3.5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
               <rect x="3" y="3" width="7" height="7" rx="1" />
               <rect x="14" y="3" width="7" height="7" rx="1" />
               <rect x="3" y="14" width="7" height="7" rx="1" />
@@ -669,18 +740,22 @@ export function FileManager() {
           <button
             onClick={() => setShowSearch(!showSearch)}
             className={`p-1.5 rounded ${t.transition} ${
-              showSearch
-                ? `${t.accent.primaryBg} ${t.accent.primary}`
-                : t.interactive.iconBtn
+              showSearch ? `${t.accent.primaryBg} ${t.accent.primary}` : t.interactive.iconBtn
             }`}
             title={ii.search}
           >
             <Search className="w-3.5 h-3.5" />
           </button>
-          <button className={`p-1.5 rounded ${t.transition} ${t.interactive.iconBtn}`} title={ii.newFile}>
+          <button
+            className={`p-1.5 rounded ${t.transition} ${t.interactive.iconBtn}`}
+            title={ii.newFile}
+          >
             <Plus className="w-3.5 h-3.5" />
           </button>
-          <button className={`p-1.5 rounded ${t.transition} ${t.interactive.iconBtn}`} title={ii.newFolder}>
+          <button
+            className={`p-1.5 rounded ${t.transition} ${t.interactive.iconBtn}`}
+            title={ii.newFolder}
+          >
             <FolderPlus className="w-3.5 h-3.5" />
           </button>
           <button
@@ -695,7 +770,9 @@ export function FileManager() {
 
       {/* Batch Actions Toolbar */}
       {batchMode && (
-        <div className={`flex items-center justify-between px-3 py-2 border-b ${t.border.subtle} ${t.isDark ? 'bg-indigo-500/10' : 'bg-indigo-50'}`}>
+        <div
+          className={`flex items-center justify-between px-3 py-2 border-b ${t.border.subtle} ${t.isDark ? 'bg-indigo-500/10' : 'bg-indigo-50'}`}
+        >
           <div className="flex items-center space-x-2">
             <button
               onClick={selectAllFiles}
@@ -757,7 +834,7 @@ export function FileManager() {
             className="h-full"
             getKey={(item) => item.key}
             renderItem={({ node, level, path }) => {
-              const isSelected = node.type === 'file' && node.name === selectedFile
+              const isSelected = node.type === 'file' && node.name === selectedFile;
               return (
                 <div
                   className={`flex items-center space-x-1 px-2 cursor-pointer rounded-md text-[13px] py-[5px] ${t.transition} group ${
@@ -767,32 +844,41 @@ export function FileManager() {
                   }`}
                   style={{ paddingLeft: `${level * 14 + 8}px`, fontWeight: isSelected ? 500 : 400 }}
                   onClick={() => {
-                    if (node.type === 'folder') toggleFolder(path)
-                    else setSelectedFile(node.name)
+                    if (node.type === 'folder') toggleFolder(path);
+                    else setSelectedFile(node.name);
                   }}
                   onContextMenu={(e) => handleContextMenu(e, node)}
                 >
                   {node.type === 'folder' ? (
-                    node.expanded
-                      ? <ChevronDown className="w-3.5 h-3.5 opacity-50 flex-shrink-0" />
-                      : <ChevronRight className="w-3.5 h-3.5 opacity-50 flex-shrink-0" />
+                    node.expanded ? (
+                      <ChevronDown className="w-3.5 h-3.5 opacity-50 flex-shrink-0" />
+                    ) : (
+                      <ChevronRight className="w-3.5 h-3.5 opacity-50 flex-shrink-0" />
+                    )
                   ) : (
                     <div className="w-3.5 flex-shrink-0" />
                   )}
                   {node.type === 'folder' ? (
-                    <Folder className={`w-4 h-4 flex-shrink-0 ${node.expanded ? t.fileIcon.folder : t.fileIcon.folderClosed}`} />
+                    <Folder
+                      className={`w-4 h-4 flex-shrink-0 ${node.expanded ? t.fileIcon.folder : t.fileIcon.folderClosed}`}
+                    />
                   ) : (
                     getFileIcon(node.name, node.language, theme as ThemeMode)
                   )}
                   <span className="truncate">{node.name}</span>
                   <div className="ml-auto opacity-0 group-hover:opacity-100 flex items-center space-x-0.5 flex-shrink-0">
-                    <button className={`p-0.5 rounded ${t.interactive.hoverBg}`}
-                      onClick={(e) => { e.stopPropagation(); handleContextMenu(e, node) }}>
+                    <button
+                      className={`p-0.5 rounded ${t.interactive.hoverBg}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleContextMenu(e, node);
+                      }}
+                    >
                       <MoreVertical className="w-3 h-3" />
                     </button>
                   </div>
                 </div>
-              )
+              );
             }}
           />
         ) : (
@@ -802,7 +888,8 @@ export function FileManager() {
 
       {/* File Count Footer */}
       <div className={`px-3 py-1.5 border-t text-[10px] ${t.border.subtle} ${t.text.dimmed}`}>
-        {selectedFile ? `${ii.selectedFile}: ${selectedFile}` : ii.noFileSelected} &middot; {ii.totalFiles.replace('{n}', '22')}
+        {selectedFile ? `${ii.selectedFile}: ${selectedFile}` : ii.noFileSelected} &middot;{' '}
+        {ii.totalFiles.replace('{n}', '22')}
       </div>
 
       {/* Version History Panel (collapsible) */}
@@ -811,24 +898,36 @@ export function FileManager() {
           <div className={`flex items-center justify-between px-3 py-1.5 ${t.surface.inset}`}>
             <div className="flex items-center gap-1.5">
               <Clock className={`w-3 h-3 ${t.accent.primary}`} />
-              <span className={`text-[10px] ${t.text.secondary}`} style={{ fontWeight: 500 }}>版本历史</span>
+              <span className={`text-[10px] ${t.text.secondary}`} style={{ fontWeight: 500 }}>
+                版本历史
+              </span>
             </div>
             <span className={`text-[9px] ${t.text.dimmed}`}>{fileVersions.length} 版本</span>
           </div>
           {versionLoading ? (
             <div className={`text-[9px] ${t.text.dimmed} text-center py-3`}>加载中...</div>
           ) : fileVersions.length === 0 ? (
-            <div className={`text-[9px] ${t.text.dimmed} text-center py-3`}>暂无版本记录 — 编辑文件后自动创建</div>
+            <div className={`text-[9px] ${t.text.dimmed} text-center py-3`}>
+              暂无版本记录 — 编辑文件后自动创建
+            </div>
           ) : (
             <div className="px-2 pb-2 space-y-0.5">
-              {fileVersions.slice(0, 10).map(v => (
-                <div key={v.id} className={`flex items-center justify-between px-2 py-1 rounded text-[9px] ${t.isDark ? 'hover:bg-white/[0.03]' : 'hover:bg-slate-50'} ${t.transition} cursor-pointer`}>
+              {fileVersions.slice(0, 10).map((v) => (
+                <div
+                  key={v.id}
+                  className={`flex items-center justify-between px-2 py-1 rounded text-[9px] ${t.isDark ? 'hover:bg-white/[0.03]' : 'hover:bg-slate-50'} ${t.transition} cursor-pointer`}
+                >
                   <div className="flex items-center gap-1.5 min-w-0">
-                    <span className={t.text.dimmed}>{new Date(v.createdAt).toLocaleTimeString()}</span>
+                    <span className={t.text.dimmed}>
+                      {new Date(v.createdAt).toLocaleTimeString()}
+                    </span>
                     <span className={`${t.text.secondary} truncate`}>{v.createdBy}</span>
                   </div>
-                  <button className={`p-0.5 rounded ${t.interactive.iconBtn}`} title="恢复此版本"
-                    onClick={() => toast.info(`恢复版本 ${v.id.slice(0, 8)}`)}>
+                  <button
+                    className={`p-0.5 rounded ${t.interactive.iconBtn}`}
+                    title="恢复此版本"
+                    onClick={() => toast.info(`恢复版本 ${v.id.slice(0, 8)}`)}
+                  >
                     <RotateCcw className="w-2.5 h-2.5" />
                   </button>
                 </div>
@@ -907,8 +1006,13 @@ export function FileManager() {
       {/* New File Dialog */}
       {showNewFileDialog && (
         <>
-          <div className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm" onClick={() => setShowNewFileDialog(false)} />
-          <div className={`fixed z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 rounded-xl p-4 ${t.surface.popover} ${t.border.popover} ${t.shadow.popover}`}>
+          <div
+            className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm"
+            onClick={() => setShowNewFileDialog(false)}
+          />
+          <div
+            className={`fixed z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 rounded-xl p-4 ${t.surface.popover} ${t.border.popover} ${t.shadow.popover}`}
+          >
             <h3 className={`text-sm font-medium mb-3 ${t.text.primary}`}>新建文件</h3>
             <input
               type="text"
@@ -944,8 +1048,13 @@ export function FileManager() {
       {/* Rename Dialog */}
       {showRenameDialog && (
         <>
-          <div className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm" onClick={() => setShowRenameDialog(false)} />
-          <div className={`fixed z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 rounded-xl p-4 ${t.surface.popover} ${t.border.popover} ${t.shadow.popover}`}>
+          <div
+            className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm"
+            onClick={() => setShowRenameDialog(false)}
+          />
+          <div
+            className={`fixed z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 rounded-xl p-4 ${t.surface.popover} ${t.border.popover} ${t.shadow.popover}`}
+          >
             <h3 className={`text-sm font-medium mb-3 ${t.text.primary}`}>重命名</h3>
             <input
               type="text"
@@ -978,5 +1087,5 @@ export function FileManager() {
         </>
       )}
     </div>
-  )
+  );
 }

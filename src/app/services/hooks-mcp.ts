@@ -12,112 +12,118 @@
  * @tags hooks,mcp,react
  */
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react';
 
-import { mcpService, type MCPTool, type MCPToolCallResult } from '../services/mcp-service'
-import { useSettingsStore } from '../settingsStore'
+import { mcpService, type MCPTool, type MCPToolCallResult } from '../services/mcp-service';
+import { useSettingsStore } from '../settingsStore';
 
 export function useMCP() {
-  const { mcpServers } = useSettingsStore()
-  const [loading, setLoading] = useState(true)
-  const [executing, setExecuting] = useState<string | null>(null)
+  const { mcpServers } = useSettingsStore();
+  const [loading, setLoading] = useState(true);
+  const [executing, setExecuting] = useState<string | null>(null);
 
   // Initialize MCP on mount
   useEffect(() => {
     const init = async () => {
-      const enabledServers = mcpServers.filter(s => s.enabled)
-      await mcpService.initialize(enabledServers)
-      setLoading(false)
-    }
-    
-    init()
-    
+      const enabledServers = mcpServers.filter((s) => s.enabled);
+      await mcpService.initialize(enabledServers);
+      setLoading(false);
+    };
+
+    init();
+
     return () => {
-      mcpService.cleanup()
-    }
-  }, [mcpServers])
+      mcpService.cleanup();
+    };
+  }, [mcpServers]);
 
   // Get all servers
   const getServers = useCallback(() => {
-    return mcpService.getAllServers()
-  }, [])
+    return mcpService.getAllServers();
+  }, []);
 
   // Get server by ID
   const getServer = useCallback((serverId: string) => {
-    return mcpService.getServerStatus(serverId)
-  }, [])
+    return mcpService.getServerStatus(serverId);
+  }, []);
 
   // List tools from all servers
   const listTools = useCallback(async (): Promise<Array<{ serverId: string; tool: MCPTool }>> => {
-    const servers = mcpService.getAllServers()
-    const allTools: Array<{ serverId: string; tool: MCPTool }> = []
-    
+    const servers = mcpService.getAllServers();
+    const allTools: Array<{ serverId: string; tool: MCPTool }> = [];
+
     for (const server of servers) {
       if (server.status === 'connected') {
-        const tools = await mcpService.listTools(server.config.id)
+        const tools = await mcpService.listTools(server.config.id);
         for (const tool of tools) {
-          allTools.push({ serverId: server.config.id, tool })
+          allTools.push({ serverId: server.config.id, tool });
         }
       }
     }
-    
-    return allTools
-  }, [])
+
+    return allTools;
+  }, []);
 
   // Call a tool
-  const callTool = useCallback(async (
-    serverId: string,
-    toolName: string,
-    args: Record<string, unknown>
-  ): Promise<MCPToolCallResult> => {
-    setExecuting(toolName)
-    
-    try {
-      const result = await mcpService.callTool(serverId, toolName, args)
-      return result
-    } finally {
-      setExecuting(null)
-    }
-  }, [])
+  const callTool = useCallback(
+    async (
+      serverId: string,
+      toolName: string,
+      args: Record<string, unknown>
+    ): Promise<MCPToolCallResult> => {
+      setExecuting(toolName);
+
+      try {
+        const result = await mcpService.callTool(serverId, toolName, args);
+        return result;
+      } finally {
+        setExecuting(null);
+      }
+    },
+    []
+  );
 
   // Execute tool with AI-generated arguments
-  const executeWithAI = useCallback(async (
-    serverId: string,
-    toolName: string,
-    naturalLanguageRequest: string
-  ): Promise<MCPToolCallResult> => {
-    // In production, this would:
-    // 1. Get tool schema
-    // 2. Ask AI to extract arguments from natural language
-    // 3. Call the tool with extracted arguments
-    
-    // For demo, just call the tool directly
-    return callTool(serverId, toolName, { request: naturalLanguageRequest })
-  }, [callTool])
+  const executeWithAI = useCallback(
+    async (
+      serverId: string,
+      toolName: string,
+      naturalLanguageRequest: string
+    ): Promise<MCPToolCallResult> => {
+      // In production, this would:
+      // 1. Get tool schema
+      // 2. Ask AI to extract arguments from natural language
+      // 3. Call the tool with extracted arguments
+
+      // For demo, just call the tool directly
+      return callTool(serverId, toolName, { request: naturalLanguageRequest });
+    },
+    [callTool]
+  );
 
   // Refresh servers
   const refresh = useCallback(async () => {
-    setLoading(true)
-    const enabledServers = mcpServers.filter(s => s.enabled)
-    await mcpService.initialize(enabledServers)
-    setLoading(false)
-  }, [mcpServers])
+    setLoading(true);
+    const enabledServers = mcpServers.filter((s) => s.enabled);
+    await mcpService.initialize(enabledServers);
+    setLoading(false);
+  }, [mcpServers]);
 
   return {
     // State
     loading,
     executing,
-    
+
     // Server management
     getServers,
     getServer,
     refresh,
-    
+
     // Tool execution
     listTools,
     callTool,
     executeWithAI,
-  }
+  };
 }
 
-export default useMCP
+export default useMCP;

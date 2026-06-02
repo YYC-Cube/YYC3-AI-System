@@ -9,11 +9,11 @@
  * @tags integration,test,cache,workflow
  */
 
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 
-import { apiCacheService } from '../../../services/api-cache-service'
-import { cacheStrategyService } from '../../../services/cache-strategy-service'
-import { storageService } from '../../../services/storage-service'
+import { apiCacheService } from '../../../services/api-cache-service';
+import { cacheStrategyService } from '../../../services/cache-strategy-service';
+import { storageService } from '../../../services/storage-service';
 
 // Mock cache services
 vi.mock('../../../services/cache-strategy-service', () => ({
@@ -21,7 +21,7 @@ vi.mock('../../../services/cache-strategy-service', () => ({
     getCacheConfig: vi.fn(),
     registerCache: vi.fn(),
   },
-}))
+}));
 
 vi.mock('../../../services/api-cache-service', () => ({
   apiCacheService: {
@@ -31,7 +31,7 @@ vi.mock('../../../services/api-cache-service', () => ({
     clear: vi.fn(),
     getStats: vi.fn(),
   },
-}))
+}));
 
 vi.mock('../../../services/storage-service', () => ({
   storageService: {
@@ -41,34 +41,34 @@ vi.mock('../../../services/storage-service', () => ({
     getFile: vi.fn(),
     saveFile: vi.fn(),
   },
-}))
+}));
 
 describe('Cache Workflow Integration', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
-  })
+    vi.clearAllMocks();
+  });
 
   afterEach(() => {
-    vi.clearAllTimers()
-  })
+    vi.clearAllTimers();
+  });
 
   describe('1. Multi-level Caching', () => {
     it('should fallback to API when cache misses', async () => {
-      const mockGet = vi.mocked(apiCacheService.get)
-      mockGet.mockResolvedValue(null)
+      const mockGet = vi.mocked(apiCacheService.get);
+      mockGet.mockResolvedValue(null);
 
-      const mockSet = vi.mocked(apiCacheService.set)
-      mockSet.mockResolvedValue()
+      const mockSet = vi.mocked(apiCacheService.set);
+      mockSet.mockResolvedValue();
 
-      await mockGet('/api/test')
-      await mockSet('/api/test', 'GET', { data: 'response' })
+      await mockGet('/api/test');
+      await mockSet('/api/test', 'GET', { data: 'response' });
 
-      expect(mockGet).toHaveBeenCalled()
-      expect(mockSet).toHaveBeenCalled()
-    })
+      expect(mockGet).toHaveBeenCalled();
+      expect(mockSet).toHaveBeenCalled();
+    });
 
     it('should use storage cache for persistent data', async () => {
-      const mockGetAICache = vi.mocked(storageService.getAICache)
+      const mockGetAICache = vi.mocked(storageService.getAICache);
       mockGetAICache.mockResolvedValue({
         id: 'cache-1',
         prompt: 'test prompt',
@@ -78,96 +78,96 @@ describe('Cache Workflow Integration', () => {
         expiresAt: Date.now() + 3600000,
         ttl: 3600,
         tokens: 100,
-      })
+      });
 
-      const result = await mockGetAICache('persistent-key')
+      const result = await mockGetAICache('persistent-key');
 
-      expect(mockGetAICache).toHaveBeenCalled()
-      expect(result).toBeDefined()
-    })
-  })
+      expect(mockGetAICache).toHaveBeenCalled();
+      expect(result).toBeDefined();
+    });
+  });
 
   describe('2. Cache Invalidation', () => {
     it('should handle cache refresh on data change', async () => {
-      const mockSet = vi.mocked(apiCacheService.set)
-      mockSet.mockResolvedValue()
+      const mockSet = vi.mocked(apiCacheService.set);
+      mockSet.mockResolvedValue();
 
-      const mockGet = vi.mocked(apiCacheService.get)
-      mockGet.mockResolvedValue(null)
+      const mockGet = vi.mocked(apiCacheService.get);
+      mockGet.mockResolvedValue(null);
 
-      await mockSet('/api/file', 'GET', { content: 'new content' })
-      const result = await mockGet('/api/file')
+      await mockSet('/api/file', 'GET', { content: 'new content' });
+      const result = await mockGet('/api/file');
 
-      expect(mockSet).toHaveBeenCalled()
-      expect(mockGet).toHaveBeenCalled()
-    })
+      expect(mockSet).toHaveBeenCalled();
+      expect(mockGet).toHaveBeenCalled();
+    });
 
     it('should support manual cache clearing', async () => {
-      const mockClear = vi.mocked(apiCacheService.clear)
-      mockClear.mockResolvedValue()
+      const mockClear = vi.mocked(apiCacheService.clear);
+      mockClear.mockResolvedValue();
 
-      await mockClear()
+      await mockClear();
 
-      expect(mockClear).toHaveBeenCalled()
-    })
-  })
+      expect(mockClear).toHaveBeenCalled();
+    });
+  });
 
   describe('3. Cache Performance', () => {
     it('should track cache hit/miss ratios', async () => {
-      const mockGetStats = vi.mocked(apiCacheService.getStats)
+      const mockGetStats = vi.mocked(apiCacheService.getStats);
       mockGetStats.mockResolvedValue({
         totalEntries: 100,
         validEntries: 80,
         expiredEntries: 20,
         size: 1000,
-      })
+      });
 
-      const stats = await mockGetStats()
+      const stats = await mockGetStats();
 
-      expect(mockGetStats).toHaveBeenCalled()
-      expect(stats.totalEntries).toBe(100)
-    })
+      expect(mockGetStats).toHaveBeenCalled();
+      expect(stats.totalEntries).toBe(100);
+    });
 
     it('should optimize cache size based on usage', async () => {
-      const mockGetStats = vi.mocked(apiCacheService.getStats)
+      const mockGetStats = vi.mocked(apiCacheService.getStats);
       mockGetStats.mockResolvedValue({
         totalEntries: 110,
         validEntries: 100,
         expiredEntries: 10,
         size: 2000,
-      })
+      });
 
-      const stats = await mockGetStats()
+      const stats = await mockGetStats();
       if (stats.size > 150) {
         // Handle cache size optimization
-        expect(stats.size).toBeGreaterThan(150)
+        expect(stats.size).toBeGreaterThan(150);
       }
 
-      expect(mockGetStats).toHaveBeenCalled()
-    })
+      expect(mockGetStats).toHaveBeenCalled();
+    });
 
     it('should handle cache pressure gracefully', async () => {
-      const mockSet = vi.mocked(apiCacheService.set)
-      mockSet.mockResolvedValue()
+      const mockSet = vi.mocked(apiCacheService.set);
+      mockSet.mockResolvedValue();
 
-      const mockGet = vi.mocked(apiCacheService.get)
-      mockGet.mockResolvedValue(null)
+      const mockGet = vi.mocked(apiCacheService.get);
+      mockGet.mockResolvedValue(null);
 
       // Simulate cache pressure
       for (let i = 0; i < 1000; i++) {
-        await mockSet(`/api/key-${i}`, 'GET', { data: `value-${i}` })
+        await mockSet(`/api/key-${i}`, 'GET', { data: `value-${i}` });
       }
 
-      await mockGet('/api/key-500')
+      await mockGet('/api/key-500');
 
-      expect(mockSet).toHaveBeenCalled()
-    })
-  })
+      expect(mockSet).toHaveBeenCalled();
+    });
+  });
 
   describe('4. Cache Consistency', () => {
     it('should ensure cache consistency across services', async () => {
-      const mockSaveFile = vi.mocked(storageService.saveFile)
-      mockSaveFile.mockResolvedValue()
+      const mockSaveFile = vi.mocked(storageService.saveFile);
+      mockSaveFile.mockResolvedValue();
 
       // Update file -> invalidate related caches
       await mockSaveFile({
@@ -179,26 +179,26 @@ describe('Cache Workflow Integration', () => {
         createdAt: Date.now(),
         updatedAt: Date.now(),
         size: 100,
-      })
+      });
 
-      expect(mockSaveFile).toHaveBeenCalled()
-    })
+      expect(mockSaveFile).toHaveBeenCalled();
+    });
 
     it('should handle cache race conditions', async () => {
-      const mockSet = vi.mocked(apiCacheService.set)
-      mockSet.mockResolvedValue()
+      const mockSet = vi.mocked(apiCacheService.set);
+      mockSet.mockResolvedValue();
 
-      const mockGet = vi.mocked(apiCacheService.get)
-      mockGet.mockResolvedValue(null)
+      const mockGet = vi.mocked(apiCacheService.get);
+      mockGet.mockResolvedValue(null);
 
       // Concurrent cache updates
       await Promise.all([
         mockSet('/api/key', 'GET', { data: 'value1' }),
         mockSet('/api/key', 'GET', { data: 'value2' }),
         mockSet('/api/key', 'GET', { data: 'value3' }),
-      ])
+      ]);
 
-      expect(mockSet).toHaveBeenCalledTimes(3)
-    })
-  })
-})
+      expect(mockSet).toHaveBeenCalledTimes(3);
+    });
+  });
+});

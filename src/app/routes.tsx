@@ -23,18 +23,22 @@
  * notes: 使用React.lazy()实现代码分割
  */
 
-import { lazy, Suspense } from 'react'
-import { createBrowserRouter } from 'react-router'
+import { lazy, Suspense } from 'react';
+import { createBrowserRouter } from 'react-router';
 
-import { IDELayoutSkeleton } from './components/Skeleton'
+import { IDELayoutSkeleton } from './components/Skeleton';
 
-const HomePage = lazy(() => import('./components/HomePage').then(m => ({ default: m.HomePage })))
-const IDELayout = lazy(() => import('./components/IDELayout').then(m => ({ default: m.IDELayout })))
-const SettingsPage = lazy(() => import('./components/SettingsPage').then(m => ({ default: m.SettingsPage })))
+const HomePage = lazy(() => import('./components/HomePage').then((m) => ({ default: m.HomePage })));
+const IDELayout = lazy(() =>
+  import('./components/IDELayout').then((m) => ({ default: m.IDELayout }))
+);
+const SettingsPage = lazy(() =>
+  import('./components/SettingsPage').then((m) => ({ default: m.SettingsPage }))
+);
 
 function LoadingFallback({ type = 'default' }: { type?: 'default' | 'ide' | 'settings' }) {
   if (type === 'ide') {
-    return <IDELayoutSkeleton theme="dark" />
+    return <IDELayoutSkeleton theme="dark" />;
   }
 
   return (
@@ -44,7 +48,7 @@ function LoadingFallback({ type = 'default' }: { type?: 'default' | 'ide' | 'set
         <p className="text-slate-400 text-sm">加载中...</p>
       </div>
     </div>
-  )
+  );
 }
 
 export const router: ReturnType<typeof createBrowserRouter> = createBrowserRouter([
@@ -72,4 +76,4 @@ export const router: ReturnType<typeof createBrowserRouter> = createBrowserRoute
       </Suspense>
     ),
   },
-])
+]);

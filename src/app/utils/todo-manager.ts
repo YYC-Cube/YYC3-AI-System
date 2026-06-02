@@ -13,24 +13,24 @@
  */
 
 export interface TodoItem {
-  id: string
-  file: string
-  line: number
-  column: number
-  type: 'TODO' | 'FIXME' | 'HACK' | 'BUG' | 'XXX' | 'NOTE'
-  message: string
-  priority: 'high' | 'medium' | 'low'
-  author?: string
-  date?: string
-  status: 'open' | 'in_progress' | 'resolved' | 'wontfix'
+  id: string;
+  file: string;
+  line: number;
+  column: number;
+  type: 'TODO' | 'FIXME' | 'HACK' | 'BUG' | 'XXX' | 'NOTE';
+  message: string;
+  priority: 'high' | 'medium' | 'low';
+  author?: string;
+  date?: string;
+  status: 'open' | 'in_progress' | 'resolved' | 'wontfix';
 }
 
 export interface TodoStats {
-  total: number
-  byType: Record<string, number>
-  byPriority: Record<string, number>
-  byStatus: Record<string, number>
-  byFile: Record<string, number>
+  total: number;
+  byType: Record<string, number>;
+  byPriority: Record<string, number>;
+  byStatus: Record<string, number>;
+  byFile: Record<string, number>;
 }
 
 const TODO_PATTERNS = {
@@ -40,42 +40,46 @@ const TODO_PATTERNS = {
   BUG: /(?:\/\/|#|\/\*|<!--)\s*BUG\s*[:\-]?\s*(.+?)(?:\*\/|-->|$)/gi,
   XXX: /(?:\/\/|#|\/\*|<!--)\s*XXX\s*[:\-]?\s*(.+?)(?:\*\/|-->|$)/gi,
   NOTE: /(?:\/\/|#|\/\*|<!--)\s*NOTE\s*[:\-]?\s*(.+?)(?:\*\/|-->|$)/gi,
-}
+};
 
 const PRIORITY_KEYWORDS = {
   high: ['urgent', 'critical', 'important', 'asap', 'high', '紧急', '重要'],
   medium: ['medium', 'normal', 'should', '中'],
   low: ['low', 'nice to have', 'maybe', 'later', '低', '可选'],
-}
+};
 
 function detectPriority(message: string): 'high' | 'medium' | 'low' {
-  const lowerMessage = message.toLowerCase()
-  
+  const lowerMessage = message.toLowerCase();
+
   for (const keyword of PRIORITY_KEYWORDS.high) {
-    if (lowerMessage.includes(keyword)) return 'high'
+    if (lowerMessage.includes(keyword)) return 'high';
   }
-  
+
   for (const keyword of PRIORITY_KEYWORDS.low) {
-    if (lowerMessage.includes(keyword)) return 'low'
+    if (lowerMessage.includes(keyword)) return 'low';
   }
-  
-  return 'medium'
+
+  return 'medium';
 }
 
-function extractMetadata(message: string): { author?: string; date?: string; cleanMessage: string } {
-  const authorMatch = message.match(/\(@?([^)]+)\)/)
-  const dateMatch = message.match(/(\d{4}-\d{2}-\d{2}|\d{2}\/\d{2}\/\d{4})/)
-  
+function extractMetadata(message: string): {
+  author?: string;
+  date?: string;
+  cleanMessage: string;
+} {
+  const authorMatch = message.match(/\(@?([^)]+)\)/);
+  const dateMatch = message.match(/(\d{4}-\d{2}-\d{2}|\d{2}\/\d{2}\/\d{4})/);
+
   const cleanMessage = message
     .replace(/\(@?([^)]+)\)/, '')
     .replace(/\d{4}-\d{2}-\d{2}|\d{2}\/\d{2}\/\d{4}/, '')
-    .trim()
-  
+    .trim();
+
   return {
     author: authorMatch?.[1]?.trim(),
     date: dateMatch?.[1],
     cleanMessage,
-  }
+  };
 }
 
 export function parseTodoComment(
@@ -84,13 +88,13 @@ export function parseTodoComment(
   filePath: string
 ): TodoItem | null {
   for (const [type, pattern] of Object.entries(TODO_PATTERNS)) {
-    pattern.lastIndex = 0
-    const match = pattern.exec(line)
-    
+    pattern.lastIndex = 0;
+    const match = pattern.exec(line);
+
     if (match) {
-      const rawMessage = match[1]?.trim() || ''
-      const { author, date, cleanMessage } = extractMetadata(rawMessage)
-      
+      const rawMessage = match[1]?.trim() || '';
+      const { author, date, cleanMessage } = extractMetadata(rawMessage);
+
       return {
         id: `${filePath}:${lineNumber}:${type}`,
         file: filePath,
@@ -102,25 +106,25 @@ export function parseTodoComment(
         author,
         date,
         status: 'open',
-      }
+      };
     }
   }
-  
-  return null
+
+  return null;
 }
 
 export function scanFileForTodos(content: string, filePath: string): TodoItem[] {
-  const todos: TodoItem[] = []
-  const lines = content.split('\n')
-  
+  const todos: TodoItem[] = [];
+  const lines = content.split('\n');
+
   lines.forEach((line, index) => {
-    const todo = parseTodoComment(line, index + 1, filePath)
+    const todo = parseTodoComment(line, index + 1, filePath);
     if (todo) {
-      todos.push(todo)
+      todos.push(todo);
     }
-  })
-  
-  return todos
+  });
+
+  return todos;
 }
 
 export function calculateStats(todos: TodoItem[]): TodoStats {
@@ -130,51 +134,57 @@ export function calculateStats(todos: TodoItem[]): TodoStats {
     byPriority: {},
     byStatus: {},
     byFile: {},
-  }
-  
+  };
+
   for (const todo of todos) {
-    stats.byType[todo.type] = (stats.byType[todo.type] || 0) + 1
-    stats.byPriority[todo.priority] = (stats.byPriority[todo.priority] || 0) + 1
-    stats.byStatus[todo.status] = (stats.byStatus[todo.status] || 0) + 1
-    stats.byFile[todo.file] = (stats.byFile[todo.file] || 0) + 1
+    stats.byType[todo.type] = (stats.byType[todo.type] || 0) + 1;
+    stats.byPriority[todo.priority] = (stats.byPriority[todo.priority] || 0) + 1;
+    stats.byStatus[todo.status] = (stats.byStatus[todo.status] || 0) + 1;
+    stats.byFile[todo.file] = (stats.byFile[todo.file] || 0) + 1;
   }
-  
-  return stats
+
+  return stats;
 }
 
 export function generateTodoReport(todos: TodoItem[]): string {
-  const stats = calculateStats(todos)
-  
-  let report = '# TODO Report\n\n'
-  report += `Generated: ${new Date().toISOString()}\n\n`
-  
-  report += '## Summary\n\n'
-  report += `- Total Items: ${stats.total}\n`
-  report += `- By Type: ${Object.entries(stats.byType).map(([k, v]) => `${k}: ${v}`).join(', ')}\n`
-  report += `- By Priority: ${Object.entries(stats.byPriority).map(([k, v]) => `${k}: ${v}`).join(', ')}\n`
-  report += `- By Status: ${Object.entries(stats.byStatus).map(([k, v]) => `${k}: ${v}`).join(', ')}\n\n`
-  
+  const stats = calculateStats(todos);
+
+  let report = '# TODO Report\n\n';
+  report += `Generated: ${new Date().toISOString()}\n\n`;
+
+  report += '## Summary\n\n';
+  report += `- Total Items: ${stats.total}\n`;
+  report += `- By Type: ${Object.entries(stats.byType)
+    .map(([k, v]) => `${k}: ${v}`)
+    .join(', ')}\n`;
+  report += `- By Priority: ${Object.entries(stats.byPriority)
+    .map(([k, v]) => `${k}: ${v}`)
+    .join(', ')}\n`;
+  report += `- By Status: ${Object.entries(stats.byStatus)
+    .map(([k, v]) => `${k}: ${v}`)
+    .join(', ')}\n\n`;
+
   const groupedByPriority = {
-    high: todos.filter(t => t.priority === 'high'),
-    medium: todos.filter(t => t.priority === 'medium'),
-    low: todos.filter(t => t.priority === 'low'),
-  }
-  
+    high: todos.filter((t) => t.priority === 'high'),
+    medium: todos.filter((t) => t.priority === 'medium'),
+    low: todos.filter((t) => t.priority === 'low'),
+  };
+
   for (const [priority, items] of Object.entries(groupedByPriority)) {
-    if (items.length === 0) continue
-    
-    report += `## ${priority.toUpperCase()} Priority (${items.length})\n\n`
-    
+    if (items.length === 0) continue;
+
+    report += `## ${priority.toUpperCase()} Priority (${items.length})\n\n`;
+
     for (const item of items) {
-      report += `### ${item.type}: ${item.message}\n`
-      report += `- File: ${item.file}:${item.line}\n`
-      if (item.author) report += `- Author: ${item.author}\n`
-      if (item.date) report += `- Date: ${item.date}\n`
-      report += `- Status: ${item.status}\n\n`
+      report += `### ${item.type}: ${item.message}\n`;
+      report += `- File: ${item.file}:${item.line}\n`;
+      if (item.author) report += `- Author: ${item.author}\n`;
+      if (item.date) report += `- Date: ${item.date}\n`;
+      report += `- Status: ${item.status}\n\n`;
     }
   }
-  
-  return report
+
+  return report;
 }
 
 export function formatTodoForDisplay(todo: TodoItem): string {
@@ -182,16 +192,16 @@ export function formatTodoForDisplay(todo: TodoItem): string {
     high: '🔴',
     medium: '🟡',
     low: '🟢',
-  }
-  
+  };
+
   const statusEmoji = {
     open: '⭕',
     in_progress: '🔄',
     resolved: '✅',
     wontfix: '❌',
-  }
-  
-  return `${priorityEmoji[todo.priority]} ${statusEmoji[todo.status]} [${todo.type}] ${todo.message} (${todo.file}:${todo.line})`
+  };
+
+  return `${priorityEmoji[todo.priority]} ${statusEmoji[todo.status]} [${todo.type}] ${todo.message} (${todo.file}:${todo.line})`;
 }
 
 export function isFunctionalTodo(todo: TodoItem): boolean {
@@ -201,31 +211,31 @@ export function isFunctionalTodo(todo: TodoItem): boolean {
     /todo.*comment/i,
     /parse.*todo/i,
     /scan.*todo/i,
-  ]
-  
-  return functionalPatterns.some(pattern => pattern.test(todo.message))
+  ];
+
+  return functionalPatterns.some((pattern) => pattern.test(todo.message));
 }
 
 export function filterActionableTodos(todos: TodoItem[]): TodoItem[] {
-  return todos.filter(todo => !isFunctionalTodo(todo))
+  return todos.filter((todo) => !isFunctionalTodo(todo));
 }
 
 export function sortTodosByPriority(todos: TodoItem[]): TodoItem[] {
-  const priorityOrder = { high: 0, medium: 1, low: 2 }
-  return [...todos].sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority])
+  const priorityOrder = { high: 0, medium: 1, low: 2 };
+  return [...todos].sort((a, b) => priorityOrder[a.priority] - priorityOrder[b.priority]);
 }
 
 export function groupTodosByFile(todos: TodoItem[]): Record<string, TodoItem[]> {
-  const grouped: Record<string, TodoItem[]> = {}
-  
+  const grouped: Record<string, TodoItem[]> = {};
+
   for (const todo of todos) {
     if (!grouped[todo.file]) {
-      grouped[todo.file] = []
+      grouped[todo.file] = [];
     }
-    grouped[todo.file].push(todo)
+    grouped[todo.file].push(todo);
   }
-  
-  return grouped
+
+  return grouped;
 }
 
 export function updateTodoStatus(
@@ -233,7 +243,5 @@ export function updateTodoStatus(
   id: string,
   status: TodoItem['status']
 ): TodoItem[] {
-  return todos.map(todo =>
-    todo.id === id ? { ...todo, status } : todo
-  )
+  return todos.map((todo) => (todo.id === id ? { ...todo, status } : todo));
 }

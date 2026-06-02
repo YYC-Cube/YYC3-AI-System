@@ -13,31 +13,26 @@
  * @tags examples,usage,editable-content,collaboration
  */
 
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 
-import { EditableContentManager } from '../components/EditableContentManager'
-import { collabService, type CollabConfig } from '../services/collab-service'
+import { EditableContentManager } from '../components/EditableContentManager';
+import { collabService, type CollabConfig } from '../services/collab-service';
 
 export function ExampleUsage() {
-  const [showManager, setShowManager] = useState(false)
+  const [showManager, setShowManager] = useState(false);
 
   return (
     <div>
-      <button onClick={() => setShowManager(true)}>
-        打开可编辑内容管理器
-      </button>
-      
-      <EditableContentManager
-        open={showManager}
-        onClose={() => setShowManager(false)}
-      />
+      <button onClick={() => setShowManager(true)}>打开可编辑内容管理器</button>
+
+      <EditableContentManager open={showManager} onClose={() => setShowManager(false)} />
     </div>
-  )
+  );
 }
 
 export function addCustomItem() {
-  const items = JSON.parse(localStorage.getItem('editable-items') || '[]')
-  
+  const items = JSON.parse(localStorage.getItem('editable-items') || '[]');
+
   items.push({
     id: `custom-${Date.now()}`,
     key: 'my-api-endpoint',
@@ -50,14 +45,14 @@ export function addCustomItem() {
     isRequired: false,
     validation: {
       pattern: '^https?://.*',
-      message: '请输入有效的URL'
+      message: '请输入有效的URL',
     },
     lastModified: Date.now(),
     version: 1,
-    syncStatus: 'synced'
-  })
-  
-  localStorage.setItem('editable-items', JSON.stringify(items))
+    syncStatus: 'synced',
+  });
+
+  localStorage.setItem('editable-items', JSON.stringify(items));
 }
 
 export async function connectToCollabServer() {
@@ -68,128 +63,125 @@ export async function connectToCollabServer() {
     userName: '张三',
     userColor: '#FF6B6B',
     onConnectionChange: (status) => {
-      console.log('连接状态:', status)
+      console.log('连接状态:', status);
     },
     onUserJoin: (user) => {
-      console.log('用户加入:', user.name)
+      console.log('用户加入:', user.name);
     },
     onUserLeave: (userId) => {
-      console.log('用户离开:', userId)
+      console.log('用户离开:', userId);
     },
     onUserUpdate: (user) => {
-      console.log('用户更新:', user.name, user.presence)
+      console.log('用户更新:', user.name, user.presence);
     },
     onError: (error) => {
-      console.error('连接错误:', error)
-    }
-  }
+      console.error('连接错误:', error);
+    },
+  };
 
-  const success = await collabService.connect(config)
-  
+  const success = await collabService.connect(config);
+
   if (success) {
-    console.log('协同编辑连接成功')
+    console.log('协同编辑连接成功');
   }
 }
 
 export function useCollabFeatures() {
-  const text = collabService.getText('shared-document')
-  
+  const text = collabService.getText('shared-document');
+
   if (text) {
-    text.insert(0, 'Hello, World!')
-    
+    text.insert(0, 'Hello, World!');
+
     text.observe((event) => {
-      console.log('文档变化:', event.changes)
-    })
+      console.log('文档变化:', event.changes);
+    });
   }
-  
-  collabService.updateCursor(10, 5)
-  
-  collabService.updateSelection(
-    { line: 5, column: 0 },
-    { line: 5, column: 20 }
-  )
-  
-  collabService.updatePresence('typing')
+
+  collabService.updateCursor(10, 5);
+
+  collabService.updateSelection({ line: 5, column: 0 }, { line: 5, column: 20 });
+
+  collabService.updatePresence('typing');
 }
 
 export function exportImportExample() {
-  const items = JSON.parse(localStorage.getItem('editable-items') || '[]')
-  
+  const items = JSON.parse(localStorage.getItem('editable-items') || '[]');
+
   const exportData = {
     version: '1.0',
     exportedAt: new Date().toISOString(),
     items: items.map((item: any) => ({
       ...item,
-      value: item.isSecret ? '***' : item.value
-    }))
-  }
-  
+      value: item.isSecret ? '***' : item.value,
+    })),
+  };
+
   const blob = new Blob([JSON.stringify(exportData, null, 2)], {
-    type: 'application/json'
-  })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement('a')
-  a.href = url
-  a.download = 'yyc3-config-export.json'
-  a.click()
-  URL.revokeObjectURL(url)
+    type: 'application/json',
+  });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'yyc3-config-export.json';
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 export function validateItem(item: any): { valid: boolean; errors: string[] } {
-  const errors: string[] = []
+  const errors: string[] = [];
 
   if (!item.key || item.key.trim() === '') {
-    errors.push('键名不能为空')
+    errors.push('键名不能为空');
   }
 
   if (!item.label || item.label.trim() === '') {
-    errors.push('标签不能为空')
+    errors.push('标签不能为空');
   }
 
   if (item.isRequired && (!item.value || item.value.trim() === '')) {
-    errors.push('必填项不能为空')
+    errors.push('必填项不能为空');
   }
 
   if (item.validation?.pattern) {
-    const regex = new RegExp(item.validation.pattern)
+    const regex = new RegExp(item.validation.pattern);
     if (!regex.test(item.value)) {
-      errors.push(item.validation.message || '格式不正确')
+      errors.push(item.validation.message || '格式不正确');
     }
   }
 
   return {
     valid: errors.length === 0,
-    errors
-  }
+    errors,
+  };
 }
 
 /**
  * 开源精神说明
  * Open-source spirit explanation
- * 
+ *
  * 本系统遵循以下开源原则：
  * This system follows these open-source principles:
- * 
+ *
  * 1. 数据主权
  *    - 所有数据存储在用户本地
  *    - 不收集任何用户信息
  *    - 用户完全控制自己的数据
- * 
+ *
  * 2. 透明性
  *    - 所有代码开源可见
  *    - 无隐藏的后门或数据收集
  *    - 用户可以审查所有功能
- * 
+ *
  * 3. 用户控制
  *    - 用户自行配置API密钥
  *    - 用户选择协同服务器
  *    - 用户决定数据存储位置
- * 
+ *
  * 4. 安全设计
  *    - 敏感信息本地加密存储
  *    - 不传输数据到第三方服务器
  *    - 用户负责自己的安全认证
- * 
+ *
  * 5. 协同为本
  *    - 支持多人实时协同编辑
  *    - 基于CRDT技术实现冲突解决

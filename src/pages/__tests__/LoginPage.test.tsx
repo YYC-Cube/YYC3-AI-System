@@ -174,14 +174,20 @@ describe('LoginPage', () => {
     await user.click(submitButton);
 
     // 等待登录完成
-    await waitFor(() => {
-      expect(submitButton).toBeDisabled();
-    }, { timeout: 3000 });
+    await waitFor(
+      () => {
+        expect(submitButton).toBeDisabled();
+      },
+      { timeout: 3000 }
+    );
 
     // 验证登录状态
-    await waitFor(() => {
-      expect(screen.queryByText('邮箱或密码错误')).not.toBeInTheDocument();
-    }, { timeout: 4000 });
+    await waitFor(
+      () => {
+        expect(screen.queryByText('邮箱或密码错误')).not.toBeInTheDocument();
+      },
+      { timeout: 4000 }
+    );
   });
 
   it('应该显示登录错误信息', async () => {
@@ -197,9 +203,12 @@ describe('LoginPage', () => {
     await user.click(submitButton);
 
     // 等待错误提示
-    await waitFor(() => {
-      expect(screen.getByText('邮箱或密码错误')).toBeInTheDocument();
-    }, { timeout: 3000 });
+    await waitFor(
+      () => {
+        expect(screen.getByText('邮箱或密码错误')).toBeInTheDocument();
+      },
+      { timeout: 3000 }
+    );
   });
 
   it('应该显示加载状态', async () => {

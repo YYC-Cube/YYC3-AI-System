@@ -21,7 +21,7 @@ const ForgotPasswordPage: React.FC = () => {
   const { forgotPassword, isLoading } = useAuth();
 
   const [formData, setFormData] = useState<ForgotPasswordFormData>({
-    email: ''
+    email: '',
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -57,7 +57,7 @@ const ForgotPasswordPage: React.FC = () => {
 
       try {
         const response = await forgotPassword(formData);
-        
+
         if (response.success) {
           setIsSuccess(true);
           setEmailSent(formData.email);
@@ -75,14 +75,17 @@ const ForgotPasswordPage: React.FC = () => {
   /**
    * 处理输入变化
    */
-  const handleChange = useCallback((value: string) => {
-    setFormData({ email: value });
-    
-    // 清除错误
-    if (errors.email) {
-      setErrors({});
-    }
-  }, [errors]);
+  const handleChange = useCallback(
+    (value: string) => {
+      setFormData({ email: value });
+
+      // 清除错误
+      if (errors.email) {
+        setErrors({});
+      }
+    },
+    [errors]
+  );
 
   if (isSuccess) {
     return (
@@ -94,11 +97,9 @@ const ForgotPasswordPage: React.FC = () => {
               <div className="mx-auto w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-6">
                 <CheckCircle className="w-8 h-8 text-green-600 dark:text-green-400" />
               </div>
-              
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                邮件已发送
-              </h2>
-              
+
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">邮件已发送</h2>
+
               <p className="text-gray-600 dark:text-gray-400 mb-6">
                 我们已向 <span className="font-medium">{emailSent}</span> 发送了重置密码的邮件。
                 请查收邮件并按照提示重置密码。
@@ -111,7 +112,7 @@ const ForgotPasswordPage: React.FC = () => {
                 >
                   返回登录
                 </Link>
-                
+
                 <button
                   onClick={() => setIsSuccess(false)}
                   className="block w-full py-3 px-4 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
@@ -134,9 +135,7 @@ const ForgotPasswordPage: React.FC = () => {
           <div className="mx-auto w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center mb-4 shadow-lg">
             <Mail className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            忘记密码
-          </h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">忘记密码</h1>
           <p className="text-gray-600 dark:text-gray-400">
             输入您的邮箱地址，我们将发送重置密码的链接
           </p>
@@ -147,9 +146,7 @@ const ForgotPasswordPage: React.FC = () => {
           {errors.email && (
             <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-red-800 dark:text-red-200">
-                {errors.email}
-              </p>
+              <p className="text-sm text-red-800 dark:text-red-200">{errors.email}</p>
             </div>
           )}
 
@@ -179,9 +176,7 @@ const ForgotPasswordPage: React.FC = () => {
                 />
               </div>
               {errors.email && (
-                <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-                  {errors.email}
-                </p>
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.email}</p>
               )}
             </div>
 

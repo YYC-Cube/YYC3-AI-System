@@ -11,23 +11,23 @@
  * @tags component,sync,ui,offline
  */
 
-import * as LucideIcons from 'lucide-react'
-import React, { useState, useEffect, useCallback } from 'react'
+import * as LucideIcons from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
 
-import { SyncManagerService } from '../../services/sync-manager-service'
-import { SyncEventType } from '../../types/sync'
-import type { SyncStatus, SyncStatistics } from '../../types/sync'
+import { SyncManagerService } from '../../services/sync-manager-service';
+import { SyncEventType } from '../../types/sync';
+import type { SyncStatus, SyncStatistics } from '../../types/sync';
 
 /**
  * 同步状态面板组件属性
  */
 interface SyncStatusPanelProps {
   /** 是否显示详细信息 */
-  showDetails?: boolean
+  showDetails?: boolean;
   /** 是否可折叠 */
-  collapsible?: boolean
+  collapsible?: boolean;
   /** 自定义类名 */
-  className?: string
+  className?: string;
 }
 
 /**
@@ -39,38 +39,41 @@ export function SyncStatusPanel({
   collapsible = true,
   className = '',
 }: SyncStatusPanelProps) {
-  const [syncStatus, setSyncStatus] = useState<SyncStatus | null>(null)
-  const [statistics, setStatistics] = useState<SyncStatistics | null>(null)
-  const [isCollapsed, setIsCollapsed] = useState(!showDetails)
-  const [lastUpdated, setLastUpdated] = useState<number>(Date.now())
+  const [syncStatus, setSyncStatus] = useState<SyncStatus | null>(null);
+  const [statistics, setStatistics] = useState<SyncStatistics | null>(null);
+  const [isCollapsed, setIsCollapsed] = useState(!showDetails);
+  const [lastUpdated, setLastUpdated] = useState<number>(Date.now());
 
-  const syncManager = SyncManagerService.getInstance()
-  const Icons = LucideIcons as unknown as Record<string, React.ComponentType<{ className?: string }>>
+  const syncManager = SyncManagerService.getInstance();
+  const Icons = LucideIcons as unknown as Record<
+    string,
+    React.ComponentType<{ className?: string }>
+  >;
 
   /**
    * 更新同步状态
    */
   const updateSyncStatus = useCallback(() => {
-    const status = syncManager.getSyncStatus()
-    const stats = syncManager.getStatistics()
-    setSyncStatus(status)
-    setStatistics(stats)
-    setLastUpdated(Date.now())
-  }, [syncManager])
+    const status = syncManager.getSyncStatus();
+    const stats = syncManager.getStatistics();
+    setSyncStatus(status);
+    setStatistics(stats);
+    setLastUpdated(Date.now());
+  }, [syncManager]);
 
   /**
    * 手动触发同步
    */
   const handleSyncNow = useCallback(() => {
-    syncManager.syncNow()
-  }, [syncManager])
+    syncManager.syncNow();
+  }, [syncManager]);
 
   /**
    * 初始化和事件监听
    */
   useEffect(() => {
     // 初始更新
-    updateSyncStatus()
+    updateSyncStatus();
 
     // 监听同步事件
     const syncEvents = [
@@ -80,31 +83,35 @@ export function SyncStatusPanel({
       SyncEventType.OPERATION_STARTED,
       SyncEventType.OPERATION_COMPLETED,
       SyncEventType.ONLINE_STATUS_CHANGED,
-    ]
-    const handleSyncEvent = () => { updateSyncStatus() }
-    syncEvents.forEach(e => syncManager.on(e, handleSyncEvent))
+    ];
+    const handleSyncEvent = () => {
+      updateSyncStatus();
+    };
+    syncEvents.forEach((e) => syncManager.on(e, handleSyncEvent));
 
     // 定时更新状态
-    const interval = setInterval(updateSyncStatus, 5000)
+    const interval = setInterval(updateSyncStatus, 5000);
 
     return () => {
-      syncEvents.forEach(e => syncManager.off(e, handleSyncEvent))
-      clearInterval(interval)
-    }
-  }, [syncManager, updateSyncStatus])
+      syncEvents.forEach((e) => syncManager.off(e, handleSyncEvent));
+      clearInterval(interval);
+    };
+  }, [syncManager, updateSyncStatus]);
 
   if (!syncStatus || !statistics) {
-    return null
+    return null;
   }
 
-  const isOnline = syncStatus.isOnline
-  const isSyncing = syncStatus.isSyncing
-  const pendingCount = syncStatus.pendingCount
-  const failedCount = syncStatus.failedCount
-  const conflictCount = syncStatus.conflictCount
+  const isOnline = syncStatus.isOnline;
+  const isSyncing = syncStatus.isSyncing;
+  const pendingCount = syncStatus.pendingCount;
+  const failedCount = syncStatus.failedCount;
+  const conflictCount = syncStatus.conflictCount;
 
   return (
-    <div className={`bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 ${className}`}>
+    <div
+      className={`bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 ${className}`}
+    >
       {/* 主状态栏 */}
       <div className="flex items-center justify-between p-4">
         <div className="flex items-center gap-3">
@@ -117,9 +124,7 @@ export function SyncStatusPanel({
             }`}
           >
             <Icons.Wifi className="w-4 h-4" />
-            <span className="text-sm font-medium">
-              {isOnline ? '在线' : '离线'}
-            </span>
+            <span className="text-sm font-medium">{isOnline ? '在线' : '离线'}</span>
           </div>
 
           {/* 同步状态 */}
@@ -237,7 +242,9 @@ export function SyncStatusPanel({
             <div className="bg-amber-50 dark:bg-amber-900/20 rounded-lg p-3">
               <div className="flex items-center gap-2 mb-1">
                 <Icons.Clock className="w-4 h-4 text-amber-600" />
-                <span className="text-xs text-amber-600 dark:text-amber-400 font-medium">平均耗时</span>
+                <span className="text-xs text-amber-600 dark:text-amber-400 font-medium">
+                  平均耗时
+                </span>
               </div>
               <div className="text-2xl font-bold text-amber-900 dark:text-amber-100">
                 {Math.round(statistics.averageSyncTime)}
@@ -283,13 +290,11 @@ export function SyncStatusPanel({
           {syncStatus.lastSyncTime > 0 && (
             <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
               <span>最后同步: {new Date(syncStatus.lastSyncTime).toLocaleString()}</span>
-              <span>
-                更新: {Math.floor((Date.now() - lastUpdated) / 1000)}秒前
-              </span>
+              <span>更新: {Math.floor((Date.now() - lastUpdated) / 1000)}秒前</span>
             </div>
           )}
         </div>
       )}
     </div>
-  )
+  );
 }

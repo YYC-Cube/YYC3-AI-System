@@ -16,135 +16,187 @@
  */
 
 import {
-  Wifi, WifiOff, RefreshCw, Cloud, CloudOff,
-  Users, Sparkles,
-  AlertTriangle, Loader2, Zap
-} from 'lucide-react'
-import { useCallback, useEffect, useState } from 'react'
-import { toast } from 'sonner'
+  Wifi,
+  WifiOff,
+  RefreshCw,
+  Cloud,
+  CloudOff,
+  Users,
+  Sparkles,
+  AlertTriangle,
+  Loader2,
+  Zap,
+} from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
-import { useAppStore } from '../store'
-import { getI18n } from '../utils/i18n'
-import { getThemeTokens } from '../utils/theme'
-import { wsCollab, type WSConnectionStatus, type WSSyncStatus, type WSPeer } from '../utils/ws-collab'
-
+import { useAppStore } from '../store';
+import { getI18n } from '../utils/i18n';
+import { getThemeTokens } from '../utils/theme';
+import {
+  wsCollab,
+  type WSConnectionStatus,
+  type WSSyncStatus,
+  type WSPeer,
+} from '../utils/ws-collab';
 
 export function CollabStatusBar() {
-  const { theme, language } = useAppStore()
-  const t = getThemeTokens(theme)
-  const i = getI18n(language)
+  const { theme, language } = useAppStore();
+  const t = getThemeTokens(theme);
+  const i = getI18n(language);
 
-  const [connStatus, setConnStatus] = useState<WSConnectionStatus>('disconnected')
-  const [syncStatus, setSyncStatus] = useState<WSSyncStatus>('offline')
-  const [latency, setLatency] = useState(0)
-  const [peerCount, setPeerCount] = useState(0)
-  const [aiCompletionOn, setAiCompletionOn] = useState(true)
+  const [connStatus, setConnStatus] = useState<WSConnectionStatus>('disconnected');
+  const [syncStatus, setSyncStatus] = useState<WSSyncStatus>('offline');
+  const [latency, setLatency] = useState(0);
+  const [peerCount, setPeerCount] = useState(0);
+  const [aiCompletionOn, setAiCompletionOn] = useState(true);
 
   useEffect(() => {
     const handleAll = (event: string, data: unknown) => {
-      const d = data as Record<string, unknown> | null
+      const d = data as Record<string, unknown> | null;
       switch (event) {
         case 'status-changed':
-          setConnStatus(d?.status as WSConnectionStatus)
-          break
+          setConnStatus(d?.status as WSConnectionStatus);
+          break;
         case 'sync-changed':
-          setSyncStatus(d?.syncStatus as WSSyncStatus)
-          break
+          setSyncStatus(d?.syncStatus as WSSyncStatus);
+          break;
         case 'latency-updated':
-          setLatency(d?.latency as number)
-          break
+          setLatency(d?.latency as number);
+          break;
         case 'peers-updated': {
-          const peers = data as WSPeer[]
-          setPeerCount(peers.filter(p => p.online).length)
-          break
+          const peers = data as WSPeer[];
+          setPeerCount(peers.filter((p) => p.online).length);
+          break;
         }
         case 'conflict-detected':
-          toast.warning(`${i.wsConflict}: ${(d?.file as string) || ''}`)
-          break
+          toast.warning(`${i.wsConflict}: ${(d?.file as string) || ''}`);
+          break;
         case 'conflict-resolved':
-          toast.success(i.wsResolved)
-          break
+          toast.success(i.wsResolved);
+          break;
         case 'connection-lost':
-          toast.error(i.wsDisconnected)
-          break
+          toast.error(i.wsDisconnected);
+          break;
         case 'reconnected':
-          toast.success(i.wsConnected)
-          break
+          toast.success(i.wsConnected);
+          break;
       }
-    }
+    };
 
-    wsCollab.on('*', handleAll)
+    wsCollab.on('*', handleAll);
 
     // Auto-connect on mount
     if (wsCollab.status === 'disconnected') {
-      wsCollab.connect()
+      wsCollab.connect();
     } else {
-      setConnStatus(wsCollab.status)
-      setSyncStatus(wsCollab.syncStatus)
-      setLatency(wsCollab.latency)
-      setPeerCount(wsCollab.onlinePeers.length)
+      setConnStatus(wsCollab.status);
+      setSyncStatus(wsCollab.syncStatus);
+      setLatency(wsCollab.latency);
+      setPeerCount(wsCollab.onlinePeers.length);
     }
 
     return () => {
-      wsCollab.off('*', handleAll)
-    }
-  }, [i])
+      wsCollab.off('*', handleAll);
+    };
+  }, [i]);
 
   const handleReconnect = useCallback(() => {
-    wsCollab.disconnect()
-    wsCollab.connect()
-  }, [])
+    wsCollab.disconnect();
+    wsCollab.connect();
+  }, []);
 
   const toggleAiCompletion = useCallback(() => {
-    const next = !aiCompletionOn
-    setAiCompletionOn(next)
-    toast.info(next ? i.aicEnabled : i.aicDisabled)
-  }, [aiCompletionOn, i])
+    const next = !aiCompletionOn;
+    setAiCompletionOn(next);
+    toast.info(next ? i.aicEnabled : i.aicDisabled);
+  }, [aiCompletionOn, i]);
 
   /* ── Connection status indicator ── */
   const connIcon = (() => {
     switch (connStatus) {
-      case 'connected': return <Wifi className={`w-3 h-3 ${t.isDark ? 'text-emerald-400' : 'text-emerald-600'}`} />
-      case 'connecting': return <Loader2 className={`w-3 h-3 animate-spin ${t.isDark ? 'text-amber-400' : 'text-amber-500'}`} />
-      case 'reconnecting': return <RefreshCw className={`w-3 h-3 animate-spin ${t.isDark ? 'text-amber-400' : 'text-amber-500'}`} />
-      case 'disconnected': return <WifiOff className={`w-3 h-3 ${t.isDark ? 'text-red-400' : 'text-red-500'}`} />
+      case 'connected':
+        return <Wifi className={`w-3 h-3 ${t.isDark ? 'text-emerald-400' : 'text-emerald-600'}`} />;
+      case 'connecting':
+        return (
+          <Loader2
+            className={`w-3 h-3 animate-spin ${t.isDark ? 'text-amber-400' : 'text-amber-500'}`}
+          />
+        );
+      case 'reconnecting':
+        return (
+          <RefreshCw
+            className={`w-3 h-3 animate-spin ${t.isDark ? 'text-amber-400' : 'text-amber-500'}`}
+          />
+        );
+      case 'disconnected':
+        return <WifiOff className={`w-3 h-3 ${t.isDark ? 'text-red-400' : 'text-red-500'}`} />;
     }
-  })()
+  })();
 
   const connLabel = (() => {
     switch (connStatus) {
-      case 'connected': return i.wsConnected
-      case 'connecting': return i.wsConnecting
-      case 'reconnecting': return i.wsReconnecting
-      case 'disconnected': return i.wsDisconnected
+      case 'connected':
+        return i.wsConnected;
+      case 'connecting':
+        return i.wsConnecting;
+      case 'reconnecting':
+        return i.wsReconnecting;
+      case 'disconnected':
+        return i.wsDisconnected;
     }
-  })()
+  })();
 
   /* ── Sync status indicator ── */
   const syncIcon = (() => {
     switch (syncStatus) {
-      case 'synced': return <Cloud className={`w-3 h-3 ${t.isDark ? 'text-emerald-400/50' : 'text-emerald-600/50'}`} />
-      case 'syncing': return <RefreshCw className={`w-3 h-3 animate-spin ${t.isDark ? 'text-blue-400/60' : 'text-blue-500/60'}`} />
-      case 'conflict': return <AlertTriangle className={`w-3 h-3 ${t.isDark ? 'text-amber-400' : 'text-amber-500'}`} />
-      case 'offline': return <CloudOff className={`w-3 h-3 ${t.isDark ? 'text-slate-500' : 'text-slate-400'}`} />
+      case 'synced':
+        return (
+          <Cloud
+            className={`w-3 h-3 ${t.isDark ? 'text-emerald-400/50' : 'text-emerald-600/50'}`}
+          />
+        );
+      case 'syncing':
+        return (
+          <RefreshCw
+            className={`w-3 h-3 animate-spin ${t.isDark ? 'text-blue-400/60' : 'text-blue-500/60'}`}
+          />
+        );
+      case 'conflict':
+        return (
+          <AlertTriangle className={`w-3 h-3 ${t.isDark ? 'text-amber-400' : 'text-amber-500'}`} />
+        );
+      case 'offline':
+        return <CloudOff className={`w-3 h-3 ${t.isDark ? 'text-slate-500' : 'text-slate-400'}`} />;
     }
-  })()
+  })();
 
   const syncLabel = (() => {
     switch (syncStatus) {
-      case 'synced': return i.wsSynced
-      case 'syncing': return i.wsSyncing
-      case 'conflict': return i.wsConflict
-      case 'offline': return i.wsOffline
+      case 'synced':
+        return i.wsSynced;
+      case 'syncing':
+        return i.wsSyncing;
+      case 'conflict':
+        return i.wsConflict;
+      case 'offline':
+        return i.wsOffline;
     }
-  })()
+  })();
 
   /* ── Latency color ── */
-  const latencyColor = latency < 50
-    ? t.isDark ? 'text-emerald-400/50' : 'text-emerald-600/50'
-    : latency < 150
-      ? t.isDark ? 'text-amber-400/50' : 'text-amber-500/50'
-      : t.isDark ? 'text-red-400/50' : 'text-red-500/50'
+  const latencyColor =
+    latency < 50
+      ? t.isDark
+        ? 'text-emerald-400/50'
+        : 'text-emerald-600/50'
+      : latency < 150
+        ? t.isDark
+          ? 'text-amber-400/50'
+          : 'text-amber-500/50'
+        : t.isDark
+          ? 'text-red-400/50'
+          : 'text-red-500/50';
 
   return (
     <div className="flex items-center gap-3">
@@ -186,15 +238,23 @@ export function CollabStatusBar() {
         className={`flex items-center gap-1 px-1 py-0.5 rounded ${t.transition} ${t.interactive.iconBtn}`}
         title={i.aicToggle}
       >
-        <Sparkles className={`w-3 h-3 ${aiCompletionOn
-          ? (t.isDark ? 'text-violet-400' : 'text-violet-500')
-          : t.text.dimmed
-        }`} />
-        <span className={`text-[9px] ${aiCompletionOn
-          ? (t.isDark ? 'text-violet-400/70' : 'text-violet-500/70')
-          : t.text.dimmed
-        }`}>{i.aicProviderLabel}</span>
+        <Sparkles
+          className={`w-3 h-3 ${
+            aiCompletionOn ? (t.isDark ? 'text-violet-400' : 'text-violet-500') : t.text.dimmed
+          }`}
+        />
+        <span
+          className={`text-[9px] ${
+            aiCompletionOn
+              ? t.isDark
+                ? 'text-violet-400/70'
+                : 'text-violet-500/70'
+              : t.text.dimmed
+          }`}
+        >
+          {i.aicProviderLabel}
+        </span>
       </button>
     </div>
-  )
+  );
 }

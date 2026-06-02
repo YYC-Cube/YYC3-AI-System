@@ -14,34 +14,43 @@
  * @tags component,editor,monaco,code
  */
 
-import Editor, { type OnMount, type BeforeMount } from '@monaco-editor/react'
+import Editor, { type OnMount, type BeforeMount } from '@monaco-editor/react';
 import {
-  AlertCircle, AlertTriangle, Info, Copy, Check,
-  GitCompare, X, CheckCheck, XCircle, Sparkles, Shield, MessageSquare, Bot
-} from 'lucide-react'
-import type { editor as MonacoEditor } from 'monaco-editor'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import * as Y from 'yjs'
+  AlertCircle,
+  AlertTriangle,
+  Info,
+  Copy,
+  Check,
+  GitCompare,
+  X,
+  CheckCheck,
+  XCircle,
+  Sparkles,
+  Shield,
+  MessageSquare,
+  Bot,
+} from 'lucide-react';
+import type { editor as MonacoEditor } from 'monaco-editor';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import * as Y from 'yjs';
 
-import { initializeMonaco, loadLanguageOnDemand } from '../../utils/monaco-config'
-import { useTaskStore } from '../services/task-store'
-import { useAppStore } from '../store'
-import { registerAICompletionProvider } from '../utils/ai-completion'
-import { collabManager } from '../utils/collaboration'
-import { getI18n } from '../utils/i18n'
-import { getThemeTokens } from '../utils/theme'
+import { initializeMonaco, loadLanguageOnDemand } from '../../utils/monaco-config';
+import { useTaskStore } from '../services/task-store';
+import { useAppStore } from '../store';
+import { registerAICompletionProvider } from '../utils/ai-completion';
+import { collabManager } from '../utils/collaboration';
+import { getI18n } from '../utils/i18n';
+import { getThemeTokens } from '../utils/theme';
 
-
-import { AiRefactorPanel } from './AiRefactorPanel'
-import { BreadcrumbNav } from './BreadcrumbNav'
-import { CodeReviewPanel } from './CodeReviewPanel'
-import { CollabCursors } from './CollabCursors'
-import { CollabStatusBar } from './CollabStatusBar'
-import { ErrorDiagnostics } from './ErrorDiagnostics'
-import { FileTabs } from './FileTabs'
-import { InlineAIChat } from './InlineAIChat'
-import { SystemReport } from './SystemReport'
-
+import { AiRefactorPanel } from './AiRefactorPanel';
+import { BreadcrumbNav } from './BreadcrumbNav';
+import { CodeReviewPanel } from './CodeReviewPanel';
+import { CollabCursors } from './CollabCursors';
+import { CollabStatusBar } from './CollabStatusBar';
+import { ErrorDiagnostics } from './ErrorDiagnostics';
+import { FileTabs } from './FileTabs';
+import { InlineAIChat } from './InlineAIChat';
+import { SystemReport } from './SystemReport';
 
 // ── Mock file contents ──
 const FILE_CONTENTS: Record<string, string> = {
@@ -274,130 +283,156 @@ export const router = createBrowserRouter([
   { path: '/', Component: HomePage },
   { path: '/ide', Component: IDELayout },
 ])`,
-}
+};
 
 // ── File → language mapping ──
 function getLanguage(filename: string): string {
-  if (filename.endsWith('.tsx')) return 'typescript'
-  if (filename.endsWith('.ts')) return 'typescript'
-  if (filename.endsWith('.jsx')) return 'javascript'
-  if (filename.endsWith('.js')) return 'javascript'
-  if (filename.endsWith('.css')) return 'css'
-  if (filename.endsWith('.json')) return 'json'
-  if (filename.endsWith('.md')) return 'markdown'
-  return 'typescript'
+  if (filename.endsWith('.tsx')) return 'typescript';
+  if (filename.endsWith('.ts')) return 'typescript';
+  if (filename.endsWith('.jsx')) return 'javascript';
+  if (filename.endsWith('.js')) return 'javascript';
+  if (filename.endsWith('.css')) return 'css';
+  if (filename.endsWith('.json')) return 'json';
+  if (filename.endsWith('.md')) return 'markdown';
+  return 'typescript';
 }
 
 // ── Diagnostic mock ──
 interface DiagItem {
-  line: number
-  type: 'error' | 'warning' | 'info'
-  message: string
-  col?: number
-  endCol?: number
+  line: number;
+  type: 'error' | 'warning' | 'info';
+  message: string;
+  col?: number;
+  endCol?: number;
 }
 
 const FILE_DIAGNOSTICS: Record<string, DiagItem[]> = {
   'ChatInterface.tsx': [
-    { line: 33, type: 'warning', message: "Variable 'scrollRef' is declared but its value is never read in this scope.", col: 7, endCol: 16 },
-    { line: 68, type: 'info', message: "Consider using optional chaining: cmd?.split(' ')", col: 5, endCol: 20 },
+    {
+      line: 33,
+      type: 'warning',
+      message: "Variable 'scrollRef' is declared but its value is never read in this scope.",
+      col: 7,
+      endCol: 16,
+    },
+    {
+      line: 68,
+      type: 'info',
+      message: "Consider using optional chaining: cmd?.split(' ')",
+      col: 5,
+      endCol: 20,
+    },
   ],
   'store.ts': [
-    { line: 35, type: 'error', message: "Cannot find name 'initialDesignRoot'.", col: 23, endCol: 39 },
+    {
+      line: 35,
+      type: 'error',
+      message: "Cannot find name 'initialDesignRoot'.",
+      col: 23,
+      endCol: 39,
+    },
   ],
-}
+};
 
 // ══════════════════════════════════════════
 // ── CodeEditor Component ──
 // ══════════════════════════════════════════
 export function CodeEditor() {
   const {
-    theme, selectedFile, collaborators,
-    pendingCodeInjection, clearCodeInjection, setSelectedFile,
-  } = useAppStore()
-  const t = getThemeTokens(theme)
-  const { language: lang } = useAppStore()
-  const i = getI18n(lang)
+    theme,
+    selectedFile,
+    collaborators,
+    pendingCodeInjection,
+    clearCodeInjection,
+    setSelectedFile,
+  } = useAppStore();
+  const t = getThemeTokens(theme);
+  const { language: lang } = useAppStore();
+  const i = getI18n(lang);
 
-  const [activeView, setActiveView] = useState<'code' | 'diff' | 'report'>('code')
-  const [copied, setCopied] = useState(false)
-  const [cursorPos, setCursorPos] = useState({ line: 1, col: 1 })
-  const [injectionToast, setInjectionToast] = useState<string | null>(null)
-  const [sidePanel, setSidePanel] = useState<'none' | 'refactor' | 'diagnostics' | 'review'>('none')
-  const [inlineChatVisible, setInlineChatVisible] = useState(false)
-  const [inlineChatLine, setInlineChatLine] = useState(1)
+  const [activeView, setActiveView] = useState<'code' | 'diff' | 'report'>('code');
+  const [copied, setCopied] = useState(false);
+  const [cursorPos, setCursorPos] = useState({ line: 1, col: 1 });
+  const [injectionToast, setInjectionToast] = useState<string | null>(null);
+  const [sidePanel, setSidePanel] = useState<'none' | 'refactor' | 'diagnostics' | 'review'>(
+    'none'
+  );
+  const [inlineChatVisible, setInlineChatVisible] = useState(false);
+  const [inlineChatLine, setInlineChatLine] = useState(1);
 
   // Define currentFile first before using it
-  const currentFile = selectedFile || 'ChatInterface.tsx'
-  const fileContent = FILE_CONTENTS[currentFile] || `// ${currentFile}\n// File content not available`
-  const language = getLanguage(currentFile)
-  const diagnostics = FILE_DIAGNOSTICS[currentFile] || []
+  const currentFile = selectedFile || 'ChatInterface.tsx';
+  const fileContent =
+    FILE_CONTENTS[currentFile] || `// ${currentFile}\n// File content not available`;
+  const language = getLanguage(currentFile);
+  const diagnostics = FILE_DIAGNOSTICS[currentFile] || [];
 
   // Get tasks related to current file
-  const { tasks } = useTaskStore.getState()
-  const relatedTasks = tasks.filter(t =>
-    t.relatedFiles?.includes(currentFile) &&
-    t.status !== 'done' &&
-    !t.isArchived
-  )
+  const { tasks } = useTaskStore.getState();
+  const relatedTasks = tasks.filter(
+    (t) => t.relatedFiles?.includes(currentFile) && t.status !== 'done' && !t.isArchived
+  );
 
   // Diff state
-  const [diffOriginal, setDiffOriginal] = useState('')
-  const [diffModified, setDiffModified] = useState('')
-  const [diffFilename, setDiffFilename] = useState('')
+  const [diffOriginal, setDiffOriginal] = useState('');
+  const [diffModified, setDiffModified] = useState('');
+  const [diffFilename, setDiffFilename] = useState('');
 
-  const editorRef = useRef<MonacoEditor.IStandaloneCodeEditor | null>(null)
-  const monacoRef = useRef<any>(null)
-  const decorationsRef = useRef<string[]>([])
-  const aiCompletionRef = useRef<ReturnType<typeof registerAICompletionProvider> | null>(null)
+  const editorRef = useRef<MonacoEditor.IStandaloneCodeEditor | null>(null);
+  const monacoRef = useRef<any>(null);
+  const decorationsRef = useRef<string[]>([]);
+  const aiCompletionRef = useRef<ReturnType<typeof registerAICompletionProvider> | null>(null);
   /** Tracks whether model changes originated from Yjs sync (prevents echo loops) */
-  const isYjsSyncRef = useRef(false)
+  const isYjsSyncRef = useRef(false);
   /** Yjs text instance for current file */
-  const yTextRef = useRef<Y.Text | null>(null)
+  const yTextRef = useRef<Y.Text | null>(null);
   /** Monaco初始化状态 */
-  const [monacoInitialized, setMonacoInitialized] = useState(false)
+  const [monacoInitialized, setMonacoInitialized] = useState(false);
 
-  const diagCounts = useMemo(() => ({
-    errors: diagnostics.filter(d => d.type === 'error').length,
-    warnings: diagnostics.filter(d => d.type === 'warning').length,
-    infos: diagnostics.filter(d => d.type === 'info').length,
-  }), [diagnostics])
+  const diagCounts = useMemo(
+    () => ({
+      errors: diagnostics.filter((d) => d.type === 'error').length,
+      warnings: diagnostics.filter((d) => d.type === 'warning').length,
+      infos: diagnostics.filter((d) => d.type === 'info').length,
+    }),
+    [diagnostics]
+  );
 
   // ── Collaborator cursors on current file ──
   const activeCollabCursors = useMemo(() => {
-    return collaborators.filter(c => c.online && c.cursor && c.cursor.file === currentFile)
-  }, [collaborators, currentFile])
+    return collaborators.filter((c) => c.online && c.cursor && c.cursor.file === currentFile);
+  }, [collaborators, currentFile]);
 
   // ── Initialize Monaco with lazy loading ──
   useEffect(() => {
     if (!monacoInitialized) {
       initializeMonaco(true)
         .then(() => {
-          console.log('[CodeEditor] Monaco initialized successfully')
-          setMonacoInitialized(true)
+          console.log('[CodeEditor] Monaco initialized successfully');
+          setMonacoInitialized(true);
         })
-        .catch(err => {
-          console.error('[CodeEditor] Failed to initialize Monaco:', err)
-        })
+        .catch((err) => {
+          console.error('[CodeEditor] Failed to initialize Monaco:', err);
+        });
     }
-  }, [monacoInitialized])
+  }, [monacoInitialized]);
 
   // ── Load language on demand when file changes ──
   useEffect(() => {
     if (monacoInitialized) {
       loadLanguageOnDemand(language)
         .then(() => {
-          console.log(`[CodeEditor] Language loaded: ${language}`)
+          console.log(`[CodeEditor] Language loaded: ${language}`);
         })
-        .catch(err => {
-          console.error(`[CodeEditor] Failed to load language ${language}:`, err)
-        })
+        .catch((err) => {
+          console.error(`[CodeEditor] Failed to load language ${language}:`, err);
+        });
     }
-  }, [language, monacoInitialized])
+  }, [language, monacoInitialized]);
 
   // ── Monaco theme definition ──
   const handleBeforeMount: BeforeMount = useCallback((monaco) => {
-    monacoRef.current = monaco
+    monacoRef.current = monaco;
 
     // Define YYC3 dark theme
     monaco.editor.defineTheme('yyc3-dark', {
@@ -438,7 +473,7 @@ export function CodeEditor() {
         'scrollbarSlider.hoverBackground': '#ffffff20',
         'scrollbarSlider.activeBackground': '#ffffff30',
       },
-    })
+    });
 
     // Define YYC3 light theme
     monaco.editor.defineTheme('yyc3-light', {
@@ -464,51 +499,57 @@ export function CodeEditor() {
         'editorGutter.background': '#f8fafc',
         'minimap.background': '#f8fafc',
       },
-    })
-  }, [])
+    });
+  }, []);
 
   // ── Monaco editor mount ──
-  const handleEditorMount: OnMount = useCallback((editor, monaco) => {
-    editorRef.current = editor
-    monacoRef.current = monaco
+  const handleEditorMount: OnMount = useCallback(
+    (editor, monaco) => {
+      editorRef.current = editor;
+      monacoRef.current = monaco;
 
-    // Track cursor position
-    editor.onDidChangeCursorPosition((e) => {
-      setCursorPos({ line: e.position.lineNumber, col: e.position.column })
-      // Update yjs local cursor
-      collabManager.updateLocalCursor(currentFile, e.position.lineNumber, e.position.column)
-    })
+      // Track cursor position
+      editor.onDidChangeCursorPosition((e) => {
+        setCursorPos({ line: e.position.lineNumber, col: e.position.column });
+        // Update yjs local cursor
+        collabManager.updateLocalCursor(currentFile, e.position.lineNumber, e.position.column);
+      });
 
-    // Set diagnostics as markers
-    setEditorMarkers(monaco, currentFile, diagnostics)
+      // Set diagnostics as markers
+      setEditorMarkers(monaco, currentFile, diagnostics);
 
-    // Register AI inline completion provider
-    if (!aiCompletionRef.current) {
-      aiCompletionRef.current = registerAICompletionProvider(monaco as typeof import('monaco-editor'), { enabled: true, debounceMs: 600 })
-    }
-  }, [currentFile, diagnostics])
+      // Register AI inline completion provider
+      if (!aiCompletionRef.current) {
+        aiCompletionRef.current = registerAICompletionProvider(
+          monaco as typeof import('monaco-editor'),
+          { enabled: true, debounceMs: 600 }
+        );
+      }
+    },
+    [currentFile, diagnostics]
+  );
 
   // ── Cleanup AI completion on unmount ──
   useEffect(() => {
     return () => {
-      aiCompletionRef.current?.dispose()
-      aiCompletionRef.current = null
-    }
-  }, [])
+      aiCompletionRef.current?.dispose();
+      aiCompletionRef.current = null;
+    };
+  }, []);
 
   // ── Update markers when file changes ──
   useEffect(() => {
     if (monacoRef.current) {
-      setEditorMarkers(monacoRef.current, currentFile, diagnostics)
+      setEditorMarkers(monacoRef.current, currentFile, diagnostics);
     }
-  }, [currentFile, diagnostics])
+  }, [currentFile, diagnostics]);
 
   // ── Collaborator cursor decorations ──
   useEffect(() => {
-    const editor = editorRef.current
-    if (!editor) return
+    const editor = editorRef.current;
+    if (!editor) return;
 
-    const newDecorations: MonacoEditor.IModelDeltaDecoration[] = activeCollabCursors.map(c => ({
+    const newDecorations: MonacoEditor.IModelDeltaDecoration[] = activeCollabCursors.map((c) => ({
       range: {
         startLineNumber: c.cursor!.line,
         startColumn: 1,
@@ -530,70 +571,70 @@ export function CodeEditor() {
         },
         stickiness: 1,
       },
-    }))
+    }));
 
-    decorationsRef.current = editor.deltaDecorations(decorationsRef.current, newDecorations)
-  }, [activeCollabCursors])
+    decorationsRef.current = editor.deltaDecorations(decorationsRef.current, newDecorations);
+  }, [activeCollabCursors]);
 
   // ── Yjs CRDT Binding: Bidirectional sync between Monaco model and Y.Text ──
   useEffect(() => {
-    const editor = editorRef.current
-    if (!editor) return
+    const editor = editorRef.current;
+    if (!editor) return;
 
     // Get or create Y.Text for the current file
-    const yText = collabManager.doc.getText(`file:${currentFile}`)
-    yTextRef.current = yText
+    const yText = collabManager.doc.getText(`file:${currentFile}`);
+    yTextRef.current = yText;
 
     // If yText is empty, initialize from current editor content
     if (yText.length === 0) {
-      const content = editor.getValue()
+      const content = editor.getValue();
       if (content) {
         collabManager.doc.transact(() => {
-          yText.insert(0, content)
-        })
+          yText.insert(0, content);
+        });
       }
     } else {
       // yText has content from another peer — apply it to editor
-      isYjsSyncRef.current = true
-      editor.setValue(yText.toString())
-      isYjsSyncRef.current = false
+      isYjsSyncRef.current = true;
+      editor.setValue(yText.toString());
+      isYjsSyncRef.current = false;
     }
 
     // Monaco → Yjs: forward local edits to Y.Text
     const modelChangeDisposable = editor.onDidChangeModelContent((e) => {
-      if (isYjsSyncRef.current) return // Ignore changes from Yjs sync
+      if (isYjsSyncRef.current) return; // Ignore changes from Yjs sync
 
       collabManager.doc.transact(() => {
         // Process changes in reverse order to maintain correct offsets
-        const changes = [...e.changes].sort((a, b) => b.rangeOffset - a.rangeOffset)
+        const changes = [...e.changes].sort((a, b) => b.rangeOffset - a.rangeOffset);
         for (const change of changes) {
           if (change.rangeLength > 0) {
-            yText.delete(change.rangeOffset, change.rangeLength)
+            yText.delete(change.rangeOffset, change.rangeLength);
           }
           if (change.text.length > 0) {
-            yText.insert(change.rangeOffset, change.text)
+            yText.insert(change.rangeOffset, change.text);
           }
         }
-      })
-    })
+      });
+    });
 
     // Yjs → Monaco: apply remote changes to editor
     const yTextObserver = (event: Y.YTextEvent) => {
-      if (event.transaction.local) return // Ignore our own transactions
+      if (event.transaction.local) return; // Ignore our own transactions
 
-      isYjsSyncRef.current = true
+      isYjsSyncRef.current = true;
       try {
-        const model = editor.getModel()
-        if (!model) return
+        const model = editor.getModel();
+        if (!model) return;
 
-        let offset = 0
-        const edits: MonacoEditor.IIdentifiedSingleEditOperation[] = []
+        let offset = 0;
+        const edits: MonacoEditor.IIdentifiedSingleEditOperation[] = [];
 
         for (const delta of event.delta) {
           if (delta.retain !== undefined) {
-            offset += delta.retain
+            offset += delta.retain;
           } else if (delta.insert !== undefined) {
-            const pos = model.getPositionAt(offset)
+            const pos = model.getPositionAt(offset);
             edits.push({
               range: {
                 startLineNumber: pos.lineNumber,
@@ -602,11 +643,11 @@ export function CodeEditor() {
                 endColumn: pos.column,
               },
               text: typeof delta.insert === 'string' ? delta.insert : '',
-            })
-            offset += (typeof delta.insert === 'string' ? delta.insert.length : 0)
+            });
+            offset += typeof delta.insert === 'string' ? delta.insert.length : 0;
           } else if (delta.delete !== undefined) {
-            const startPos = model.getPositionAt(offset)
-            const endPos = model.getPositionAt(offset + delta.delete)
+            const startPos = model.getPositionAt(offset);
+            const endPos = model.getPositionAt(offset + delta.delete);
             edits.push({
               range: {
                 startLineNumber: startPos.lineNumber,
@@ -615,73 +656,75 @@ export function CodeEditor() {
                 endColumn: endPos.column,
               },
               text: '',
-            })
+            });
           }
         }
 
         if (edits.length > 0) {
-          model.pushEditOperations([], edits, () => null)
+          model.pushEditOperations([], edits, () => null);
         }
       } finally {
-        isYjsSyncRef.current = false
+        isYjsSyncRef.current = false;
       }
-    }
+    };
 
-    yText.observe(yTextObserver)
+    yText.observe(yTextObserver);
 
     return () => {
-      modelChangeDisposable.dispose()
-      yText.unobserve(yTextObserver)
-      yTextRef.current = null
-    }
-  }, [currentFile]) // Re-bind when file changes
+      modelChangeDisposable.dispose();
+      yText.unobserve(yTextObserver);
+      yTextRef.current = null;
+    };
+  }, [currentFile]); // Re-bind when file changes
 
   // ── Code injection → Diff view ──
   useEffect(() => {
     if (pendingCodeInjection) {
-      const { filename, code } = pendingCodeInjection
-      const originalContent = FILE_CONTENTS[filename] || `// ${filename}\n// New file`
-      setDiffOriginal(originalContent)
-      setDiffModified(code)
-      setDiffFilename(filename)
-      setActiveView('diff')
+      const { filename, code } = pendingCodeInjection;
+      const originalContent = FILE_CONTENTS[filename] || `// ${filename}\n// New file`;
+      setDiffOriginal(originalContent);
+      setDiffModified(code);
+      setDiffFilename(filename);
+      setActiveView('diff');
 
       if (filename !== currentFile) {
-        setSelectedFile(filename)
+        setSelectedFile(filename);
       }
 
-      clearCodeInjection()
+      clearCodeInjection();
     }
-  }, [pendingCodeInjection, currentFile, setSelectedFile, clearCodeInjection])
+  }, [pendingCodeInjection, currentFile, setSelectedFile, clearCodeInjection]);
 
   const handleAcceptDiff = useCallback(() => {
     // Apply the modified code to FILE_CONTENTS
     if (diffFilename) {
-      FILE_CONTENTS[diffFilename] = diffModified
+      FILE_CONTENTS[diffFilename] = diffModified;
     }
-    setActiveView('code')
-    setInjectionToast(`${i.ceAcceptedChanges} → ${diffFilename}`)
-    setTimeout(() => setInjectionToast(null), 3000)
-  }, [diffFilename, diffModified])
+    setActiveView('code');
+    setInjectionToast(`${i.ceAcceptedChanges} → ${diffFilename}`);
+    setTimeout(() => setInjectionToast(null), 3000);
+  }, [diffFilename, diffModified]);
 
   const handleRejectDiff = useCallback(() => {
-    setActiveView('code')
-    setInjectionToast(null)
-  }, [])
+    setActiveView('code');
+    setInjectionToast(null);
+  }, []);
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(fileContent)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
-  }
+    navigator.clipboard.writeText(fileContent);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
-  const monacoTheme = t.isDark ? 'yyc3-dark' : 'yyc3-light'
+  const monacoTheme = t.isDark ? 'yyc3-dark' : 'yyc3-light';
 
   // ── Report view ──
   if (activeView === 'report') {
     return (
       <div className="flex flex-col h-full overflow-hidden">
-        <div className={`h-7 flex items-center px-2 border-b flex-shrink-0 ${t.border.subtle} ${t.surface.inset}`}>
+        <div
+          className={`h-7 flex items-center px-2 border-b flex-shrink-0 ${t.border.subtle} ${t.surface.inset}`}
+        >
           <button
             onClick={() => setActiveView('code')}
             className={`text-[11px] px-2 py-0.5 rounded ${t.transition} ${t.accent.link} ${t.isDark ? 'hover:bg-slate-700/50' : 'hover:bg-slate-100'}`}
@@ -694,7 +737,7 @@ export function CodeEditor() {
           <SystemReport />
         </div>
       </div>
-    )
+    );
   }
 
   // ── Diff view ──
@@ -702,13 +745,17 @@ export function CodeEditor() {
     return (
       <div className={`flex flex-col h-full overflow-hidden ${t.transition} ${t.surface.glass}`}>
         {/* Diff toolbar */}
-        <div className={`h-8 flex items-center px-3 justify-between border-b flex-shrink-0 ${t.border.subtle} ${t.surface.toolbar}`}>
+        <div
+          className={`h-8 flex items-center px-3 justify-between border-b flex-shrink-0 ${t.border.subtle} ${t.surface.toolbar}`}
+        >
           <div className="flex items-center gap-2">
             <GitCompare className={`w-3.5 h-3.5 ${t.accent.primary}`} />
             <span className={`text-[11px] ${t.text.secondary}`} style={{ fontWeight: 500 }}>
               {i.aiCodeInjection} · {diffFilename}
             </span>
-            <span className={`text-[9px] px-1.5 py-0.5 rounded ${t.isDark ? 'bg-amber-500/15 text-amber-400' : 'bg-amber-50 text-amber-600'}`}>
+            <span
+              className={`text-[9px] px-1.5 py-0.5 rounded ${t.isDark ? 'bg-amber-500/15 text-amber-400' : 'bg-amber-50 text-amber-600'}`}
+            >
               {i.diffPreview}
             </span>
           </div>
@@ -755,7 +802,7 @@ export function CodeEditor() {
           />
         </div>
       </div>
-    )
+    );
   }
 
   // ── Code view (Monaco Editor) ──
@@ -765,17 +812,23 @@ export function CodeEditor() {
       <FileTabs />
 
       {/* Editor Toolbar with Breadcrumb */}
-      <div className={`h-7 flex items-center px-2 justify-between border-b flex-shrink-0 ${t.border.subtle} ${t.surface.toolbar}`}>
+      <div
+        className={`h-7 flex items-center px-2 justify-between border-b flex-shrink-0 ${t.border.subtle} ${t.surface.toolbar}`}
+      >
         <div className="flex items-center min-w-0 flex-1">
           <BreadcrumbNav />
           {/* Collab indicators */}
           {activeCollabCursors.length > 0 && (
             <div className="flex items-center -space-x-1 ml-2 flex-shrink-0">
-              {activeCollabCursors.map(c => (
+              {activeCollabCursors.map((c) => (
                 <div
                   key={c.id}
                   className="w-4 h-4 rounded-full border flex items-center justify-center text-[7px] text-white"
-                  style={{ backgroundColor: c.color, borderColor: t.isDark ? '#0f172a' : '#f8fafc', fontWeight: 700 }}
+                  style={{
+                    backgroundColor: c.color,
+                    borderColor: t.isDark ? '#0f172a' : '#f8fafc',
+                    fontWeight: 700,
+                  }}
                   title={`${c.name} · ${i.ceAtLine.replace('{n}', String(c.cursor!.line))}`}
                 >
                   {c.name[0]}
@@ -814,7 +867,10 @@ export function CodeEditor() {
             <MessageSquare className="w-3 h-3" />
           </button>
           <button
-            onClick={() => { setInlineChatLine(cursorPos.line); setInlineChatVisible(!inlineChatVisible) }}
+            onClick={() => {
+              setInlineChatLine(cursorPos.line);
+              setInlineChatVisible(!inlineChatVisible);
+            }}
             className={`p-0.5 rounded ${t.transition} ${inlineChatVisible ? t.accent.activeText : ''} ${t.interactive.iconBtn}`}
             title={i.icTitle}
           >
@@ -825,7 +881,11 @@ export function CodeEditor() {
             className={`p-0.5 rounded ${t.transition} ${t.interactive.icon}`}
             title={i.copyCode}
           >
-            {copied ? <Check className={`w-3 h-3 ${t.status.success}`} /> : <Copy className="w-3 h-3" />}
+            {copied ? (
+              <Check className={`w-3 h-3 ${t.status.success}`} />
+            ) : (
+              <Copy className="w-3 h-3" />
+            )}
           </button>
         </div>
       </div>
@@ -833,7 +893,9 @@ export function CodeEditor() {
       {/* Monaco Editor + Side Panel */}
       <div className="flex-1 overflow-hidden flex">
         {/* Editor area */}
-        <div className={`${sidePanel !== 'none' ? 'flex-1 min-w-0' : 'w-full'} overflow-hidden relative`}>
+        <div
+          className={`${sidePanel !== 'none' ? 'flex-1 min-w-0' : 'w-full'} overflow-hidden relative`}
+        >
           <Editor
             key={currentFile}
             defaultValue={fileContent}
@@ -880,7 +942,7 @@ export function CodeEditor() {
           <CollabCursors currentFile={currentFile} lineHeight={20} />
 
           {/* Collab cursor overlay labels */}
-          {activeCollabCursors.map(c => (
+          {activeCollabCursors.map((c) => (
             <div
               key={c.id}
               className="absolute pointer-events-none z-10 flex items-center gap-0.5"
@@ -889,7 +951,10 @@ export function CodeEditor() {
                 right: 8,
               }}
             >
-              <div className="w-0.5 h-4 rounded animate-pulse" style={{ backgroundColor: c.color }} />
+              <div
+                className="w-0.5 h-4 rounded animate-pulse"
+                style={{ backgroundColor: c.color }}
+              />
               <span
                 className="text-[8px] px-1 py-0 rounded text-white whitespace-nowrap"
                 style={{ backgroundColor: c.color, fontWeight: 600, opacity: 0.85 }}
@@ -905,12 +970,8 @@ export function CodeEditor() {
           <div className="absolute inset-0 flex items-center justify-center bg-slate-900/80 backdrop-blur-sm z-20">
             <div className="flex flex-col items-center gap-3">
               <div className="inline-block w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-              <div className="text-sm text-slate-400">
-                正在初始化编辑器...
-              </div>
-              <div className="text-xs text-slate-500">
-                懒加载语言服务以提升性能
-              </div>
+              <div className="text-sm text-slate-400">正在初始化编辑器...</div>
+              <div className="text-xs text-slate-500">懒加载语言服务以提升性能</div>
             </div>
           </div>
         )}
@@ -934,7 +995,9 @@ export function CodeEditor() {
       </div>
 
       {/* Footer Status Bar */}
-      <div className={`h-6 border-t flex items-center justify-between px-3 flex-shrink-0 ${t.border.subtle} ${t.surface.toolbar}`}>
+      <div
+        className={`h-6 border-t flex items-center justify-between px-3 flex-shrink-0 ${t.border.subtle} ${t.surface.toolbar}`}
+      >
         <div className="flex items-center space-x-3">
           {diagCounts.errors > 0 && (
             <span className={`flex items-center space-x-1 text-[10px] ${t.status.error}`}>
@@ -955,19 +1018,25 @@ export function CodeEditor() {
             </span>
           )}
           {relatedTasks.length > 0 && (
-            <span className={`flex items-center space-x-1 text-[10px] ${t.isDark ? 'text-indigo-400/60' : 'text-indigo-500/60'}`}>
+            <span
+              className={`flex items-center space-x-1 text-[10px] ${t.isDark ? 'text-indigo-400/60' : 'text-indigo-500/60'}`}
+            >
               <MessageSquare className="w-3 h-3" />
               <span>{relatedTasks.length} tasks in this file</span>
             </span>
           )}
           {activeCollabCursors.length > 0 && (
-            <span className={`flex items-center space-x-1 text-[10px] ${t.isDark ? 'text-indigo-400/60' : 'text-indigo-500/60'}`}>
+            <span
+              className={`flex items-center space-x-1 text-[10px] ${t.isDark ? 'text-indigo-400/60' : 'text-indigo-500/60'}`}
+            >
               <span>{i.ceCollabCount.replace('{n}', String(activeCollabCursors.length))}</span>
             </span>
           )}
         </div>
         <div className={`flex items-center space-x-4 text-[10px] ${t.text.dimmed}`}>
-          <span>Ln {cursorPos.line}, Col {cursorPos.col}</span>
+          <span>
+            Ln {cursorPos.line}, Col {cursorPos.col}
+          </span>
           <span>UTF-8</span>
           <span>TypeScript React</span>
           <CollabStatusBar />
@@ -976,62 +1045,76 @@ export function CodeEditor() {
 
       {/* Injection toast */}
       {injectionToast && (
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500/20 border border-emerald-500/25 backdrop-blur-sm z-30"
-          style={{ animation: 'yyc3ModalIn 0.2s ease-out' }}>
+        <div
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500/20 border border-emerald-500/25 backdrop-blur-sm z-30"
+          style={{ animation: 'yyc3ModalIn 0.2s ease-out' }}
+        >
           <Check className="w-3.5 h-3.5 text-emerald-400" />
           <span className="text-[11px] text-emerald-300">{injectionToast}</span>
         </div>
       )}
     </div>
-  )
+  );
 }
 
 // ── Monaco markers from diagnostics ──
-function setEditorMarkers(monaco: typeof import('monaco-editor'), filename: string, diagnostics: DiagItem[]) {
+function setEditorMarkers(
+  monaco: typeof import('monaco-editor'),
+  filename: string,
+  diagnostics: DiagItem[]
+) {
   const model = monaco.editor.getModels().find((m) => {
-    const uri = m.uri.toString()
-    return uri.includes(filename)
-  })
-  if (!model) return
+    const uri = m.uri.toString();
+    return uri.includes(filename);
+  });
+  if (!model) return;
 
-  const markers = diagnostics.map(d => ({
-    severity: d.type === 'error'
-      ? monaco.MarkerSeverity.Error
-      : d.type === 'warning'
-        ? monaco.MarkerSeverity.Warning
-        : monaco.MarkerSeverity.Info,
+  const markers = diagnostics.map((d) => ({
+    severity:
+      d.type === 'error'
+        ? monaco.MarkerSeverity.Error
+        : d.type === 'warning'
+          ? monaco.MarkerSeverity.Warning
+          : monaco.MarkerSeverity.Info,
     startLineNumber: d.line,
     startColumn: d.col || 1,
     endLineNumber: d.line,
     endColumn: d.endCol || 100,
     message: d.message,
     source: 'YYC3 TypeChecker',
-  }))
+  }));
 
-  monaco.editor.setModelMarkers(model, 'yyc3', markers)
+  monaco.editor.setModelMarkers(model, 'yyc3', markers);
 }
 
 // ── Diff Editor Wrapper ──
 function DiffEditorWrapper({
-  original, modified, language, theme, onBeforeMount,
+  original,
+  modified,
+  language,
+  theme,
+  onBeforeMount,
 }: {
-  original: string; modified: string; language: string; theme: string
-  onBeforeMount: BeforeMount
+  original: string;
+  modified: string;
+  language: string;
+  theme: string;
+  onBeforeMount: BeforeMount;
 }) {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const diffEditorRef = useRef<MonacoEditor.IStandaloneDiffEditor | null>(null)
+  const containerRef = useRef<HTMLDivElement>(null);
+  const diffEditorRef = useRef<MonacoEditor.IStandaloneDiffEditor | null>(null);
 
   useEffect(() => {
-    let editor: MonacoEditor.IStandaloneDiffEditor | null = null
+    let editor: MonacoEditor.IStandaloneDiffEditor | null = null;
 
     const init = async () => {
-      const monaco = await import('monaco-editor')
-      onBeforeMount(monaco as unknown)
+      const monaco = await import('monaco-editor');
+      onBeforeMount(monaco as unknown);
 
-      if (!containerRef.current) return
+      if (!containerRef.current) return;
 
-      const originalModel = monaco.editor.createModel(original, language)
-      const modifiedModel = monaco.editor.createModel(modified, language)
+      const originalModel = monaco.editor.createModel(original, language);
+      const modifiedModel = monaco.editor.createModel(modified, language);
 
       editor = monaco.editor.createDiffEditor(containerRef.current, {
         theme,
@@ -1052,18 +1135,18 @@ function DiffEditorWrapper({
           verticalScrollbarSize: 6,
           horizontalScrollbarSize: 6,
         },
-      })
+      });
 
-      editor.setModel({ original: originalModel, modified: modifiedModel })
-      diffEditorRef.current = editor
-    }
+      editor.setModel({ original: originalModel, modified: modifiedModel });
+      diffEditorRef.current = editor;
+    };
 
-    init()
+    init();
 
     return () => {
-      if (editor) editor.dispose()
-    }
-  }, [original, modified, language, theme, onBeforeMount])
+      if (editor) editor.dispose();
+    };
+  }, [original, modified, language, theme, onBeforeMount]);
 
-  return <div ref={containerRef} className="w-full h-full" />
+  return <div ref={containerRef} className="w-full h-full" />;
 }

@@ -14,37 +14,37 @@
  * @tags component,error-boundary,error-handling,recovery
  */
 
-import { AlertTriangle, RefreshCw, Home, Bug, Copy, Check } from 'lucide-react'
-import React, { Component, ErrorInfo, ReactNode } from 'react'
-import { toast } from 'sonner'
+import { AlertTriangle, RefreshCw, Home, Bug, Copy, Check } from 'lucide-react';
+import React, { Component, ErrorInfo, ReactNode } from 'react';
+import { toast } from 'sonner';
 
-import { ErrorCategory, ErrorSeverity } from '../services/error-handler'
+import { ErrorCategory, ErrorSeverity } from '../services/error-handler';
 
 interface Props {
-  children: ReactNode
-  fallback?: ReactNode
-  onError?: (error: Error, errorInfo: ErrorInfo) => void
-  showDetails?: boolean
+  children: ReactNode;
+  fallback?: ReactNode;
+  onError?: (error: Error, errorInfo: ErrorInfo) => void;
+  showDetails?: boolean;
 }
 
 interface State {
-  hasError: boolean
-  error: Error | null
-  errorInfo: ErrorInfo | null
-  errorId: string | null
-  copied: boolean
+  hasError: boolean;
+  error: Error | null;
+  errorInfo: ErrorInfo | null;
+  errorId: string | null;
+  copied: boolean;
 }
 
 export class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
-    super(props)
+    super(props);
     this.state = {
       hasError: false,
       error: null,
       errorInfo: null,
       errorId: null,
       copied: false,
-    }
+    };
   }
 
   static getDerivedStateFromError(error: Error): Partial<State> {
@@ -52,11 +52,11 @@ export class ErrorBoundary extends Component<Props, State> {
       hasError: true,
       error,
       errorId: `err_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
-    }
+    };
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
-    this.setState({ errorInfo })
+    this.setState({ errorInfo });
 
     console.error('[ErrorBoundary] Caught error:', {
       message: error.message,
@@ -65,26 +65,26 @@ export class ErrorBoundary extends Component<Props, State> {
       category: ErrorCategory.RUNTIME,
       severity: ErrorSeverity.HIGH,
       timestamp: Date.now(),
-    })
+    });
 
     if (this.props.onError) {
-      this.props.onError(error, errorInfo)
+      this.props.onError(error, errorInfo);
     }
 
-    console.error('[ErrorBoundary] Component stack:', errorInfo.componentStack)
+    console.error('[ErrorBoundary] Component stack:', errorInfo.componentStack);
   }
 
   handleReload = (): void => {
-    window.location.reload()
-  }
+    window.location.reload();
+  };
 
   handleGoHome = (): void => {
-    window.location.href = '/'
-  }
+    window.location.href = '/';
+  };
 
   handleCopyError = async (): Promise<void> => {
-    const { error, errorInfo, errorId } = this.state
-    if (!error) return
+    const { error, errorInfo, errorId } = this.state;
+    if (!error) return;
 
     const errorDetails = `
 Error ID: ${errorId}
@@ -94,46 +94,42 @@ Component Stack: ${errorInfo?.componentStack}
 Timestamp: ${new Date().toISOString()}
 User Agent: ${navigator.userAgent}
 URL: ${window.location.href}
-    `.trim()
+    `.trim();
 
     try {
-      await navigator.clipboard.writeText(errorDetails)
-      this.setState({ copied: true })
-      toast.success('错误信息已复制到剪贴板')
-      setTimeout(() => this.setState({ copied: false }), 2000)
+      await navigator.clipboard.writeText(errorDetails);
+      this.setState({ copied: true });
+      toast.success('错误信息已复制到剪贴板');
+      setTimeout(() => this.setState({ copied: false }), 2000);
     } catch {
-      toast.error('复制失败，请手动复制')
+      toast.error('复制失败，请手动复制');
     }
-  }
+  };
 
   render(): ReactNode {
-    const { hasError, error, errorInfo, errorId, copied } = this.state
-    const { children, fallback, showDetails = true } = this.props
+    const { hasError, error, errorInfo, errorId, copied } = this.state;
+    const { children, fallback, showDetails = true } = this.props;
 
     if (hasError) {
       if (fallback) {
-        return fallback
+        return fallback;
       }
 
-      const isDark = document.documentElement.classList.contains('dark')
+      const isDark = document.documentElement.classList.contains('dark');
       const theme = {
         bg: isDark ? 'bg-slate-900' : 'bg-slate-50',
         card: isDark ? 'bg-slate-800/90' : 'bg-white',
         border: isDark ? 'border-slate-700' : 'border-slate-200',
         text: isDark ? 'text-slate-100' : 'text-slate-900',
         textMuted: isDark ? 'text-slate-400' : 'text-slate-600',
-        button: isDark
-          ? 'bg-indigo-600 hover:bg-indigo-700'
-          : 'bg-indigo-500 hover:bg-indigo-600',
+        button: isDark ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-indigo-500 hover:bg-indigo-600',
         buttonSecondary: isDark
           ? 'bg-slate-700 hover:bg-slate-600'
           : 'bg-slate-100 hover:bg-slate-200',
-      }
+      };
 
       return (
-        <div
-          className={`min-h-screen ${theme.bg} flex items-center justify-center p-4`}
-        >
+        <div className={`min-h-screen ${theme.bg} flex items-center justify-center p-4`}>
           <div
             className={`${theme.card} backdrop-blur-xl border ${theme.border} rounded-2xl shadow-2xl max-w-2xl w-full p-8`}
           >
@@ -142,18 +138,14 @@ URL: ${window.location.href}
                 <AlertTriangle className="w-8 h-8 text-red-500" />
               </div>
 
-              <h1 className={`text-2xl font-bold ${theme.text} mb-2`}>
-                应用遇到了错误
-              </h1>
+              <h1 className={`text-2xl font-bold ${theme.text} mb-2`}>应用遇到了错误</h1>
 
               <p className={`${theme.textMuted} mb-6 max-w-md`}>
                 很抱歉，应用遇到了意外错误。您可以尝试刷新页面或返回首页。
               </p>
 
               {errorId && (
-                <p className={`text-xs ${theme.textMuted} mb-4 font-mono`}>
-                  错误ID: {errorId}
-                </p>
+                <p className={`text-xs ${theme.textMuted} mb-4 font-mono`}>错误ID: {errorId}</p>
               )}
 
               <div className="flex gap-3 mb-6">
@@ -187,9 +179,7 @@ URL: ${window.location.href}
                         className={`${isDark ? 'bg-slate-900' : 'bg-slate-100'} p-4 rounded-lg overflow-auto max-h-60`}
                       >
                         <div className="flex items-center justify-between mb-2">
-                          <span className={`text-xs font-medium ${theme.textMuted}`}>
-                            错误信息
-                          </span>
+                          <span className={`text-xs font-medium ${theme.textMuted}`}>错误信息</span>
                           <button
                             onClick={this.handleCopyError}
                             className={`flex items-center gap-1 text-xs ${theme.textMuted} hover:${theme.text} transition-colors`}
@@ -250,10 +240,10 @@ URL: ${window.location.href}
             </div>
           </div>
         </div>
-      )
+      );
     }
 
-    return children
+    return children;
   }
 }
 
@@ -261,15 +251,15 @@ export function withErrorBoundary<P extends object>(
   WrappedComponent: React.ComponentType<P>,
   errorBoundaryProps?: Omit<Props, 'children'>
 ): React.FC<P> {
-  const displayName = WrappedComponent.displayName || WrappedComponent.name || 'Component'
+  const displayName = WrappedComponent.displayName || WrappedComponent.name || 'Component';
 
   const ComponentWithErrorBoundary: React.FC<P> = (props) => (
     <ErrorBoundary {...errorBoundaryProps}>
       <WrappedComponent {...props} />
     </ErrorBoundary>
-  )
+  );
 
-  ComponentWithErrorBoundary.displayName = `withErrorBoundary(${displayName})`
+  ComponentWithErrorBoundary.displayName = `withErrorBoundary(${displayName})`;
 
-  return ComponentWithErrorBoundary
+  return ComponentWithErrorBoundary;
 }

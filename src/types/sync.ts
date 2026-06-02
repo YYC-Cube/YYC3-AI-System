@@ -27,21 +27,21 @@ export enum SyncOperationType {
  */
 export enum SyncPriority {
   CRITICAL = 'critical', // 关键操作，需要立即同步
-  HIGH = 'high',         // 高优先级
-  NORMAL = 'normal',     // 普通优先级
-  LOW = 'low',           // 低优先级
+  HIGH = 'high', // 高优先级
+  NORMAL = 'normal', // 普通优先级
+  LOW = 'low', // 低优先级
 }
 
 /**
  * 同步操作状态
  */
 export enum SyncOperationStatus {
-  PENDING = 'pending',       // 待同步
-  SYNCING = 'syncing',       // 同步中
-  SUCCESS = 'success',       // 同步成功
-  FAILED = 'failed',         // 同步失败
-  CONFLICT = 'conflict',     // 冲突待解决
-  CANCELLED = 'cancelled',   // 已取消
+  PENDING = 'pending', // 待同步
+  SYNCING = 'syncing', // 同步中
+  SUCCESS = 'success', // 同步成功
+  FAILED = 'failed', // 同步失败
+  CONFLICT = 'conflict', // 冲突待解决
+  CANCELLED = 'cancelled', // 已取消
 }
 
 /**
@@ -49,44 +49,44 @@ export enum SyncOperationStatus {
  */
 export interface SyncOperation {
   /** 操作ID */
-  id: string
+  id: string;
   /** 操作类型 */
-  type: SyncOperationType
+  type: SyncOperationType;
   /** 优先级 */
-  priority: SyncPriority
+  priority: SyncPriority;
   /** 状态 */
-  status: SyncOperationStatus
+  status: SyncOperationStatus;
   /** 资源类型 */
-  resourceType: string
+  resourceType: string;
   /** 资源ID */
-  resourceId: string
+  resourceId: string;
   /** 本地数据 */
-  localData: Record<string, unknown>
+  localData: Record<string, unknown>;
   /** 服务器数据（冲突时） */
-  serverData?: Record<string, unknown>
+  serverData?: Record<string, unknown>;
   /** 操作时间 */
-  timestamp: number
+  timestamp: number;
   /** 重试次数 */
-  retryCount: number
+  retryCount: number;
   /** 最大重试次数 */
-  maxRetries: number
+  maxRetries: number;
   /** 错误信息 */
-  error?: string
+  error?: string;
   /** 是否需要用户确认 */
-  requiresConfirmation: boolean
+  requiresConfirmation: boolean;
   /** 用户决策（解决冲突时） */
-  userDecision?: 'local' | 'server' | 'merge'
+  userDecision?: 'local' | 'server' | 'merge';
 }
 
 /**
  * 冲突类型
  */
 export enum ConflictType {
-  VERSION = 'version',           // 版本冲突
-  CONTENT = 'content',           // 内容冲突
-  DELETE_CONFLICT = 'delete',    // 删除冲突
+  VERSION = 'version', // 版本冲突
+  CONTENT = 'content', // 内容冲突
+  DELETE_CONFLICT = 'delete', // 删除冲突
   CONCURRENT_EDIT = 'concurrent', // 并发编辑
-  REFERENCE = 'reference',       // 引用冲突
+  REFERENCE = 'reference', // 引用冲突
 }
 
 /**
@@ -94,33 +94,33 @@ export enum ConflictType {
  */
 export interface ConflictInfo {
   /** 冲突ID */
-  id: string
+  id: string;
   /** 冲突类型 */
-  type: ConflictType
+  type: ConflictType;
   /** 资源类型 */
-  resourceType: string
+  resourceType: string;
   /** 资源ID */
-  resourceId: string
+  resourceId: string;
   /** 本地版本 */
   localVersion: {
-    id: string
-    version: number
-    timestamp: number
-    data: Record<string, unknown>
-  }
+    id: string;
+    version: number;
+    timestamp: number;
+    data: Record<string, unknown>;
+  };
   /** 服务器版本 */
   serverVersion: {
-    id: string
-    version: number
-    timestamp: number
-    data: Record<string, unknown>
-  }
+    id: string;
+    version: number;
+    timestamp: number;
+    data: Record<string, unknown>;
+  };
   /** 冲突描述 */
-  description: string
+  description: string;
   /** 建议的解决方案 */
-  suggestedResolution: 'local' | 'server' | 'merge'
+  suggestedResolution: 'local' | 'server' | 'merge';
   /** 是否自动解决 */
-  autoResolve: boolean
+  autoResolve: boolean;
 }
 
 /**
@@ -128,19 +128,19 @@ export interface ConflictInfo {
  */
 export interface SyncStatus {
   /** 是否在线 */
-  isOnline: boolean
+  isOnline: boolean;
   /** 是否正在同步 */
-  isSyncing: boolean
+  isSyncing: boolean;
   /** 待同步操作数量 */
-  pendingCount: number
+  pendingCount: number;
   /** 同步失败数量 */
-  failedCount: number
+  failedCount: number;
   /** 冲突数量 */
-  conflictCount: number
+  conflictCount: number;
   /** 最后同步时间 */
-  lastSyncTime: number
+  lastSyncTime: number;
   /** 下次同步时间 */
-  nextSyncTime: number
+  nextSyncTime: number;
 }
 
 /**
@@ -148,19 +148,19 @@ export interface SyncStatus {
  */
 export interface SyncConfig {
   /** 是否自动同步 */
-  autoSync: boolean
+  autoSync: boolean;
   /** 同步间隔（毫秒） */
-  syncInterval: number
+  syncInterval: number;
   /** 最大并发同步数 */
-  maxConcurrentSyncs: number
+  maxConcurrentSyncs: number;
   /** 同步超时时间（毫秒） */
-  syncTimeout: number
+  syncTimeout: number;
   /** 是否在后台同步 */
-  syncInBackground: boolean
+  syncInBackground: boolean;
   /** 优先级权重 */
   priorityWeights: {
-    [key in SyncPriority]: number
-  }
+    [key in SyncPriority]: number;
+  };
 }
 
 /**
@@ -168,19 +168,19 @@ export interface SyncConfig {
  */
 export interface SyncStatistics {
   /** 总同步次数 */
-  totalSyncs: number
+  totalSyncs: number;
   /** 成功次数 */
-  successCount: number
+  successCount: number;
   /** 失败次数 */
-  failureCount: number
+  failureCount: number;
   /** 冲突次数 */
-  conflictCount: number
+  conflictCount: number;
   /** 平均同步时间（毫秒） */
-  averageSyncTime: number
+  averageSyncTime: number;
   /** 最后同步时间 */
-  lastSyncTime: number
+  lastSyncTime: number;
   /** 待同步操作数 */
-  pendingOperations: number
+  pendingOperations: number;
 }
 
 /**
@@ -204,9 +204,9 @@ export enum SyncEventType {
  * 同步事件数据
  */
 export interface SyncEventData {
-  type: SyncEventType
-  timestamp: number
-  data?: Record<string, unknown>
+  type: SyncEventType;
+  timestamp: number;
+  data?: Record<string, unknown>;
 }
 
 /**
@@ -214,9 +214,9 @@ export interface SyncEventData {
  */
 export interface SyncQueueItem {
   /** 操作 */
-  operation: SyncOperation
+  operation: SyncOperation;
   /** 依赖的操作ID列表 */
-  dependencies: string[]
+  dependencies: string[];
   /** 估算的同步时间（毫秒） */
-  estimatedTime: number
+  estimatedTime: number;
 }

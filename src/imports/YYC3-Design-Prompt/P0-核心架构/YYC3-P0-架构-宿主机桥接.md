@@ -22,6 +22,7 @@ tags: p0,architecture,host-bridge,tauri
 ## Bridge API 设计
 
 ### 1. HostBridge (文件系统)
+
 - pickAndReadFile(): 选择并读取文件
 - readFile(path): 读取文件内容
 - writeFile(filename, data): 写入文件
@@ -31,15 +32,18 @@ tags: p0,architecture,host-bridge,tauri
 - watchFile(path, callback): 监控文件变化
 
 ### 2. DialogBridge (对话框)
+
 - openFile(options): 打开文件对话框
 - saveFile(options): 保存文件对话框
 - selectDirectory(options): 选择目录对话框
 
 ### 3. NotificationBridge (通知)
+
 - send(options): 发送系统通知
 - success/error/warning/info 快捷方法
 
 ### 4. SystemBridge (系统)
+
 - getSystemInfo(): 获取系统信息
 - execCommand(cmd, args): 执行系统命令
 - openUrl(url): 打开外部链接

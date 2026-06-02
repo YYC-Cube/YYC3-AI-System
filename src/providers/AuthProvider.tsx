@@ -18,14 +18,8 @@ import { AuthRoutes } from '../pages/auth-routes';
  * AppAuthProvider - 应用认证提供者
  * 包装应用并提供认证上下文
  */
-export const AppAuthProvider: React.FC<{ children?: React.ReactNode }> = ({
-  children
-}) => {
-  return (
-    <BaseAuthProvider>
-      {children || <AuthRoutes />}
-    </BaseAuthProvider>
-  );
+export const AppAuthProvider: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
+  return <BaseAuthProvider>{children || <AuthRoutes />}</BaseAuthProvider>;
 };
 
 export default AppAuthProvider;

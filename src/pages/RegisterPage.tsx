@@ -31,7 +31,7 @@ const RegisterPage: React.FC = () => {
     username: '',
     password: '',
     confirmPassword: '',
-    agreeToTerms: false
+    agreeToTerms: false,
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -41,7 +41,7 @@ const RegisterPage: React.FC = () => {
   const [passwordStrength, setPasswordStrength] = useState<PasswordStrength>({
     score: 0,
     text: '',
-    color: ''
+    color: '',
   });
 
   /**
@@ -49,7 +49,7 @@ const RegisterPage: React.FC = () => {
    */
   const calculatePasswordStrength = useCallback((password: string): PasswordStrength => {
     let score = 0;
-    
+
     if (password.length >= 8) score++;
     if (password.length >= 12) score++;
     if (/[a-z]/.test(password)) score++;
@@ -69,23 +69,26 @@ const RegisterPage: React.FC = () => {
   /**
    * 处理密码输入
    */
-  const handlePasswordChange = useCallback((value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      password: value
-    }));
-    
-    setPasswordStrength(calculatePasswordStrength(value));
-    
-    // 清除该字段的错误
-    if (errors.password) {
-      setErrors(prev => {
-        const newErrors = { ...prev };
-        delete newErrors.password;
-        return newErrors;
-      });
-    }
-  }, [calculatePasswordStrength, errors]);
+  const handlePasswordChange = useCallback(
+    (value: string) => {
+      setFormData((prev) => ({
+        ...prev,
+        password: value,
+      }));
+
+      setPasswordStrength(calculatePasswordStrength(value));
+
+      // 清除该字段的错误
+      if (errors.password) {
+        setErrors((prev) => {
+          const newErrors = { ...prev };
+          delete newErrors.password;
+          return newErrors;
+        });
+      }
+    },
+    [calculatePasswordStrength, errors]
+  );
 
   /**
    * 验证表单
@@ -141,7 +144,7 @@ const RegisterPage: React.FC = () => {
 
       try {
         const response = await register(formData);
-        
+
         if (response.success) {
           // 注册成功，跳转到首页
           navigate('/');
@@ -161,14 +164,14 @@ const RegisterPage: React.FC = () => {
    */
   const handleChange = useCallback(
     (field: keyof RegisterFormData, value: string | boolean) => {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        [field]: value
+        [field]: value,
       }));
-      
+
       // 清除该字段的错误
       if (errors[field]) {
-        setErrors(prev => {
+        setErrors((prev) => {
           const newErrors = { ...prev };
           delete newErrors[field];
           return newErrors;
@@ -186,12 +189,8 @@ const RegisterPage: React.FC = () => {
           <div className="mx-auto w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center mb-4 shadow-lg">
             <User className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            创建账号
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            加入 YYC³ 便携式智能 AI 系统
-          </p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">创建账号</h1>
+          <p className="text-gray-600 dark:text-gray-400">加入 YYC³ 便携式智能 AI 系统</p>
         </div>
 
         {/* 注册表单 */}
@@ -199,9 +198,7 @@ const RegisterPage: React.FC = () => {
           {submitError && (
             <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-red-800 dark:text-red-200">
-                {submitError}
-              </p>
+              <p className="text-sm text-red-800 dark:text-red-200">{submitError}</p>
             </div>
           )}
 
@@ -231,9 +228,7 @@ const RegisterPage: React.FC = () => {
                 />
               </div>
               {errors.username && (
-                <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-                  {errors.username}
-                </p>
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.username}</p>
               )}
             </div>
 
@@ -262,9 +257,7 @@ const RegisterPage: React.FC = () => {
                 />
               </div>
               {errors.email && (
-                <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-                  {errors.email}
-                </p>
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.email}</p>
               )}
             </div>
 
@@ -297,11 +290,7 @@ const RegisterPage: React.FC = () => {
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                   disabled={isLoading}
                 >
-                  {showPassword ? (
-                    <EyeOff className="w-5 h-5" />
-                  ) : (
-                    <Eye className="w-5 h-5" />
-                  )}
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
               {/* 密码强度指示器 */}
@@ -313,8 +302,8 @@ const RegisterPage: React.FC = () => {
                         passwordStrength.score <= 2
                           ? 'bg-red-500'
                           : passwordStrength.score <= 4
-                          ? 'bg-yellow-500'
-                          : 'bg-green-500'
+                            ? 'bg-yellow-500'
+                            : 'bg-green-500'
                       }`}
                       style={{ width: `${(passwordStrength.score / 6) * 100}%` }}
                     />
@@ -325,9 +314,7 @@ const RegisterPage: React.FC = () => {
                 </div>
               )}
               {errors.password && (
-                <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-                  {errors.password}
-                </p>
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.password}</p>
               )}
             </div>
 
@@ -351,8 +338,8 @@ const RegisterPage: React.FC = () => {
                     errors.confirmPassword
                       ? 'border-red-500 focus:ring-red-500'
                       : formData.confirmPassword && formData.confirmPassword === formData.password
-                      ? 'border-green-500 focus:ring-green-500'
-                      : 'border-gray-300 dark:border-gray-600 focus:ring-blue-500'
+                        ? 'border-green-500 focus:ring-green-500'
+                        : 'border-gray-300 dark:border-gray-600 focus:ring-blue-500'
                   } rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all`}
                   disabled={isLoading}
                 />
@@ -368,9 +355,11 @@ const RegisterPage: React.FC = () => {
                     <Eye className="w-5 h-5" />
                   )}
                 </button>
-                {formData.confirmPassword && formData.confirmPassword === formData.password && !errors.confirmPassword && (
-                  <CheckCircle className="absolute right-12 top-1/2 -translate-y-1/2 w-5 h-5 text-green-500" />
-                )}
+                {formData.confirmPassword &&
+                  formData.confirmPassword === formData.password &&
+                  !errors.confirmPassword && (
+                    <CheckCircle className="absolute right-12 top-1/2 -translate-y-1/2 w-5 h-5 text-green-500" />
+                  )}
               </div>
               {errors.confirmPassword && (
                 <p className="mt-1 text-sm text-red-600 dark:text-red-400">
@@ -395,17 +384,15 @@ const RegisterPage: React.FC = () => {
                   我已阅读并同意{' '}
                   <Link to="/terms" className="text-blue-600 dark:text-blue-400 hover:underline">
                     用户协议
-                  </Link>
-                  {' '}和{' '}
+                  </Link>{' '}
+                  和{' '}
                   <Link to="/privacy" className="text-blue-600 dark:text-blue-400 hover:underline">
                     隐私政策
                   </Link>
                 </span>
               </label>
               {errors.agreeToTerms && (
-                <p className="mt-1 text-sm text-red-600 dark:text-red-400">
-                  {errors.agreeToTerms}
-                </p>
+                <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.agreeToTerms}</p>
               )}
             </div>
 
@@ -433,9 +420,7 @@ const RegisterPage: React.FC = () => {
                 <div className="w-full border-t border-gray-200 dark:border-gray-700" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-4 bg-white dark:bg-gray-800 text-gray-500">
-                  或者
-                </span>
+                <span className="px-4 bg-white dark:bg-gray-800 text-gray-500">或者</span>
               </div>
             </div>
 

@@ -15,7 +15,7 @@
  * @tags utils,ai,completion,monaco
  */
 
-import type { editor as MonacoEditor, languages, Position, CancellationToken } from 'monaco-editor'
+import type { editor as MonacoEditor, languages, Position, CancellationToken } from 'monaco-editor';
 
 /* ── Context-aware suggestion database ── */
 const SUGGESTIONS: Record<string, string[]> = {
@@ -32,11 +32,7 @@ const SUGGESTIONS: Record<string, string[]> = {
   'useEffect(': [
     '() => {\n    // Side effect logic\n    return () => {\n      // Cleanup\n    }\n  }, [])',
   ],
-  'useState': [
-    '<boolean>(false)',
-    '<string>(\'\')',
-    '<number>(0)',
-  ],
+  useState: ['<boolean>(false)', "<string>('')", '<number>(0)'],
   'function ': [
     'handleSubmit(e: React.FormEvent) {\n    e.preventDefault()\n    // Handle form submission\n  }',
     'handleChange(value: string) {\n    // Handle value change\n  }',
@@ -55,23 +51,19 @@ const SUGGESTIONS: Record<string, string[]> = {
     'grid grid-cols-2 gap-4 p-6"',
     'relative overflow-hidden backdrop-blur-xl"',
   ],
-  'console.': [
-    "log('Debug:', { data })",
-    "error('Error:', error)",
-    "warn('Warning:', message)",
-  ],
+  'console.': ["log('Debug:', { data })", "error('Error:', error)", "warn('Warning:', message)"],
   'async function': [
-    ' fetchData() {\n  try {\n    const response = await fetch(\'/api/data\')\n    if (!response.ok) throw new Error(\'Network error\')\n    const data = await response.json()\n    return data\n  } catch (error) {\n    console.error(\'Fetch failed:\', error)\n    throw error\n  }\n}',
+    " fetchData() {\n  try {\n    const response = await fetch('/api/data')\n    if (!response.ok) throw new Error('Network error')\n    const data = await response.json()\n    return data\n  } catch (error) {\n    console.error('Fetch failed:', error)\n    throw error\n  }\n}",
   ],
   'try {': [
-    '\n    const result = await operation()\n    return result\n  } catch (error) {\n    console.error(\'Operation failed:\', error)\n    throw error\n  } finally {\n    cleanup()\n  }',
+    "\n    const result = await operation()\n    return result\n  } catch (error) {\n    console.error('Operation failed:', error)\n    throw error\n  } finally {\n    cleanup()\n  }",
   ],
   '// TODO': [
     ': Implement error boundary for graceful error handling',
     ': Add loading skeleton while data is being fetched',
     ': Optimize re-renders with React.memo and useMemo',
   ],
-  'const': [
+  const: [
     ' handleClick = useCallback(() => {\n    // Handle click event\n  }, [])',
     ' memoizedValue = useMemo(() => {\n    return computeExpensiveValue(a, b)\n  }, [a, b])',
   ],
@@ -79,7 +71,7 @@ const SUGGESTIONS: Record<string, string[]> = {
     "Status = 'idle' | 'loading' | 'success' | 'error'",
     "Theme = 'light' | 'dark' | 'system'",
   ],
-}
+};
 
 /* ── Fallback suggestions based on language ── */
 const LANGUAGE_SUGGESTIONS: Record<string, string[]> = {
@@ -87,40 +79,38 @@ const LANGUAGE_SUGGESTIONS: Record<string, string[]> = {
     '// YYC3 AI: Consider adding type annotations for better type safety',
     'export type Result<T> = { success: true; data: T } | { success: false; error: string }',
   ],
-  javascript: [
-    '// YYC3 AI: Consider migrating to TypeScript for better DX',
-  ],
+  javascript: ['// YYC3 AI: Consider migrating to TypeScript for better DX'],
   css: [
     '/* YYC3 AI: Consider using CSS custom properties for theming */',
     'backdrop-filter: blur(12px);',
   ],
-}
+};
 
 /**
  * Find the best matching suggestion for the current line context
  */
 function findSuggestion(lineContent: string, _language: string): string | null {
   // Trim whitespace for matching
-  const trimmed = lineContent.trimStart()
+  const trimmed = lineContent.trimStart();
 
   // Check direct prefix matches (longest match first)
-  const sortedKeys = Object.keys(SUGGESTIONS).sort((a, b) => b.length - a.length)
+  const sortedKeys = Object.keys(SUGGESTIONS).sort((a, b) => b.length - a.length);
   for (const key of sortedKeys) {
     if (trimmed.endsWith(key) || trimmed.includes(key)) {
-      const options = SUGGESTIONS[key]
+      const options = SUGGESTIONS[key];
       // Deterministic but varied selection based on line content hash
-      const hash = lineContent.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0)
-      return options[hash % options.length]
+      const hash = lineContent.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
+      return options[hash % options.length];
     }
   }
 
   // Fallback to language-specific suggestions
-  const langSuggestions = LANGUAGE_SUGGESTIONS[_language]
+  const langSuggestions = LANGUAGE_SUGGESTIONS[_language];
   if (langSuggestions && Math.random() > 0.7) {
-    return langSuggestions[Math.floor(Math.random() * langSuggestions.length)]
+    return langSuggestions[Math.floor(Math.random() * langSuggestions.length)];
   }
 
-  return null
+  return null;
 }
 
 /**
@@ -131,8 +121,8 @@ export function registerAICompletionProvider(
   monaco: typeof import('monaco-editor'),
   options?: { enabled?: boolean; debounceMs?: number }
 ): { dispose: () => void; setEnabled: (enabled: boolean) => void } {
-  let isEnabled = options?.enabled ?? true
-  const debounceMs = options?.debounceMs ?? 500
+  let isEnabled = options?.enabled ?? true;
+  const debounceMs = options?.debounceMs ?? 500;
 
   const provider: languages.InlineCompletionsProvider = {
     provideInlineCompletions: async (
@@ -141,24 +131,24 @@ export function registerAICompletionProvider(
       _context: languages.InlineCompletionContext,
       _token: CancellationToken
     ): Promise<languages.InlineCompletions> => {
-      if (!isEnabled) return { items: [] }
+      if (!isEnabled) return { items: [] };
 
       // Get current line content up to cursor
-      const lineContent = model.getLineContent(position.lineNumber)
-      const textBeforeCursor = lineContent.substring(0, position.column - 1)
+      const lineContent = model.getLineContent(position.lineNumber);
+      const textBeforeCursor = lineContent.substring(0, position.column - 1);
 
-      if (textBeforeCursor.trim().length < 3) return { items: [] }
+      if (textBeforeCursor.trim().length < 3) return { items: [] };
 
       // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, debounceMs))
+      await new Promise((resolve) => setTimeout(resolve, debounceMs));
 
       // Check if cancelled
-      if (_token.isCancellationRequested) return { items: [] }
+      if (_token.isCancellationRequested) return { items: [] };
 
-      const language = model.getLanguageId()
-      const suggestion = findSuggestion(textBeforeCursor, language)
+      const language = model.getLanguageId();
+      const suggestion = findSuggestion(textBeforeCursor, language);
 
-      if (!suggestion) return { items: [] }
+      if (!suggestion) return { items: [] };
 
       return {
         items: [
@@ -172,12 +162,12 @@ export function registerAICompletionProvider(
             },
           },
         ],
-      }
+      };
     },
     disposeInlineCompletions: () => {
       // Nothing to dispose
     },
-  }
+  };
 
   // Register for TypeScript/JavaScript files
   const disposables = [
@@ -185,10 +175,12 @@ export function registerAICompletionProvider(
     monaco.languages.registerInlineCompletionsProvider('javascript', provider),
     monaco.languages.registerInlineCompletionsProvider('css', provider),
     monaco.languages.registerInlineCompletionsProvider('json', provider),
-  ]
+  ];
 
   return {
-    dispose: () => disposables.forEach(d => d.dispose()),
-    setEnabled: (enabled: boolean) => { isEnabled = enabled },
-  }
+    dispose: () => disposables.forEach((d) => d.dispose()),
+    setEnabled: (enabled: boolean) => {
+      isEnabled = enabled;
+    },
+  };
 }
