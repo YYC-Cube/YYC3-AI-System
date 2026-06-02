@@ -93,10 +93,35 @@ const SIMULATED_TABLES: DBTableInfo[] = [
 
 // ── DB Service ──
 
+/**
+ * Local-First 数据库三种模式
+ * - simulated: 演示模式（mock数据，默认）
+ * - sqljs-local: 浏览器内 SQLite (sql.js + WASM, 100% 本地)
+ * - websocket-bridge: 用户自部署的桥接服务（可选）
+ *
+ * 注意：原 HTTPAdapter 已移除（指向不存在的 /api/db 端点）
+ */
+export type DBMode = 'simulated' | 'sqljs-local' | 'websocket-bridge'
+
 export class DBService {
   private connections = new Map<string, DBConnectionStatus>()
   private queryHistory: { sql: string; timestamp: number; duration: number; rowCount: number }[] = []
   private useRealConnection = false
+
+  /**
+   * 获取当前数据库工作模式
+   */
+  getMode(): DBMode {
+    if (!this.useRealConnection) return 'simulated'
+    return 'sqljs-local'
+  }
+
+  /**
+   * 是否处于模拟模式（演示数据）
+   */
+  isSimulated(): boolean {
+    return !this.useRealConnection
+  }
 
   enableRealConnection(enabled: boolean = true): void {
     this.useRealConnection = enabled

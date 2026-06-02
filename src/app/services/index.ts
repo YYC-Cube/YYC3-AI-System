@@ -37,3 +37,8 @@ export { aiTaskIntegration } from './task-ai-integration'
 export { mvpService } from './mvp-service'
 export { previewSandbox } from './preview-sandbox'
 export { deviceSimulator, DEVICE_PRESETS } from './device-simulator'
+
+// ── Local-First additions ──
+export { opfsStorage, OPFSStorageService } from './opfs-storage'
+export type { StorageQuota } from './opfs-storage'
+export { RECOMMENDATION_ORDER } from './ai-provider'

@@ -779,7 +779,7 @@ export function HomePage() {
                         className={`p-2 rounded-lg ${t.transition} ${t.interactive.headerBtn} cursor-pointer`}
                         title={i[labelKey]}
                         type="button">
-                        <Icon className="w-4 h-4 pointer-events-none" />
+                        <Icon className="w-4 h-4" />
                       </button>
                     ))}
                   </div>
@@ -804,25 +804,25 @@ export function HomePage() {
                   className={`p-2 rounded-lg ${t.transition} ${showTools ? `${t.accent.primaryBg} ${t.accent.primary}` : t.interactive.headerBtn} cursor-pointer`}
                   title={i.addAttachment}
                   type="button">
-                  <Plus className="w-4 h-4 pointer-events-none" />
+                  <Plus className="w-4 h-4" />
                 </button>
                 {/* 📤 Image Upload */}
-                <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); toast.info(i.toastImageUpload) }}
+                <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); imageInputRef.current?.click() }}
                   className={`p-2 rounded-lg ${t.transition} ${t.interactive.headerBtn} cursor-pointer`} title={i.uploadImage}
                   type="button">
-                  <ImageIcon className="w-4 h-4 pointer-events-none" />
+                  <ImageIcon className="w-4 h-4" />
                 </button>
                 {/* 💻 Code Insert */}
                 <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); setInput(input + '```tsx\n// code here\n```'); inputRef.current?.focus(); toast.info(i.toastCodeTemplateInserted) }}
                   className={`p-2 rounded-lg ${t.transition} ${t.interactive.headerBtn} cursor-pointer`} title={i.insertCode}
                   type="button">
-                  <Code className="w-4 h-4 pointer-events-none" />
+                  <Code className="w-4 h-4" />
                 </button>
                 {/* 📋 Clipboard */}
                 <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); navigator.clipboard.readText().then(text => { if (text) { setInput(input + text); toast.success(i.toastClipboardPasted) } }).catch(() => toast.error(i.toastClipboardError)) }}
                   className={`p-2 rounded-lg ${t.transition} ${t.interactive.headerBtn} cursor-pointer`} title={i.clipboard}
                   type="button">
-                  <Clipboard className="w-4 h-4 pointer-events-none" />
+                  <Clipboard className="w-4 h-4" />
                 </button>
               </div>
               {/* Send */}
@@ -830,7 +830,7 @@ export function HomePage() {
                 className={`p-2.5 ${t.accent.solidBtn} disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-xl shadow-lg ${t.transition} flex items-center justify-center cursor-pointer`}
                 aria-label={i.send}
                 type="button">
-                <Send className="w-4 h-4 pointer-events-none" />
+                <Send className="w-4 h-4" />
               </button>
             </div>
           </div>

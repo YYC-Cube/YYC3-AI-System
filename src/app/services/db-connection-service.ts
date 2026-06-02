@@ -401,6 +401,16 @@ class WebSocketAdapter implements ConnectionAdapter {
   }
 }
 
+/**
+ * @deprecated HTTPAdapter 已弃用
+ *
+ * Local-First 哲学下，HTTPAdapter 调用的 /api/db/connect 端点
+ * 在标准数据库上不存在，需要用户自部署 YYC3-DB-Bridge 服务。
+ *
+ * 推荐使用：
+ *   - SQLJsAdapter: 浏览器内 SQLite (100% 本地)
+ *   - WebSocketAdapter: 用户自部署的桥接服务
+ */
 class HTTPAdapter implements ConnectionAdapter {
   type: ConnectionType = 'http'
   private baseUrl: string = ''

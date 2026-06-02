@@ -23,13 +23,13 @@
  */
 
 import type {
-  AIProviderConfig,
-  AIModel,
   AIChatMessage,
   AIChatOptions,
   AIChatResponse,
-  AIPerformanceMetrics,
   AIErrorAnalysis,
+  AIModel,
+  AIPerformanceMetrics,
+  AIProviderConfig,
 } from '../types'
 
 // ── Default provider presets ──
@@ -39,7 +39,7 @@ export const PRESET_PROVIDERS: AIProviderConfig[] = [
     id: 'openai', name: 'openai', displayName: 'OpenAI',
     type: 'cloud', baseURL: 'https://api.openai.com/v1', apiKey: '',
     apiKeyURL: 'https://platform.openai.com/api-keys',
-    models: [], enabled: true, priority: 1,
+    models: [], enabled: true, priority: 5,
     rateLimit: { requestsPerMinute: 3500, tokensPerMinute: 90000 },
     pricing: { inputPrice: 0.01, outputPrice: 0.03, currency: 'USD' },
   },
@@ -47,7 +47,7 @@ export const PRESET_PROVIDERS: AIProviderConfig[] = [
     id: 'anthropic', name: 'anthropic', displayName: 'Anthropic',
     type: 'cloud', baseURL: 'https://api.anthropic.com/v1', apiKey: '',
     apiKeyURL: 'https://console.anthropic.com/settings/keys',
-    models: [], enabled: true, priority: 2,
+    models: [], enabled: true, priority: 3,
     rateLimit: { requestsPerMinute: 50, tokensPerMinute: 40000 },
     pricing: { inputPrice: 0.015, outputPrice: 0.075, currency: 'USD' },
   },
@@ -55,7 +55,7 @@ export const PRESET_PROVIDERS: AIProviderConfig[] = [
     id: 'deepseek', name: 'deepseek', displayName: 'DeepSeek',
     type: 'cloud', baseURL: 'https://api.deepseek.com/v1', apiKey: '',
     apiKeyURL: 'https://platform.deepseek.com/api_keys',
-    models: [], enabled: true, priority: 3,
+    models: [], enabled: true, priority: 6,
     rateLimit: { requestsPerMinute: 100, tokensPerMinute: 60000 },
     pricing: { inputPrice: 0.001, outputPrice: 0.002, currency: 'USD' },
   },
@@ -63,7 +63,7 @@ export const PRESET_PROVIDERS: AIProviderConfig[] = [
     id: 'zhipuai', name: 'zhipuai', displayName: '智谱 AI',
     type: 'cloud', baseURL: 'https://open.bigmodel.cn/api/paas/v4', apiKey: '',
     apiKeyURL: 'https://open.bigmodel.cn/usercenter/apikeys', region: 'cn',
-    models: [], enabled: true, priority: 4,
+    models: [], enabled: true, priority: 7,
     rateLimit: { requestsPerMinute: 100, tokensPerMinute: 50000 },
     pricing: { inputPrice: 0.0001, outputPrice: 0.0001, currency: 'CNY' },
   },
@@ -71,7 +71,7 @@ export const PRESET_PROVIDERS: AIProviderConfig[] = [
     id: 'aliyun', name: 'aliyun', displayName: '阿里通义',
     type: 'cloud', baseURL: 'https://dashscope.aliyuncs.com/compatible-mode/v1', apiKey: '',
     apiKeyURL: 'https://dashscope.console.aliyun.com/apiKey', region: 'cn',
-    models: [], enabled: true, priority: 5,
+    models: [], enabled: true, priority: 8,
     rateLimit: { requestsPerMinute: 100, tokensPerMinute: 60000 },
     pricing: { inputPrice: 0.00008, outputPrice: 0.00008, currency: 'CNY' },
   },
@@ -79,16 +79,28 @@ export const PRESET_PROVIDERS: AIProviderConfig[] = [
     id: 'baidu', name: 'baidu', displayName: '百度文心',
     type: 'cloud', baseURL: 'https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop', apiKey: '',
     apiKeyURL: 'https://console.bce.baidu.com/qianfan/ais/console/application/list', region: 'cn',
-    models: [], enabled: true, priority: 6,
+    models: [], enabled: true, priority: 9,
     rateLimit: { requestsPerMinute: 50, tokensPerMinute: 30000 },
     pricing: { inputPrice: 0.00012, outputPrice: 0.00012, currency: 'CNY' },
   },
   {
-    id: 'ollama', name: 'ollama', displayName: 'Ollama (本地)',
+    id: 'ollama', name: 'ollama', displayName: 'Ollama (本地 · 推荐)',
     type: 'local', baseURL: 'http://localhost:11434', apiKey: 'ollama',
-    models: [], enabled: true, priority: 10,
+    models: [], enabled: true, priority: 1,
     pricing: { inputPrice: 0, outputPrice: 0, currency: 'USD' },
   },
+]
+
+// ── Local-First Recommendation Order ──
+// YYC³ philosophy: 一户一端，零跟踪，Ollama 优先（完全本地）
+export const RECOMMENDATION_ORDER = [
+  { id: 'ollama', reason: '完全本地，零网络依赖，零CORS问题，零跟踪' },
+  { id: 'anthropic', reason: '官方支持浏览器直连（含 anthropic-dangerous-direct-browser-access header）' },
+  { id: 'openai', reason: '需要启用 CORS 代理（用户自带密钥）' },
+  { id: 'deepseek', reason: '需要启用 CORS 代理（用户自带密钥）' },
+  { id: 'zhipuai', reason: '需要启用 CORS 代理（用户自带密钥）' },
+  { id: 'aliyun', reason: '需要启用 CORS 代理（用户自带密钥）' },
+  { id: 'baidu', reason: '需要启用 CORS 代理（用户自带密钥）' },
 ]
 
 // ── AI Provider Service ──
@@ -108,6 +120,45 @@ export class AIProviderService {
   private cacheMaxSize = 100
   private rateLimitEnabled = true
   private maxRequestsPerMinute = 60
+
+  // ── Local-First CORS Proxy Config (用户显式启用) ──
+  private corsProxyEnabled = false
+  private corsProxyUrl: string = ''
+
+  /**
+   * 启用/禁用 CORS 代理（用户在设置中显式选择）
+   *
+   * 哲学合规：
+   *   - 默认关闭（零跟踪）
+   *   - 代理无日志、无鉴权、纯透传
+   *   - 用户可自部署同一份 Worker
+   */
+  setCORSProxy(enabled: boolean, url?: string): void {
+    this.corsProxyEnabled = enabled
+    this.corsProxyUrl = url ?? ''
+  }
+
+  isCORSProxyEnabled(): boolean {
+    return this.corsProxyEnabled
+  }
+
+  /**
+   * 构建请求 URL（根据 CORS 代理配置）
+   */
+  buildRequestUrl(providerId: string, originalUrl: string): string {
+    if (!this.corsProxyEnabled || !this.corsProxyUrl) return originalUrl
+
+    // Ollama 不需要代理（本地）
+    if (providerId === 'ollama') return originalUrl
+
+    // Anthropic 官方支持浏览器直连，不需要代理
+    if (providerId === 'anthropic') return originalUrl
+
+    // OpenAI / DeepSeek / 其他云厂商需要代理
+    const proxyBase = this.corsProxyUrl.replace(/\/$/, '')
+    const path = originalUrl.replace(/^https?:\/\/[^/]+/, '')
+    return `${proxyBase}${path}`
+  }
 
   constructor() {
     this.providers = [...PRESET_PROVIDERS]
@@ -234,7 +285,7 @@ export class AIProviderService {
       console.log('[AIProviderService] Sync already in progress, skipping')
       return
     }
-    
+
     this.syncInProgress = true
     console.log('[AIProviderService] Starting sync to appStore...')
 
@@ -387,8 +438,19 @@ export class AIProviderService {
   // ── Intelligent Detection ──
 
   detectBestProvider(): AIProviderConfig | null {
+    // Local-First: Ollama has highest priority by design (priority=1)
+    // If Ollama is available locally, prefer it (零网络依赖、零CORS、零跟踪)
+    const ollama = this.getProvider('ollama')
+    if (ollama?.enabled) {
+      return ollama
+    }
+
     const metrics = this.getPerformanceMetrics()
-    if (metrics.length === 0) return this.providers.find(p => p.enabled) ?? null
+    if (metrics.length === 0) {
+      // Fallback to lowest priority number (highest priority) among enabled
+      const enabled = this.providers.filter(p => p.enabled)
+      return enabled.sort((a, b) => a.priority - b.priority)[0] ?? null
+    }
 
     const scores = new Map<string, number>()
     for (const m of metrics) {
@@ -404,6 +466,60 @@ export class AIProviderService {
     }
 
     return this.getProvider(bestId) ?? this.providers.find(p => p.enabled) ?? null
+  }
+
+  // ── Local-First: Detect locally running Ollama instance ──
+  async detectLocalOllama(customUrl?: string): Promise<boolean> {
+    const url = customUrl || 'http://localhost:11434'
+    try {
+      const resp = await fetch(`${url}/api/tags`, {
+        signal: AbortSignal.timeout(2000),
+      })
+      return resp.ok
+    } catch {
+      return false
+    }
+  }
+
+  // ── Local-First: Auto-activate Ollama if running locally ──
+  async autoActivateLocalOllama(): Promise<boolean> {
+    const ollama = this.getProvider('ollama')
+    if (!ollama?.enabled) return false
+
+    const isRunning = await this.detectLocalOllama(ollama.baseURL)
+    if (isRunning && !this.activeProviderId) {
+      this.setActiveProvider('ollama')
+      return true
+    }
+    return false
+  }
+
+  // ── Local-First: Chat with automatic Ollama fallback on network failure ──
+  async chatWithLocalFallback(messages: AIChatMessage[]): Promise<AIChatResponse> {
+    const order = ['ollama', 'anthropic', 'openai', 'deepseek', 'zhipuai', 'aliyun', 'baidu']
+    const originalProviderId = this.activeProviderId
+
+    for (const providerId of order) {
+      const provider = this.getProvider(providerId)
+      if (!provider?.enabled) continue
+
+      // Skip cloud providers when offline
+      if (provider.type === 'cloud' && !navigator.onLine) continue
+
+      try {
+        // Temporarily switch to this provider for the call
+        this.setActiveProvider(providerId)
+        return await this.chat(messages)
+      } catch (e) {
+        console.warn(`Provider ${providerId} failed, trying next:`, e)
+        continue
+      }
+    }
+
+    // Restore original provider
+    if (originalProviderId) this.setActiveProvider(originalProviderId)
+
+    throw new Error('所有 AI 提供者均不可用。建议：1) 启动本地 Ollama  2) 检查网络连接  3) 配置 API 密钥')
   }
 
   // ── Private helpers ──

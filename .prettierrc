@@ -1,53 +1,16 @@
-/**
- * @file .prettierrc
- * @description YYC³便携式智能AI系统 - Prettier配置
- * @author YanYuCloudCube Team <admin@0379.email>
- * @version v1.0.0
- * @created 2026-03-25
- * @status stable
- * @license MIT
- */
-
-module.exports = {
-  // 单行长度
-  printWidth: 100,
-
-  // 缩进空格数
-  tabWidth: 2,
-
-  // 使用空格缩进
-  useTabs: false,
-
-  // 语句末尾加分号
-  semi: true,
-
-  // 使用单引号
-  singleQuote: true,
-
-  // 对象属性引号策略
-  quoteProps: 'as-needed',
-
-  // JSX中使用单引号
-  jsxSingleQuote: false,
-
-  // 末尾逗号
-  trailingComma: 'es5',
-
-  // 对象大括号内部空格
-  bracketSpacing: true,
-
-  // JSX标签闭合位置
-  bracketSameLine: false,
-
-  // 箭头函数参数括号
-  arrowParens: 'always',
-
-  // 换行符
-  endOfLine: 'lf',
-
-  // HTML空格敏感性
-  htmlWhitespaceSensitivity: 'css',
-
-  // Vue文件缩进
-  vueIndentScriptAndStyle: false,
+{
+  "printWidth": 100,
+  "tabWidth": 2,
+  "useTabs": false,
+  "semi": true,
+  "singleQuote": true,
+  "quoteProps": "as-needed",
+  "jsxSingleQuote": false,
+  "trailingComma": "es5",
+  "bracketSpacing": true,
+  "bracketSameLine": false,
+  "arrowParens": "always",
+  "endOfLine": "lf",
+  "htmlWhitespaceSensitivity": "css",
+  "vueIndentScriptAndStyle": false
 }

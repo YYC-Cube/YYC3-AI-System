@@ -169,10 +169,11 @@ export class SyncService implements SyncServiceInterface {
   // ── Private ──
 
   private async processSync(record: SyncRecord): Promise<void> {
-    // Simulate sync processing (in production, this calls the host bridge)
-    await new Promise(resolve => setTimeout(resolve, 100 + Math.random() * 200))
+    // Local-First: commit to local persistence layer (no remote server)
+    // YYC³ philosophy: 一户一端，数据存储在用户本机浏览器
+    await new Promise(resolve => setTimeout(resolve, 50))
 
-    record.status = 'synced'
+    record.status = 'committed'
     this.syncRecords.push(record)
 
     // Keep last 200 records

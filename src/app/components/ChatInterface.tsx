@@ -283,12 +283,12 @@ export function ChatInterface() {
   const handleImageUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-    
+
     if (!file.type.startsWith('image/')) {
       toast.error(i.toastInvalidImage)
       return
     }
-    
+
     const reader = new FileReader()
     reader.onload = (event) => {
       const dataUrl = event.target?.result as string
@@ -299,7 +299,7 @@ export function ChatInterface() {
     }
     reader.onerror = () => toast.error(i.toastImageUploadFailed)
     reader.readAsDataURL(file)
-    
+
     e.target.value = ''
   }, [i])
 
@@ -307,26 +307,26 @@ export function ChatInterface() {
   const handleFileImport = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-    
+
     const reader = new FileReader()
     reader.onload = (event) => {
       const content = event.target?.result as string
       const ext = file.name.split('.').pop()?.toLowerCase() || 'txt'
-      
+
       let formattedContent = ''
       if (['js', 'jsx', 'ts', 'tsx', 'json', 'css', 'html', 'py', 'java', 'go', 'rs', 'c', 'cpp', 'h'].includes(ext)) {
         formattedContent = `\`\`\`${ext}\n${content}\n\`\`\`\n`
       } else {
         formattedContent = `\`\`\`\n${content}\n\`\`\`\n`
       }
-      
+
       setInput(prev => prev + formattedContent)
       toast.success(i.toastFileImported)
       inputRef.current?.focus()
     }
     reader.onerror = () => toast.error(i.toastFileImportFailed)
     reader.readAsText(file)
-    
+
     e.target.value = ''
   }, [i])
 
@@ -588,27 +588,17 @@ export function ChatInterface() {
           )}
         </AnimatePresence>
 
-        <div className="relative">
-          <textarea
-            ref={inputRef}
-            value={input}
-            onChange={handleInputChange}
-            onKeyDown={handleKeyDown}
-            placeholder={isStreaming ? i.chatStreamingPlaceholder : i.chatPlaceholder}
-            disabled={isStreaming}
-            aria-label={i.ciInputLabel}
-            className={`w-full h-20 resize-none py-2.5 pl-10 pr-12 rounded-xl outline-none text-[13px] ${t.transition} ${t.input.chat} disabled:opacity-50`}
-            style={{ fontWeight: 400 }}
-          />
-          <div className="absolute bottom-2 left-2 flex items-center space-x-0.5 z-10 pointer-events-auto">
-            <div className="relative pointer-events-auto">
+        <div className="relative flex items-end gap-1">
+          {/* Left icon buttons */}
+          <div className="flex-shrink-0 flex items-center space-x-0.5 pb-2 z-10">
+            <div className="relative">
               <button
                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowAttachMenu(!showAttachMenu) }}
                 className={`p-1 rounded ${t.transition} ${showAttachMenu ? t.interactive.iconActive : t.interactive.iconBtn} cursor-pointer`}
                 aria-label={i.addAttachment}
                 type="button"
               >
-                <Plus className="w-3.5 h-3.5 pointer-events-none" />
+                <Plus className="w-3.5 h-3.5" />
               </button>
               <AnimatePresence>
                 {showAttachMenu && (
@@ -659,12 +649,12 @@ export function ChatInterface() {
               </AnimatePresence>
             </div>
             <button
-              onClick={(e) => { e.preventDefault(); e.stopPropagation(); toast.info(i.toastImageUpload) }}
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); imageInputRef.current?.click() }}
               className={`p-1 rounded ${t.transition} ${t.interactive.iconBtn} cursor-pointer`}
               aria-label={i.uploadImage}
               type="button"
             >
-              <ImageIcon className="w-3.5 h-3.5 pointer-events-none" />
+              <ImageIcon className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={(e) => {
@@ -679,17 +669,32 @@ export function ChatInterface() {
               aria-label={i.insertCode}
               type="button"
             >
-              <Code className="w-3.5 h-3.5 pointer-events-none" />
+              <Code className="w-3.5 h-3.5" />
             </button>
           </div>
+
+          {/* Textarea */}
+          <textarea
+            ref={inputRef}
+            value={input}
+            onChange={handleInputChange}
+            onKeyDown={handleKeyDown}
+            placeholder={isStreaming ? i.chatStreamingPlaceholder : i.chatPlaceholder}
+            disabled={isStreaming}
+            aria-label={i.ciInputLabel}
+            className={`flex-1 h-20 resize-none py-2.5 px-3 rounded-xl outline-none text-[13px] ${t.transition} ${t.input.chat} disabled:opacity-50`}
+            style={{ fontWeight: 400 }}
+          />
+
+          {/* Send button */}
           <button
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleSend() }}
             disabled={!input.trim() || isStreaming}
-            className={`absolute bottom-2 right-2 p-2 ${t.accent.solidBtn} disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-lg shadow-lg ${t.transition} flex items-center justify-center z-10 cursor-pointer`}
+            className={`flex-shrink-0 p-2 mb-2 ${t.accent.solidBtn} disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-lg shadow-lg ${t.transition} flex items-center justify-center cursor-pointer`}
             aria-label={i.ciSendLabel}
             type="button"
           >
-            <Send className="w-3.5 h-3.5 pointer-events-none" />
+            <Send className="w-3.5 h-3.5" />
           </button>
         </div>
 

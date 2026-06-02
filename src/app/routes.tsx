@@ -47,7 +47,7 @@ function LoadingFallback({ type = 'default' }: { type?: 'default' | 'ide' | 'set
   )
 }
 
-export const router = createBrowserRouter([
+export const router: ReturnType<typeof createBrowserRouter> = createBrowserRouter([
   {
     path: '/',
     element: (

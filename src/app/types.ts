@@ -584,7 +584,7 @@ export interface SyncRecord {
   entityId: string
   action: 'create' | 'update' | 'delete'
   timestamp: number
-  status: 'pending' | 'synced' | 'failed'
+  status: 'pending' | 'committed' | 'failed'
   errorMessage?: string
 }
 
