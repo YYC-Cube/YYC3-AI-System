@@ -544,18 +544,18 @@ export function ChatInterface() {
             placeholder={isStreaming ? i.chatStreamingPlaceholder : i.chatPlaceholder}
             disabled={isStreaming}
             aria-label={i.ciInputLabel}
-            className={`w-full h-20 resize-none py-2.5 px-3 rounded-xl outline-none text-[13px] ${t.transition} ${t.input.chat} disabled:opacity-50`}
+            className={`w-full h-20 resize-none py-2.5 pl-10 pr-12 rounded-xl outline-none text-[13px] ${t.transition} ${t.input.chat} disabled:opacity-50`}
             style={{ fontWeight: 400 }}
           />
-          <div className="absolute bottom-2 left-2 flex items-center space-x-0.5 z-10">
-            <div className="relative">
+          <div className="absolute bottom-2 left-2 flex items-center space-x-0.5 z-10 pointer-events-auto">
+            <div className="relative pointer-events-auto">
               <button
-                onClick={() => setShowAttachMenu(!showAttachMenu)}
-                className={`p-1 rounded ${t.transition} ${showAttachMenu ? t.interactive.iconActive : t.interactive.iconBtn}`}
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowAttachMenu(!showAttachMenu) }}
+                className={`p-1 rounded ${t.transition} ${showAttachMenu ? t.interactive.iconActive : t.interactive.iconBtn} cursor-pointer`}
                 aria-label={i.addAttachment}
                 type="button"
               >
-                <Plus className="w-3.5 h-3.5" />
+                <Plus className="w-3.5 h-3.5 pointer-events-none" />
               </button>
               <AnimatePresence>
                 {showAttachMenu && (
@@ -592,35 +592,37 @@ export function ChatInterface() {
               </AnimatePresence>
             </div>
             <button
-              onClick={() => toast.info(i.toastImageUpload)}
-              className={`p-1 rounded ${t.transition} ${t.interactive.iconBtn}`}
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); toast.info(i.toastImageUpload) }}
+              className={`p-1 rounded ${t.transition} ${t.interactive.iconBtn} cursor-pointer`}
               aria-label={i.uploadImage}
               type="button"
             >
-              <ImageIcon className="w-3.5 h-3.5" />
+              <ImageIcon className="w-3.5 h-3.5 pointer-events-none" />
             </button>
             <button
-              onClick={() => {
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
                 const snippet = '```tsx\n// Your code here\n```'
                 setInput(input + snippet)
                 inputRef.current?.focus()
                 toast.info(i.toastCodeTemplateInserted)
               }}
-              className={`p-1 rounded ${t.transition} ${t.interactive.iconBtn}`}
+              className={`p-1 rounded ${t.transition} ${t.interactive.iconBtn} cursor-pointer`}
               aria-label={i.insertCode}
               type="button"
             >
-              <Code className="w-3.5 h-3.5" />
+              <Code className="w-3.5 h-3.5 pointer-events-none" />
             </button>
           </div>
           <button
-            onClick={handleSend}
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleSend() }}
             disabled={!input.trim() || isStreaming}
-            className={`absolute bottom-2 right-2 p-2 ${t.accent.solidBtn} disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-lg shadow-lg ${t.transition} flex items-center justify-center z-10`}
+            className={`absolute bottom-2 right-2 p-2 ${t.accent.solidBtn} disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-lg shadow-lg ${t.transition} flex items-center justify-center z-10 cursor-pointer`}
             aria-label={i.ciSendLabel}
             type="button"
           >
-            <Send className="w-3.5 h-3.5" />
+            <Send className="w-3.5 h-3.5 pointer-events-none" />
           </button>
         </div>
 
@@ -671,8 +673,8 @@ function MessageBubble({ msg, theme }: { msg: Message, theme: string }) {
       <div className="flex items-start space-x-2 max-w-[90%]">
         {!isUser && (
           <div className={`w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 ${isSystem
-              ? t.isDark ? 'bg-cyan-500/20' : 'bg-cyan-500/10'
-              : t.accent.primaryBg
+            ? t.isDark ? 'bg-cyan-500/20' : 'bg-cyan-500/10'
+            : t.accent.primaryBg
             }`}>
             {isSystem
               ? <Terminal className="w-3.5 h-3.5 text-cyan-500" />
@@ -726,8 +728,8 @@ function MessageBubble({ msg, theme }: { msg: Message, theme: string }) {
                         <button
                           onClick={() => handleApplyCode(codeStr, match[1])}
                           className={`absolute top-2 right-2 flex items-center gap-1 px-2 py-1 rounded-lg text-[9px] opacity-0 group-hover/code:opacity-100 transition-all ${t.isDark
-                              ? 'bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30 border border-indigo-500/20'
-                              : 'bg-indigo-50 text-indigo-600 hover:bg-indigo-100 border border-indigo-200'
+                            ? 'bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30 border border-indigo-500/20'
+                            : 'bg-indigo-50 text-indigo-600 hover:bg-indigo-100 border border-indigo-200'
                             }`}
                           title={i.ciApplyToEditor}
                         >
@@ -749,8 +751,8 @@ function MessageBubble({ msg, theme }: { msg: Message, theme: string }) {
                         <button
                           onClick={() => handleApplyCode(codeStr, match[1])}
                           className={`absolute top-2 right-2 flex items-center gap-1 px-2 py-1 rounded-lg text-[9px] opacity-0 group-hover/code:opacity-100 transition-all ${t.isDark
-                              ? 'bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30 border border-indigo-500/20'
-                              : 'bg-indigo-50 text-indigo-600 hover:bg-indigo-100 border border-indigo-200'
+                            ? 'bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30 border border-indigo-500/20'
+                            : 'bg-indigo-50 text-indigo-600 hover:bg-indigo-100 border border-indigo-200'
                             }`}
                           title={i.ciApplyToEditor}
                         >

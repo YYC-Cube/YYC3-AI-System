@@ -23,22 +23,55 @@
  */
 
 import {
-  Send, Plus, Image as ImageIcon, Code, Paperclip, Github,
-  Palette, Clipboard, Sparkles, ArrowRight, Clock, MoreHorizontal,
-  Folder, Bell, Settings, Rocket, Share, User, Languages,
-  ChevronRight, ChevronDown, Keyboard, Zap, Download, Upload,
-  Link, Mail, Copy, ExternalLink, Trash2, FolderPlus, Edit3,
-  Archive, Cloud, CheckCircle, Play, TestTube, GitBranch,
-  Terminal, Search, Globe
+  Archive,
+  ArrowRight,
+  Bell,
+  CheckCircle,
+  ChevronDown,
+  ChevronRight,
+  Clipboard,
+  Clock,
+  Cloud,
+  Code,
+  Copy,
+  Download,
+  Edit3,
+  ExternalLink,
+  Folder,
+  FolderPlus,
+  GitBranch,
+  Github,
+  Globe,
+  Image as ImageIcon,
+  Keyboard,
+  Languages,
+  Link, Mail,
+  MoreHorizontal,
+  Palette,
+  Paperclip,
+  Play,
+  Plus,
+  Rocket,
+  Search,
+  Send,
+  Settings,
+  Share,
+  Sparkles,
+  Terminal,
+  TestTube,
+  Trash2,
+  Upload,
+  User,
+  Zap
 } from 'lucide-react'
-import { motion, AnimatePresence } from 'motion/react'
-import React, { useState, useRef, useEffect, KeyboardEvent, useCallback, lazy, Suspense } from 'react'
+import { AnimatePresence, motion } from 'motion/react'
+import React, { KeyboardEvent, Suspense, lazy, useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { toast } from 'sonner'
 
 import { useAppStore } from '../store'
 import { getI18n, resolveKey } from '../utils/i18n'
-import { getThemeTokens, THEME_PRESETS } from '../utils/theme'
+import { THEME_PRESETS, getThemeTokens } from '../utils/theme'
 
 import { ShortcutsDialog } from './ShortcutsDialog'
 
@@ -149,56 +182,56 @@ export function HomePage() {
   // Semantic understanding for user input
   const analyzeUserIntent = (input: string): { action: 'chat' | 'code' | 'project' | 'question'; confidence: number; keywords: string[] } => {
     const lower = input.toLowerCase().trim()
-    
+
     // Code generation keywords
     const codeKeywords = ['代码', 'code', '生成', 'generate', '创建', 'create', '实现', 'implement', '函数', 'function', '组件', 'component', '写一个', 'write a', '做一个', 'make a']
-    
+
     // Project management keywords
     const projectKeywords = ['项目', 'project', '打开', 'open', '新建', 'new', '删除', 'delete', '管理', 'manage']
-    
+
     // Question keywords
     const questionKeywords = ['怎么', 'how', '为什么', 'why', '什么', 'what', '吗', '?', '？', '帮助', 'help', '问题', 'question']
-    
+
     // Calculate confidence
     const codeCount = codeKeywords.filter(k => lower.includes(k)).length
     const projectCount = projectKeywords.filter(k => lower.includes(k)).length
     const questionCount = questionKeywords.filter(k => lower.includes(k)).length
-    
+
     const maxCount = Math.max(codeCount, projectCount, questionCount)
     const confidence = maxCount > 0 ? Math.min(0.5 + (maxCount * 0.15), 0.95) : 0.3
-    
+
     // Determine action
     let action: 'chat' | 'code' | 'project' | 'question' = 'chat'
     if (codeCount >= 2 || (codeCount > 0 && maxCount === codeCount)) action = 'code'
     else if (projectCount > 0 && maxCount === projectCount) action = 'project'
     else if (questionCount > 0 && maxCount === questionCount) action = 'question'
-    
+
     return { action, confidence, keywords: [] }
   }
 
   const handleSend = () => {
     const trimmedInput = input.trim()
-    
+
     // Prevent empty input navigation
     if (!trimmedInput) {
       toast.warning('请输入内容后再发送')
       inputRef.current?.focus()
       return
     }
-    
+
     // Analyze user intent
     const intent = analyzeUserIntent(trimmedInput)
     console.log('[HomePage] User intent:', intent)
-    
+
     // Add message to chat
     addMessage({ role: 'user', content: trimmedInput })
     setInput('')
     setShowCommands(false)
-    
+
     // Simulate AI response based on intent
     setTimeout(() => {
       let aiResponse = ''
-      
+
       if (intent.action === 'code') {
         aiResponse = `我理解您想要${trimmedInput}。让我为您生成代码...\n\n已跳转到编程页面，您可以在那里查看和编辑生成的代码。`
       } else if (intent.action === 'project') {
@@ -208,10 +241,10 @@ export function HomePage() {
       } else {
         aiResponse = `收到您的需求："${trimmedInput}"\n\n正在分析并准备响应...`
       }
-      
+
       addMessage({ role: 'ai', content: aiResponse })
     }, 500)
-    
+
     // Smart navigation based on intent
     if (intent.action === 'code' && intent.confidence > 0.6) {
       // High confidence code generation request - navigate to IDE
@@ -235,7 +268,7 @@ export function HomePage() {
   }
 
   const handleCommandSelect = (command: string) => {
-    
+
     // Handle slash commands with semantic understanding
     if (command === '/code') {
       // Code generation - navigate to IDE
@@ -257,7 +290,7 @@ export function HomePage() {
       addMessage({ role: 'user', content: command })
       navigate('/ide')
     }
-    
+
     setShowCommands(false)
     setInput('')
   }
@@ -305,7 +338,7 @@ export function HomePage() {
           </div>
           <div className="flex flex-col">
             <span className="text-[15px] tracking-tight" style={{ fontWeight: 600 }}>YanYu Cloud</span>
-            
+
           </div>
         </div>
 
@@ -327,7 +360,7 @@ export function HomePage() {
                     <span className="text-[13px]" style={{ fontWeight: 600 }}>{i.projects}</span>
                     <button
                       onClick={() => {
-                        addProject({ name: `Project ${Date.now() % 1000}`, description: i.newProject, updatedAt: Date.now(), status: 'draft', color: ['#6366f1','#3b82f6','#14b8a6','#f59e0b','#ef4444'][Math.floor(Math.random()*5)] })
+                        addProject({ name: `Project ${Date.now() % 1000}`, description: i.newProject, updatedAt: Date.now(), status: 'draft', color: ['#6366f1', '#3b82f6', '#14b8a6', '#f59e0b', '#ef4444'][Math.floor(Math.random() * 5)] })
                         toast.success(i.toastProjectCreated)
                       }}
                       className={`p-1 rounded-lg ${t.transition} ${t.interactive.iconBtn}`} title={i.createProject}
@@ -388,7 +421,7 @@ export function HomePage() {
                       <span className="text-[13px]" style={{ fontWeight: 600 }}>{i.notifications}</span>
                       {unreadCount > 0 && <span className="px-1.5 py-0.5 rounded-full bg-red-500/20 text-red-400 text-[10px]" style={{ fontWeight: 600 }}>{unreadCount}</span>}
                     </div>
-                    <button onClick={() => { setNotifications(prev => prev.map(n => ({...n, read: true}))); toast.success(i.toastAllRead) }}
+                    <button onClick={() => { setNotifications(prev => prev.map(n => ({ ...n, read: true }))); toast.success(i.toastAllRead) }}
                       className={`text-[11px] ${t.accent.primary} hover:underline`} style={{ fontWeight: 500 }}>
                       {i.toastMarkAllRead}
                     </button>
@@ -396,7 +429,7 @@ export function HomePage() {
                   <div className="p-2 max-h-64 overflow-y-auto space-y-0.5">
                     {notifications.map(n => (
                       <div key={n.id}
-                        onClick={() => setNotifications(prev => prev.map(x => x.id === n.id ? {...x, read: true} : x))}
+                        onClick={() => setNotifications(prev => prev.map(x => x.id === n.id ? { ...x, read: true } : x))}
                         className={`flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer ${t.transition} ${t.interactive.menuItem}`}>
                         <div className="flex items-center space-x-2.5">
                           {!n.read && <div className="w-1.5 h-1.5 rounded-full bg-indigo-400 flex-shrink-0" />}
@@ -686,11 +719,11 @@ export function HomePage() {
                   <div className="flex items-center space-x-1 px-4 py-2.5">
                     {TOOL_ICONS_DATA.slice(1).map(({ icon: Icon, labelKey, key }) => (
                       <button key={key}
-                        onClick={() => { toolIconActions[key]?.(); }}
-                        className={`p-2 rounded-lg ${t.transition} ${t.interactive.headerBtn}`}
+                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); toolIconActions[key]?.(); }}
+                        className={`p-2 rounded-lg ${t.transition} ${t.interactive.headerBtn} cursor-pointer`}
                         title={i[labelKey]}
                         type="button">
-                        <Icon className="w-4 h-4" />
+                        <Icon className="w-4 h-4 pointer-events-none" />
                       </button>
                     ))}
                   </div>
@@ -711,37 +744,37 @@ export function HomePage() {
             <div className={`flex items-center justify-between px-4 py-2.5 border-t ${t.border.subtle}`}>
               <div className="flex items-center space-x-1">
                 {/* ⊕ Expand tool row */}
-                <button onClick={() => setShowTools(!showTools)}
-                  className={`p-2 rounded-lg ${t.transition} ${showTools ? `${t.accent.primaryBg} ${t.accent.primary}` : t.interactive.headerBtn}`}
+                <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowTools(!showTools) }}
+                  className={`p-2 rounded-lg ${t.transition} ${showTools ? `${t.accent.primaryBg} ${t.accent.primary}` : t.interactive.headerBtn} cursor-pointer`}
                   title={i.addAttachment}
                   type="button">
-                  <Plus className="w-4 h-4" />
+                  <Plus className="w-4 h-4 pointer-events-none" />
                 </button>
                 {/* 📤 Image Upload */}
-                <button onClick={() => toast.info(i.toastImageUpload)}
-                  className={`p-2 rounded-lg ${t.transition} ${t.interactive.headerBtn}`} title={i.uploadImage}
+                <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); toast.info(i.toastImageUpload) }}
+                  className={`p-2 rounded-lg ${t.transition} ${t.interactive.headerBtn} cursor-pointer`} title={i.uploadImage}
                   type="button">
-                  <ImageIcon className="w-4 h-4" />
+                  <ImageIcon className="w-4 h-4 pointer-events-none" />
                 </button>
                 {/* 💻 Code Insert */}
-                <button onClick={() => { setInput(input + '```tsx\n// code here\n```'); inputRef.current?.focus(); toast.info(i.toastCodeTemplateInserted) }}
-                  className={`p-2 rounded-lg ${t.transition} ${t.interactive.headerBtn}`} title={i.insertCode}
+                <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); setInput(input + '```tsx\n// code here\n```'); inputRef.current?.focus(); toast.info(i.toastCodeTemplateInserted) }}
+                  className={`p-2 rounded-lg ${t.transition} ${t.interactive.headerBtn} cursor-pointer`} title={i.insertCode}
                   type="button">
-                  <Code className="w-4 h-4" />
+                  <Code className="w-4 h-4 pointer-events-none" />
                 </button>
                 {/* 📋 Clipboard */}
-                <button onClick={() => { navigator.clipboard.readText().then(text => { if (text) { setInput(input + text); toast.success(i.toastClipboardPasted) } }).catch(() => toast.error(i.toastClipboardError)) }}
-                  className={`p-2 rounded-lg ${t.transition} ${t.interactive.headerBtn}`} title={i.clipboard}
+                <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); navigator.clipboard.readText().then(text => { if (text) { setInput(input + text); toast.success(i.toastClipboardPasted) } }).catch(() => toast.error(i.toastClipboardError)) }}
+                  className={`p-2 rounded-lg ${t.transition} ${t.interactive.headerBtn} cursor-pointer`} title={i.clipboard}
                   type="button">
-                  <Clipboard className="w-4 h-4" />
+                  <Clipboard className="w-4 h-4 pointer-events-none" />
                 </button>
               </div>
               {/* Send */}
-              <button onClick={handleSend} disabled={!input.trim()}
-                className={`p-2.5 ${t.accent.solidBtn} disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-xl shadow-lg ${t.transition} flex items-center justify-center`}
+              <button onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleSend() }} disabled={!input.trim()}
+                className={`p-2.5 ${t.accent.solidBtn} disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-xl shadow-lg ${t.transition} flex items-center justify-center cursor-pointer`}
                 aria-label={i.send}
                 type="button">
-                <Send className="w-4 h-4" />
+                <Send className="w-4 h-4 pointer-events-none" />
               </button>
             </div>
           </div>
@@ -790,11 +823,10 @@ export function HomePage() {
                 <p className={`text-[11px] mb-3 ${t.text.muted}`}>{resolveKey(i, project.description)}</p>
                 <div className="flex items-center justify-between">
                   <span className={`text-[10px] ${t.text.dimmed}`}>{formatTime(project.updatedAt)}</span>
-                  <span className={`text-[10px] px-2 py-0.5 rounded-full ${
-                    project.status === 'active' ? 'bg-emerald-500/15 text-emerald-500'
-                    : project.status === 'draft' ? 'bg-amber-500/15 text-amber-500'
-                    : 'bg-slate-500/15 text-slate-500'
-                  }`} style={{ fontWeight: 500 }}>
+                  <span className={`text-[10px] px-2 py-0.5 rounded-full ${project.status === 'active' ? 'bg-emerald-500/15 text-emerald-500'
+                      : project.status === 'draft' ? 'bg-amber-500/15 text-amber-500'
+                        : 'bg-slate-500/15 text-slate-500'
+                    }`} style={{ fontWeight: 500 }}>
                     {project.status === 'active' ? i.active : project.status === 'draft' ? i.draft : i.archived}
                   </span>
                 </div>
@@ -816,12 +848,14 @@ export function HomePage() {
               { label: i.openProject, icon: ExternalLink, action: () => { navigate('/ide'); setProjectContextMenu(null) } },
               { label: i.renameProject, icon: Edit3, action: () => { toast.info(i.toastRenameTriggered); setProjectContextMenu(null) } },
               { label: i.archive, icon: Archive, action: () => { toast.success(i.toastProjectArchived); setProjectContextMenu(null) } },
-              { label: i.duplicate, icon: Copy, action: () => {
-                const proj = recentProjects.find(p => p.id === projectContextMenu.id)
-                if (proj) { addProject({ name: proj.name + ' (copy)', description: proj.description, updatedAt: Date.now(), status: 'draft', color: proj.color }) }
-                toast.success(i.toastProjectDuplicated)
-                setProjectContextMenu(null)
-              }},
+              {
+                label: i.duplicate, icon: Copy, action: () => {
+                  const proj = recentProjects.find(p => p.id === projectContextMenu.id)
+                  if (proj) { addProject({ name: proj.name + ' (copy)', description: proj.description, updatedAt: Date.now(), status: 'draft', color: proj.color }) }
+                  toast.success(i.toastProjectDuplicated)
+                  setProjectContextMenu(null)
+                }
+              },
             ].map(({ label, icon: Icon, action }) => (
               <button key={label} onClick={action}
                 className={`w-full flex items-center space-x-2.5 px-3 py-2 text-[12px] rounded-lg ${t.transition} ${t.interactive.menuItem}`} style={{ fontWeight: 400 }}>
