@@ -34,7 +34,7 @@ import {
   Square,
   Sun,
   Terminal,
-  Trash2
+  Trash2,
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import React, { KeyboardEvent, useCallback, useEffect, useRef, useState } from 'react';
@@ -85,11 +85,13 @@ async function callModelAPI(
   const apiKey = providerConfig?.apiKey || model.apiKey;
   // Use model.endpoint (already correct per provider from buildEndpoint)
   // Only fallback to providerConfig if model.endpoint is missing
-  const endpoint = model.endpoint || (providerConfig?.baseURL
-    ? model.provider === 'ollama'
-      ? `${providerConfig.baseURL}/api/chat`
-      : `${providerConfig.baseURL}/chat/completions`
-    : '');
+  const endpoint =
+    model.endpoint ||
+    (providerConfig?.baseURL
+      ? model.provider === 'ollama'
+        ? `${providerConfig.baseURL}/api/chat`
+        : `${providerConfig.baseURL}/chat/completions`
+      : '');
 
   if (model.provider === 'ollama') {
     const resp = await fetch(endpoint, {
@@ -138,11 +140,13 @@ async function callModelAPIStream(
   // Get real config from aiProviderService
   const providerConfig = aiProviderService.getActiveProvider();
   const apiKey = providerConfig?.apiKey || model.apiKey;
-  const endpoint = model.endpoint || (providerConfig?.baseURL
-    ? model.provider === 'ollama'
-      ? `${providerConfig.baseURL}/api/chat`
-      : `${providerConfig.baseURL}/chat/completions`
-    : '');
+  const endpoint =
+    model.endpoint ||
+    (providerConfig?.baseURL
+      ? model.provider === 'ollama'
+        ? `${providerConfig.baseURL}/api/chat`
+        : `${providerConfig.baseURL}/chat/completions`
+      : '');
 
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
   if (apiKey) headers['Authorization'] = `Bearer ${apiKey}`;
@@ -161,12 +165,12 @@ async function callModelAPIStream(
       ? JSON.stringify({ model: model.name, messages: msgs, stream: true })
       : isClaude
         ? JSON.stringify({
-          model: model.name,
-          messages: msgs.filter((m) => m.role !== 'system'),
-          system: msgs[0].content,
-          max_tokens: 2048,
-          stream: true,
-        })
+            model: model.name,
+            messages: msgs.filter((m) => m.role !== 'system'),
+            system: msgs[0].content,
+            max_tokens: 2048,
+            stream: true,
+          })
         : JSON.stringify({ model: model.name, messages: msgs, stream: true, max_tokens: 2048 });
 
   const resp = await fetch(endpoint, { method: 'POST', headers, body, signal });
@@ -250,15 +254,37 @@ async function mockStreamResponse(
 // ══════════════════════════════════════════
 export function ChatInterface() {
   const {
-    theme, setTheme, language, messages, addMessage, updateMessage,
-    aiModels, activeModelId, openModelSettings,
-    quoteContent, setQuoteContent, activeMsgId, setActiveMsgId,
-    chatSessions, currentSessionId, loadSession, createChatSession,
-    deleteChatSession, syncMessagesToSession,
-    searchQuery, setSearchQuery, searchResults, doGlobalSearch,
-  } =
-    useAppStore();
-  const { renderText, setRenderText, startStream: _startStream, fastFinish: _fastFinish, abort: abortStream } = useStreamText();
+    theme,
+    setTheme,
+    language,
+    messages,
+    addMessage,
+    updateMessage,
+    aiModels,
+    activeModelId,
+    openModelSettings,
+    quoteContent,
+    setQuoteContent,
+    activeMsgId,
+    setActiveMsgId,
+    chatSessions,
+    currentSessionId,
+    loadSession,
+    createChatSession,
+    deleteChatSession,
+    syncMessagesToSession,
+    searchQuery,
+    setSearchQuery,
+    searchResults,
+    doGlobalSearch,
+  } = useAppStore();
+  const {
+    renderText,
+    setRenderText,
+    startStream: _startStream,
+    fastFinish: _fastFinish,
+    abort: abortStream,
+  } = useStreamText();
   const t = getThemeTokens(theme);
   const i = getI18n(language);
   const [input, setInput] = useState('');
@@ -499,10 +525,7 @@ export function ChatInterface() {
             '```tsx\nexport function GlassButton({ children, onClick }) {\n  return (\n    <button\n      onClick={onClick}\n      className="bg-white/20 backdrop-blur-md border border-white/30 rounded-xl px-6 py-3 text-white shadow-xl hover:bg-white/30 transition-all active:scale-95"\n    >\n      {children}\n    </button>\n  )\n}\n```\n\n' +
             i.ciCodeSynced;
         } else {
-          const noModelHint =
-            aiModels.length === 0
-              ? '\n\n' + i.ciNoModelHint
-              : '';
+          const noModelHint = aiModels.length === 0 ? '\n\n' + i.ciNoModelHint : '';
           mockText = `${i.ciReceived}：**${text}**\n\n${i.ciAnalyzingFull}${noModelHint}`;
         }
 
@@ -608,7 +631,11 @@ export function ChatInterface() {
   const exportChat = useCallback(
     (format: 'md' | 'json') => {
       if (format === 'json') {
-        const payload = { exportedAt: new Date().toISOString(), sessionId: currentSessionId, messages };
+        const payload = {
+          exportedAt: new Date().toISOString(),
+          sessionId: currentSessionId,
+          messages,
+        };
         const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -620,7 +647,10 @@ export function ChatInterface() {
       } else {
         let md = `# YYC³ AI Chat Export\n> ${new Date().toLocaleString()}\n\n`;
         messages.forEach((m) => {
-          md += m.role === 'user' ? `### 🧑 User\n\n${m.content}\n\n` : `### 🤖 AI\n\n${m.content}\n\n---\n\n`;
+          md +=
+            m.role === 'user'
+              ? `### 🧑 User\n\n${m.content}\n\n`
+              : `### 🤖 AI\n\n${m.content}\n\n---\n\n`;
         });
         const blob = new Blob([md], { type: 'text/markdown' });
         const url = URL.createObjectURL(blob);
@@ -669,7 +699,9 @@ export function ChatInterface() {
       className={`flex flex-col h-full relative overflow-hidden ${t.isDark ? 'bg-slate-900/50' : 'bg-white/50'}`}
     >
       {/* ── Toolbar: Session | Theme | Search | Export ── */}
-      <div className={`flex items-center justify-between px-2 py-1.5 border-b ${t.isDark ? 'border-slate-700/40' : 'border-slate-200/50'}`}>
+      <div
+        className={`flex items-center justify-between px-2 py-1.5 border-b ${t.isDark ? 'border-slate-700/40' : 'border-slate-200/50'}`}
+      >
         <div className="flex items-center gap-0.5">
           {/* Session toggle */}
           <button
@@ -691,7 +723,10 @@ export function ChatInterface() {
           </button>
           {/* Search */}
           <button
-            onClick={() => { setShowSearch(!showSearch); showSearch && setSearchQuery(''); }}
+            onClick={() => {
+              setShowSearch(!showSearch);
+              showSearch && setSearchQuery('');
+            }}
             className={`p-1 rounded ${t.transition} ${showSearch ? t.interactive.iconActive : t.interactive.iconBtn}`}
             title="Search messages"
             type="button"
@@ -745,7 +780,9 @@ export function ChatInterface() {
             exit={{ height: 0, opacity: 0 }}
             className="overflow-hidden"
           >
-            <div className={`px-2 py-2 border-b ${t.isDark ? 'border-slate-700/40 bg-slate-800/60' : 'border-slate-200/50 bg-slate-50'}`}>
+            <div
+              className={`px-2 py-2 border-b ${t.isDark ? 'border-slate-700/40 bg-slate-800/60' : 'border-slate-200/50 bg-slate-50'}`}
+            >
               <input
                 ref={searchInputRef}
                 type="text"
@@ -820,15 +857,19 @@ export function ChatInterface() {
                   {chatSessions.map((s) => (
                     <div
                       key={s.sid}
-                      onClick={() => { handleSwitchSession(s.sid); setShowSessionBar(false); }}
-                      className={`group flex items-center justify-between px-2 py-1.5 rounded-lg text-[11px] cursor-pointer ${t.transition} ${s.sid === currentSessionId
-                        ? t.isDark
-                          ? 'bg-indigo-500/20 text-indigo-300'
-                          : 'bg-indigo-50 text-indigo-600'
-                        : t.isDark
-                          ? 'hover:bg-slate-700/40 text-slate-400'
-                          : 'hover:bg-slate-100 text-slate-600'
-                        }`}
+                      onClick={() => {
+                        handleSwitchSession(s.sid);
+                        setShowSessionBar(false);
+                      }}
+                      className={`group flex items-center justify-between px-2 py-1.5 rounded-lg text-[11px] cursor-pointer ${t.transition} ${
+                        s.sid === currentSessionId
+                          ? t.isDark
+                            ? 'bg-indigo-500/20 text-indigo-300'
+                            : 'bg-indigo-50 text-indigo-600'
+                          : t.isDark
+                            ? 'hover:bg-slate-700/40 text-slate-400'
+                            : 'hover:bg-slate-100 text-slate-600'
+                      }`}
                     >
                       <div className="truncate flex-1 min-w-0">
                         <div className="truncate">{s.title}</div>
@@ -863,7 +904,9 @@ export function ChatInterface() {
             {messages.map((msg) => (
               <div
                 key={msg.id}
-                ref={(el) => { msgRefs.current[msg.id] = el; }}
+                ref={(el) => {
+                  msgRefs.current[msg.id] = el;
+                }}
               >
                 <ChatMessageBubble msg={msg} theme={theme} onRegenerate={handleRegenerate} />
               </div>
@@ -985,13 +1028,20 @@ export function ChatInterface() {
             { label: 'Code', insert: '`代码`', tip: '行内代码' },
             { label: 'Block', insert: '\n```tsx\n\n```\n', tip: '代码块' },
             { label: 'List', insert: '\n- 列表项\n- 列表项\n', tip: '列表' },
-            { label: 'Table', insert: '\n| 列1 | 列2 |\n|------|------|\n| 值1 | 值2 |\n', tip: '表格' },
+            {
+              label: 'Table',
+              insert: '\n| 列1 | 列2 |\n|------|------|\n| 值1 | 值2 |\n',
+              tip: '表格',
+            },
             { label: 'H2', insert: '\n## 标题\n', tip: '标题' },
             { label: 'Link', insert: '[链接](url)', tip: '链接' },
           ].map(({ label, insert, tip }) => (
             <button
               key={label}
-              onClick={() => { setInput((prev) => prev + insert); inputRef.current?.focus(); }}
+              onClick={() => {
+                setInput((prev) => prev + insert);
+                inputRef.current?.focus();
+              }}
               className={`px-1.5 py-0.5 rounded text-[9px] ${t.isDark ? 'bg-slate-700/50 text-slate-400 hover:bg-slate-600/50 hover:text-slate-300' : 'bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-700'} transition-colors`}
               title={tip}
               type="button"
@@ -1081,7 +1131,10 @@ export function ChatInterface() {
               <AnimatePresence>
                 {showAttachMenu && (
                   <>
-                    <div className="fixed inset-0 z-[200]" onClick={() => setShowAttachMenu(false)} />
+                    <div
+                      className="fixed inset-0 z-[200]"
+                      onClick={() => setShowAttachMenu(false)}
+                    />
                     <motion.div
                       initial={{ opacity: 0, y: 6, scale: 0.95 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}

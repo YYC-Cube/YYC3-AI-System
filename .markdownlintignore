@@ -1,0 +1,7 @@
+node_modules
+src/imports
+src/docs
+docs
+CHANGELOG.md
+CODE_OF_CONDUCT.md
+CONTRIBUTING.md

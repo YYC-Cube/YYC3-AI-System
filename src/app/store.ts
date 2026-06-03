@@ -682,11 +682,11 @@ export const useAppStore = create<AppState>()(
           aiModels: state.aiModels.map((m) =>
             m.id === id
               ? {
-                ...m,
-                status,
-                lastTestResult: result ?? m.lastTestResult,
-                lastTestTime: Date.now(),
-              }
+                  ...m,
+                  status,
+                  lastTestResult: result ?? m.lastTestResult,
+                  lastTestTime: Date.now(),
+                }
               : m
           ),
         }));

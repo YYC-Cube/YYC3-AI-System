@@ -11,7 +11,7 @@
  * @tags [test],[data-layer],[export],[integrity],[storage]
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('数据层服务测试', () => {
   describe('数据导出服务', () => {
@@ -24,7 +24,7 @@ describe('数据层服务测试', () => {
     });
 
     it('应该正确生成导出文件名', async () => {
-      const { dataExportService } = await import('../services/data-export-service');
+      const { dataExportService } = await import('../data-export-service');
 
       const filename = dataExportService.generateExportFilename('json');
       expect(filename).toMatch(/^yyc3-backup-\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}\.json$/);
@@ -34,7 +34,7 @@ describe('数据层服务测试', () => {
     });
 
     it('应该正确计算数据哈希', async () => {
-      const { dataExportService } = await import('../services/data-export-service');
+      const { dataExportService } = await import('../data-export-service');
 
       const content = 'test content';
       const hash = await (
@@ -47,7 +47,7 @@ describe('数据层服务测试', () => {
     });
 
     it('应该正确验证版本兼容性', async () => {
-      const { dataExportService } = await import('../services/data-export-service');
+      const { dataExportService } = await import('../data-export-service');
 
       const service = dataExportService as unknown as {
         checkCompatibility: (version: string) => { compatible: boolean; reason: string };
@@ -64,7 +64,7 @@ describe('数据层服务测试', () => {
 
   describe('数据完整性服务', () => {
     it('应该正确执行快速检查', async () => {
-      const { dataIntegrityService } = await import('../services/data-integrity-service');
+      const { dataIntegrityService } = await import('../data-integrity-service');
 
       const mockStorageService = {
         getAllFiles: vi
@@ -80,7 +80,7 @@ describe('数据层服务测试', () => {
     });
 
     it('应该正确生成迁移计划', async () => {
-      const { dataIntegrityService } = await import('../services/data-integrity-service');
+      const { dataIntegrityService } = await import('../data-integrity-service');
 
       const plan = await dataIntegrityService.createMigrationPlan('1.0.0', '1.1.0');
 
@@ -91,7 +91,7 @@ describe('数据层服务测试', () => {
     });
 
     it('应该正确计算数据哈希', async () => {
-      const { dataIntegrityService } = await import('../services/data-integrity-service');
+      const { dataIntegrityService } = await import('../data-integrity-service');
 
       const hash = await dataIntegrityService.calculateDataHash('test.ts', 'test content');
 
@@ -141,7 +141,7 @@ describe('数据层服务测试', () => {
 
   describe('LRU缓存', () => {
     it('应该正确缓存和获取数据', async () => {
-      const { storageService } = await import('../services/storage-service');
+      const { storageService } = await import('../storage-service');
 
       const testKey = 'test-cache-key';
       const testValue = { data: 'test' };
@@ -153,7 +153,7 @@ describe('数据层服务测试', () => {
     });
 
     it('应该正确删除缓存', async () => {
-      const { storageService } = await import('../services/storage-service');
+      const { storageService } = await import('../storage-service');
 
       const testKey = 'test-delete-key';
       await storageService.set(testKey, 'test');
@@ -166,8 +166,8 @@ describe('数据层服务测试', () => {
 
   describe('文件操作', () => {
     it('应该正确保存和获取文件', async () => {
-      const { storageService } = await import('../services/storage-service');
-      const { FileNode } = await import('../types');
+      const { storageService } = await import('../storage-service');
+      const { FileNode } = await import('../../types');
 
       const testFile = {
         path: '/test/file.ts',
@@ -185,7 +185,7 @@ describe('数据层服务测试', () => {
     });
 
     it('应该正确删除文件', async () => {
-      const { storageService } = await import('../services/storage-service');
+      const { storageService } = await import('../storage-service');
 
       const testFile = {
         path: '/test/delete-me.ts',
@@ -205,7 +205,7 @@ describe('数据层服务测试', () => {
 
   describe('版本历史', () => {
     it('应该正确保存和获取版本', async () => {
-      const { storageService } = await import('../services/storage-service');
+      const { storageService } = await import('../storage-service');
 
       const testVersion = {
         id: 'version-1',
@@ -225,7 +225,7 @@ describe('数据层服务测试', () => {
 
   describe('快照操作', () => {
     it('应该正确保存和获取快照', async () => {
-      const { storageService } = await import('../services/storage-service');
+      const { storageService } = await import('../storage-service');
 
       const testSnapshot = {
         id: 'snapshot-1',
@@ -244,7 +244,7 @@ describe('数据层服务测试', () => {
 
   describe('数据库配置', () => {
     it('应该正确保存和获取数据库配置', async () => {
-      const { storageService } = await import('../services/storage-service');
+      const { storageService } = await import('../storage-service');
 
       const testProfile = {
         id: 'profile-1',
@@ -267,7 +267,7 @@ describe('数据层服务测试', () => {
 
   describe('导入导出', () => {
     it('应该正确导出所有数据', async () => {
-      const { storageService } = await import('../services/storage-service');
+      const { storageService } = await import('../storage-service');
 
       const exported = await storageService.exportAll();
       const parsed = JSON.parse(exported);
@@ -279,7 +279,7 @@ describe('数据层服务测试', () => {
     });
 
     it('应该正确导入数据', async () => {
-      const { storageService } = await import('../services/storage-service');
+      const { storageService } = await import('../storage-service');
 
       const testData = JSON.stringify({
         files: [
@@ -308,7 +308,7 @@ describe('数据层服务测试', () => {
 
 describe('存储健康检查', () => {
   it('应该正确检测存储状态', async () => {
-    const { storageOptimizer } = await import('../services/storage-service');
+    const { storageOptimizer } = await import('../storage-service');
 
     const health = await storageOptimizer.checkStorageHealth();
 
@@ -318,7 +318,7 @@ describe('存储健康检查', () => {
   });
 
   it('应该正确获取存储统计', async () => {
-    const { storageOptimizer } = await import('../services/storage-service');
+    const { storageOptimizer } = await import('../storage-service');
 
     const stats = await storageOptimizer.getStorageStats();
 

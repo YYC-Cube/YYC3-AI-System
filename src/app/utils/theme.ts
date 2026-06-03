@@ -20,7 +20,9 @@ export type ThemeMode = 'light' | 'dark' | 'midnight' | 'forest' | 'sunset' | 's
 /** Resolve 'system' to actual light/dark based on OS preference */
 export function resolveTheme(mode: ThemeMode, media?: MediaQueryList): 'light' | 'dark' {
   if (mode === 'system') {
-    const mq = media ?? (typeof window !== 'undefined' ? window.matchMedia('(prefers-color-scheme: dark)') : null);
+    const mq =
+      media ??
+      (typeof window !== 'undefined' ? window.matchMedia('(prefers-color-scheme: dark)') : null);
     return mq?.matches ? 'dark' : 'light';
   }
   // midnight, forest, sunset are dark variants; light is light
@@ -102,7 +104,8 @@ function getPalette(theme: ThemeMode): Palette {
     case 'system':
     default: {
       // Resolve system preference at call time
-      const isDarkOS = typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const isDarkOS =
+        typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches;
       if (isDarkOS) {
         return {
           dark: true,

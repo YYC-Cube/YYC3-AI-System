@@ -204,12 +204,13 @@ function DragHandle({
   return (
     <div
       ref={drag}
-      className={`cursor-grab active:cursor-grabbing p-0.5 rounded transition-all ${isDragging
-        ? 'opacity-50 scale-90'
-        : isDark
-          ? 'text-white/15 hover:text-white/40 hover:bg-white/5'
-          : 'text-slate-300 hover:text-slate-500 hover:bg-slate-100'
-        }`}
+      className={`cursor-grab active:cursor-grabbing p-0.5 rounded transition-all ${
+        isDragging
+          ? 'opacity-50 scale-90'
+          : isDark
+            ? 'text-white/15 hover:text-white/40 hover:bg-white/5'
+            : 'text-slate-300 hover:text-slate-500 hover:bg-slate-100'
+      }`}
       title={i18n.dragToSwap}
     >
       <GripVertical className="w-3.5 h-3.5" />
@@ -420,7 +421,10 @@ export function IDELayout() {
 
     // Switch left panel based on intent
     const currentPanelMap = { ...state.panelMap };
-    if (panel && ['chat', 'files', 'code', 'preview', 'terminal', 'workspace', 'database'].includes(panel)) {
+    if (
+      panel &&
+      ['chat', 'files', 'code', 'preview', 'terminal', 'workspace', 'database'].includes(panel)
+    ) {
       currentPanelMap.left = panel as ContentType;
       state.setPanelMap(currentPanelMap);
     }

@@ -343,9 +343,10 @@ export function HomePage() {
     // Add context message for IDE chat
     addMessage({
       role: 'ai',
-      content: intent.source === 'ai'
-        ? `AI 识别意图：${intent.action}（置信度 ${Math.round(intent.confidence * 100)}%）。正在为您跳转...`
-        : `正在为您跳转到${intent.panel || '工作区'}...`,
+      content:
+        intent.source === 'ai'
+          ? `AI 识别意图：${intent.action}（置信度 ${Math.round(intent.confidence * 100)}%）。正在为您跳转...`
+          : `正在为您跳转到${intent.panel || '工作区'}...`,
     });
 
     navigate(`${intent.route}?${params.toString()}`);
@@ -1370,12 +1371,13 @@ export function HomePage() {
                     {formatTime(project.updatedAt)}
                   </span>
                   <span
-                    className={`text-[10px] px-2 py-0.5 rounded-full ${project.status === 'active'
-                      ? 'bg-emerald-500/15 text-emerald-500'
-                      : project.status === 'draft'
-                        ? 'bg-amber-500/15 text-amber-500'
-                        : 'bg-slate-500/15 text-slate-500'
-                      }`}
+                    className={`text-[10px] px-2 py-0.5 rounded-full ${
+                      project.status === 'active'
+                        ? 'bg-emerald-500/15 text-emerald-500'
+                        : project.status === 'draft'
+                          ? 'bg-amber-500/15 text-amber-500'
+                          : 'bg-slate-500/15 text-slate-500'
+                    }`}
                     style={{ fontWeight: 500 }}
                   >
                     {project.status === 'active'

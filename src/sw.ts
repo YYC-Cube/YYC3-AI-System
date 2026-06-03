@@ -12,10 +12,7 @@
  */
 
 import { CacheableResponsePlugin } from 'workbox-cacheable-response';
-import {
-  cleanupOutdatedCaches,
-  precacheAndRoute,
-} from 'workbox-precaching';
+import { cleanupOutdatedCaches, precacheAndRoute } from 'workbox-precaching';
 import { NavigationRoute, registerRoute } from 'workbox-routing';
 import {
   CacheFirst,

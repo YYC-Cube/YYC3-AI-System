@@ -130,6 +130,8 @@ class UndoRedoService<T> {
     if (!this.canUndo()) return null;
 
     const entry = this.undoStack.pop()!;
+
+    // Save current state to redo stack for redo capability
     if (this.currentState !== null) {
       this.redoStack.push({
         id: this.generateId(),
@@ -141,11 +143,15 @@ class UndoRedoService<T> {
       });
     }
 
-    this.currentState = entry.state;
+    // Restore to the previous state (entry before the popped one, or null)
+    const restoredState =
+      this.undoStack.length > 0 ? this.undoStack[this.undoStack.length - 1].state : null;
+
+    this.currentState = restoredState;
     this.notifyListeners();
     this.saveToPersistence();
 
-    return entry.state;
+    return restoredState;
   }
 
   redo(): T | null {

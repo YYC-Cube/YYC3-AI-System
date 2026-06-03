@@ -362,7 +362,7 @@ function CopyBtn({ text }: { text: string }) {
   return (
     <button
       onClick={() => {
-        navigator.clipboard.writeText(text).catch(() => { });
+        navigator.clipboard.writeText(text).catch(() => {});
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
       }}
@@ -428,10 +428,11 @@ function ProviderCard({
 
   return (
     <div
-      className={`rounded-xl border overflow-hidden transition-all ${hasActiveModel
-        ? 'border-indigo-500/25 bg-indigo-500/[0.02]'
-        : 'border-white/[0.06] bg-white/[0.02]'
-        }`}
+      className={`rounded-xl border overflow-hidden transition-all ${
+        hasActiveModel
+          ? 'border-indigo-500/25 bg-indigo-500/[0.02]'
+          : 'border-white/[0.06] bg-white/[0.02]'
+      }`}
       style={{
         boxShadow: hasActiveModel
           ? '0 0 20px -6px rgba(99,102,241,0.12), inset 0 1px 0 rgba(255,255,255,0.04)'
@@ -607,22 +608,24 @@ function ProviderCard({
                 return (
                   <div
                     key={model.id}
-                    className={`flex items-center gap-2.5 px-3 py-2 rounded-lg transition-all group ${isActive
-                      ? 'bg-indigo-500/[0.08] border border-indigo-500/25'
-                      : 'bg-white/[0.01] hover:bg-white/[0.03] border border-transparent'
-                      }`}
+                    className={`flex items-center gap-2.5 px-3 py-2 rounded-lg transition-all group ${
+                      isActive
+                        ? 'bg-indigo-500/[0.08] border border-indigo-500/25'
+                        : 'bg-white/[0.01] hover:bg-white/[0.03] border border-transparent'
+                    }`}
                   >
                     <div
-                      className={`w-1.5 h-1.5 rounded-full shrink-0 ${isActive
-                        ? 'bg-indigo-400'
-                        : diag?.status === 'success'
-                          ? 'bg-emerald-400'
-                          : diag?.status === 'error'
-                            ? 'bg-red-400'
-                            : diag?.status === 'testing'
-                              ? 'bg-cyan-400 animate-pulse'
-                              : 'bg-white/10'
-                        }`}
+                      className={`w-1.5 h-1.5 rounded-full shrink-0 ${
+                        isActive
+                          ? 'bg-indigo-400'
+                          : diag?.status === 'success'
+                            ? 'bg-emerald-400'
+                            : diag?.status === 'error'
+                              ? 'bg-red-400'
+                              : diag?.status === 'testing'
+                                ? 'bg-cyan-400 animate-pulse'
+                                : 'bg-white/10'
+                      }`}
                     />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
@@ -957,10 +960,11 @@ function MCPConfigPanel() {
           {servers.map((server) => (
             <div
               key={server.id}
-              className={`rounded-xl border p-3 space-y-2 transition-all ${server.enabled
-                ? 'border-white/[0.06] bg-white/[0.02]'
-                : 'border-white/[0.03] bg-white/[0.01] opacity-50'
-                }`}
+              className={`rounded-xl border p-3 space-y-2 transition-all ${
+                server.enabled
+                  ? 'border-white/[0.06] bg-white/[0.02]'
+                  : 'border-white/[0.03] bg-white/[0.01] opacity-50'
+              }`}
             >
               <div className="flex items-center gap-2.5">
                 <button onClick={() => handleToggle(server.id)} className="shrink-0">
@@ -968,8 +972,9 @@ function MCPConfigPanel() {
                     className={`w-8 h-4 rounded-full transition-all ${server.enabled ? 'bg-violet-500/30' : 'bg-white/[0.06]'}`}
                   >
                     <div
-                      className={`w-3.5 h-3.5 rounded-full transition-all mt-[1px] ${server.enabled ? 'bg-violet-400 ml-[17px]' : 'bg-white/20 ml-[1px]'
-                        }`}
+                      className={`w-3.5 h-3.5 rounded-full transition-all mt-[1px] ${
+                        server.enabled ? 'bg-violet-400 ml-[17px]' : 'bg-white/20 ml-[1px]'
+                      }`}
                     />
                   </div>
                 </button>
@@ -1193,14 +1198,15 @@ function SmartDiagnosticsPanel({
               return (
                 <div
                   key={model.id}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all group ${isActive
-                    ? 'bg-indigo-500/[0.06] border border-indigo-500/20'
-                    : diag.status === 'success'
-                      ? 'bg-emerald-500/[0.03] border border-emerald-500/10 hover:border-emerald-500/20'
-                      : diag.status === 'error'
-                        ? 'bg-red-500/[0.03] border border-red-500/10'
-                        : 'bg-white/[0.01] border border-white/[0.04]'
-                    }`}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all group ${
+                    isActive
+                      ? 'bg-indigo-500/[0.06] border border-indigo-500/20'
+                      : diag.status === 'success'
+                        ? 'bg-emerald-500/[0.03] border border-emerald-500/10 hover:border-emerald-500/20'
+                        : diag.status === 'error'
+                          ? 'bg-red-500/[0.03] border border-red-500/10'
+                          : 'bg-white/[0.01] border border-white/[0.04]'
+                  }`}
                 >
                   {isActive ? (
                     <CheckCircle2 className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
@@ -1747,7 +1753,7 @@ export function ModelSettings() {
         } else {
           const msg =
             (error.message || '').includes('fetch') ||
-              (error.message || '').includes('NetworkError')
+            (error.message || '').includes('NetworkError')
               ? 'Network error, check CORS or service status'
               : 'Test error: ' + (error.message || '').slice(0, 200);
           setDiagnostics((prev) => ({
@@ -1783,9 +1789,7 @@ export function ModelSettings() {
         activateAIModel(existing.id);
       } else {
         // Try to find by name match (for preset models not yet imported)
-        const byName = aiModels.find(
-          (m) => m.name === modelId && m.provider === providerType
-        );
+        const byName = aiModels.find((m) => m.name === modelId && m.provider === providerType);
         if (byName) {
           console.log('[ModelSettings] Found model by name, activating:', byName.id);
           activateAIModel(byName.id);
@@ -2029,10 +2033,11 @@ export function ModelSettings() {
             <button
               key={key}
               onClick={() => setActiveTab(key)}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-t-lg text-[11px] ${t.transition} border-b-2 whitespace-nowrap -mb-px ${activeTab === key
-                ? `${t.accent.activeText} border-current ${t.isDark ? 'bg-white/3' : 'bg-slate-50'}`
-                : `${t.text.muted} border-transparent ${t.isDark ? 'hover:text-white/50' : 'hover:text-slate-600'}`
-                }`}
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-t-lg text-[11px] ${t.transition} border-b-2 whitespace-nowrap -mb-px ${
+                activeTab === key
+                  ? `${t.accent.activeText} border-current ${t.isDark ? 'bg-white/3' : 'bg-slate-50'}`
+                  : `${t.text.muted} border-transparent ${t.isDark ? 'hover:text-white/50' : 'hover:text-slate-600'}`
+              }`}
               style={{ fontWeight: activeTab === key ? 500 : 400 }}
             >
               <Icon className="w-3.5 h-3.5" />
@@ -2089,18 +2094,19 @@ export function ModelSettings() {
 
               {filteredProviders.map((rawProvider) => {
                 // For Ollama, merge imported models from aiProviderService dynamically
-                const provider = rawProvider.id === 'ollama'
-                  ? {
-                    ...rawProvider,
-                    models: aiModels
-                      .filter((m) => m.provider === 'ollama')
-                      .map((m) => ({
-                        id: m.id,
-                        name: m.name,
-                        description: m.displayName || m.name,
-                      })),
-                  }
-                  : rawProvider;
+                const provider =
+                  rawProvider.id === 'ollama'
+                    ? {
+                        ...rawProvider,
+                        models: aiModels
+                          .filter((m) => m.provider === 'ollama')
+                          .map((m) => ({
+                            id: m.id,
+                            name: m.name,
+                            description: m.displayName || m.name,
+                          })),
+                      }
+                    : rawProvider;
                 const providerDiags: Record<string, DiagnosticResult> = {};
                 provider.models.forEach((m) => {
                   const d = diagnostics[provider.id + ':' + m.id];
@@ -2132,7 +2138,7 @@ export function ModelSettings() {
                     onRemoveProvider={
                       !PROVIDERS.find((p) => p.id === provider.id)
                         ? () =>
-                          setCustomProviders((prev) => prev.filter((p) => p.id !== provider.id))
+                            setCustomProviders((prev) => prev.filter((p) => p.id !== provider.id))
                         : undefined
                     }
                     onAddModel={(model) => handleProviderAddModel(provider.id, model)}
@@ -2190,10 +2196,11 @@ export function ModelSettings() {
               ) : (
                 <button
                   onClick={() => setAddingProvider(true)}
-                  className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-dashed text-[12px] transition-all ${t.isDark
-                    ? 'border-white/[0.08] text-white/25 hover:text-white/50 hover:border-white/[0.15]'
-                    : 'border-slate-200 text-slate-400 hover:text-slate-600 hover:border-slate-300'
-                    }`}
+                  className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-dashed text-[12px] transition-all ${
+                    t.isDark
+                      ? 'border-white/[0.08] text-white/25 hover:text-white/50 hover:border-white/[0.15]'
+                      : 'border-slate-200 text-slate-400 hover:text-slate-600 hover:border-slate-300'
+                  }`}
                 >
                   <Plus className="w-4 h-4" /> {i.msAddProvider}
                 </button>

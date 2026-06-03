@@ -382,7 +382,7 @@ const corsOptions = {
 
 For encrypted communications, you can use our PGP key:
 
-```
+```text
 -----BEGIN PGP PUBLIC KEY BLOCK-----
 [PGP Key would be here]
 -----END PGP PUBLIC KEY BLOCK-----

@@ -201,8 +201,9 @@ export const OfflineStatusIndicator: React.FC<OfflineStatusIndicatorProps> = ({
     >
       {/* 状态指示器 */}
       <div
-        className={`flex items-center gap-2 px-4 py-2 rounded-lg shadow-lg cursor-pointer transition-all hover:shadow-xl ${clickable ? 'bg-white' : ''
-          }`}
+        className={`flex items-center gap-2 px-4 py-2 rounded-lg shadow-lg cursor-pointer transition-all hover:shadow-xl ${
+          clickable ? 'bg-white' : ''
+        }`}
         onClick={() => clickable && setExpanded(!expanded)}
       >
         {/* 状态点 */}

@@ -39,16 +39,19 @@ const mockPerformanceEntry = {
   duration: 1000,
 };
 
-global.performance = {
-  now: vi.fn(() => Date.now()),
-  getEntriesByType: vi.fn(() => [mockPerformanceEntry]),
-  getEntriesByName: vi.fn(() => [mockPerformanceEntry]),
-  memory: {
-    usedJSHeapSize: 50 * 1024 * 1024,
-    totalJSHeapSize: 100 * 1024 * 1024,
-    jsHeapSizeLimit: 200 * 1024 * 1024,
+Object.defineProperty(global, 'performance', {
+  writable: true,
+  value: {
+    now: vi.fn(() => Date.now()),
+    getEntriesByType: vi.fn(() => [mockPerformanceEntry]),
+    getEntriesByName: vi.fn(() => [mockPerformanceEntry]),
+    memory: {
+      usedJSHeapSize: 50 * 1024 * 1024,
+      totalJSHeapSize: 100 * 1024 * 1024,
+      jsHeapSizeLimit: 200 * 1024 * 1024,
+    },
   },
-} as unknown;
+});
 
 // Import after mocks are set up
 const { performanceMonitorService, PerformanceMonitorService } =

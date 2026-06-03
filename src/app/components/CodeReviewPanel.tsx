@@ -483,12 +483,13 @@ export function ${currentFile.replace('.tsx', '').replace('.ts', '')}() {
                         e.stopPropagation();
                         handleJumpToLine(comment.file, comment.line);
                       }}
-                      className={`flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[8px] ${highlightedLine === comment.line
-                        ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30'
-                        : t.isDark
-                          ? 'bg-white/[0.04] text-white/40 hover:text-white/60 hover:bg-white/[0.08]'
-                          : 'bg-slate-100 text-slate-500 hover:text-slate-700 hover:bg-slate-200'
-                        } transition-all`}
+                      className={`flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[8px] ${
+                        highlightedLine === comment.line
+                          ? 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30'
+                          : t.isDark
+                            ? 'bg-white/[0.04] text-white/40 hover:text-white/60 hover:bg-white/[0.08]'
+                            : 'bg-slate-100 text-slate-500 hover:text-slate-700 hover:bg-slate-200'
+                      } transition-all`}
                       title={i.crJumpToLine}
                     >
                       L{comment.line}
@@ -572,10 +573,11 @@ export function ${currentFile.replace('.tsx', '').replace('.ts', '')}() {
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => toggleResolve(comment.id)}
-                      className={`flex items-center gap-1 px-2 py-0.5 rounded text-[8px] ${t.transition} ${comment.resolved
-                        ? `${t.isDark ? 'bg-amber-500/10 text-amber-400' : 'bg-amber-50 text-amber-600'}`
-                        : `${t.isDark ? 'bg-emerald-500/10 text-emerald-400' : 'bg-emerald-50 text-emerald-600'}`
-                        }`}
+                      className={`flex items-center gap-1 px-2 py-0.5 rounded text-[8px] ${t.transition} ${
+                        comment.resolved
+                          ? `${t.isDark ? 'bg-amber-500/10 text-amber-400' : 'bg-amber-50 text-amber-600'}`
+                          : `${t.isDark ? 'bg-emerald-500/10 text-emerald-400' : 'bg-emerald-50 text-emerald-600'}`
+                      }`}
                       style={{ fontWeight: 600 }}
                     >
                       {comment.resolved ? (

@@ -25,7 +25,7 @@ import { getThemeTokens, THEME_PRESETS, type ThemeMode } from '../utils/theme';
 interface SavedTheme {
   id: string;
   name: string;
-  config: { theme?: string;[key: string]: unknown };
+  config: { theme?: string; [key: string]: unknown };
   createdAt: number;
 }
 
@@ -247,10 +247,11 @@ export function ThemeManager({ open, onClose }: { open: boolean; onClose: () => 
                   <button
                     key={preset.id}
                     onClick={() => setTheme(preset.id)}
-                    className={`p-2 rounded-lg text-[10px] text-center ${t.transition} ${theme === preset.id
-                      ? `ring-2 ring-indigo-500 ${t.accent.activeBg}`
-                      : t.interactive.iconBtn
-                      }`}
+                    className={`p-2 rounded-lg text-[10px] text-center ${t.transition} ${
+                      theme === preset.id
+                        ? `ring-2 ring-indigo-500 ${t.accent.activeBg}`
+                        : t.interactive.iconBtn
+                    }`}
                   >
                     <div className="text-[16px] mb-1">{preset.icon}</div>
                     <div style={{ fontWeight: theme === preset.id ? 600 : 400 }}>{preset.id}</div>
@@ -283,10 +284,11 @@ export function ThemeManager({ open, onClose }: { open: boolean; onClose: () => 
                 <button
                   onClick={handleSaveTheme}
                   disabled={!newThemeName.trim()}
-                  className={`px-3 py-1.5 rounded-lg text-[11px] flex items-center space-x-1.5 ${t.transition} ${newThemeName.trim()
-                    ? `${t.accent.activeBg} ${t.accent.activeText}`
-                    : 'opacity-40 cursor-not-allowed'
-                    }`}
+                  className={`px-3 py-1.5 rounded-lg text-[11px] flex items-center space-x-1.5 ${t.transition} ${
+                    newThemeName.trim()
+                      ? `${t.accent.activeBg} ${t.accent.activeText}`
+                      : 'opacity-40 cursor-not-allowed'
+                  }`}
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>{i.tmSaveTheme}</span>

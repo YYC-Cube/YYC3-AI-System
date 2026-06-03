@@ -363,10 +363,11 @@ export function ThemeCustomizer() {
 
       {/* Modal */}
       <div
-        className={`relative w-[760px] max-h-[85vh] rounded-2xl flex flex-col overflow-hidden ${isDark
+        className={`relative w-[760px] max-h-[85vh] rounded-2xl flex flex-col overflow-hidden ${
+          isDark
             ? 'bg-slate-900/95 border border-white/8'
             : 'bg-white/95 border border-slate-200/80'
-          } backdrop-blur-xl`}
+        } backdrop-blur-xl`}
         style={{
           boxShadow: isDark
             ? '0 0 0 1px rgba(255,255,255,0.06), 0 25px 60px -12px rgba(0,0,0,0.6), 0 0 120px -40px rgba(99,102,241,0.15)'
@@ -414,12 +415,13 @@ export function ThemeCustomizer() {
               <button
                 key={preset.id}
                 onClick={(e) => handleThemeSwitch(preset.id, e)}
-                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] transition-all ${theme === preset.id
+                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] transition-all ${
+                  theme === preset.id
                     ? `${t.accent.activeBg} ${t.accent.activeText}`
                     : isDark
                       ? 'text-white/40 hover:text-white/70 hover:bg-white/5'
                       : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'
-                  }`}
+                }`}
                 style={{ fontWeight: theme === preset.id ? 500 : 400 }}
               >
                 <span className="text-[12px]">{preset.icon}</span>
@@ -437,12 +439,13 @@ export function ThemeCustomizer() {
             <button
               key={key}
               onClick={() => setActiveTab(key)}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-t-lg text-[11px] transition-all border-b-2 -mb-px whitespace-nowrap ${activeTab === key
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-t-lg text-[11px] transition-all border-b-2 -mb-px whitespace-nowrap ${
+                activeTab === key
                   ? `${t.accent.activeText} border-current ${isDark ? 'bg-white/3' : 'bg-slate-50'}`
                   : isDark
                     ? 'text-white/30 border-transparent hover:text-white/50'
                     : 'text-slate-400 border-transparent hover:text-slate-600'
-                }`}
+              }`}
               style={{ fontWeight: activeTab === key ? 500 : 400 }}
             >
               <Icon className="w-3.5 h-3.5" />
@@ -467,14 +470,15 @@ export function ThemeCustomizer() {
                   <button
                     key={preset.id}
                     onClick={() => handleApplyPreset(preset)}
-                    className={`group relative rounded-xl border p-4 text-left transition-all ${customThemeConfig.name === resolveKey(i, preset.nameKey)
+                    className={`group relative rounded-xl border p-4 text-left transition-all ${
+                      customThemeConfig.name === resolveKey(i, preset.nameKey)
                         ? isDark
                           ? 'border-purple-500/30 bg-purple-500/5'
                           : 'border-purple-300/50 bg-purple-50/50'
                         : isDark
                           ? 'border-white/6 bg-white/2 hover:border-white/12'
                           : 'border-slate-200/60 bg-white/60 hover:border-slate-300'
-                      }`}
+                    }`}
                   >
                     {/* Color preview bar */}
                     <div className="flex gap-1 mb-3">
@@ -644,10 +648,11 @@ export function ThemeCustomizer() {
                           type="text"
                           value={customThemeConfig.colors[key]}
                           onChange={(e) => updateCustomColors({ [key]: e.target.value })}
-                          className={`flex-1 px-2 py-1.5 rounded-lg text-[11px] font-mono ${isDark
+                          className={`flex-1 px-2 py-1.5 rounded-lg text-[11px] font-mono ${
+                            isDark
                               ? 'bg-white/4 border border-white/8 text-white/70 focus:border-purple-500/40'
                               : 'bg-slate-50 border border-slate-200 text-slate-600 focus:border-purple-500/40'
-                            } focus:outline-none`}
+                          } focus:outline-none`}
                         />
                       </div>
                     </div>
@@ -665,23 +670,25 @@ export function ThemeCustomizer() {
                 <div className="flex gap-1">
                   <button
                     onClick={() => updateCustomThemeConfig({ type: 'light' })}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] transition-all border ${customThemeConfig.type === 'light'
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] transition-all border ${
+                      customThemeConfig.type === 'light'
                         ? 'border-amber-400/30 bg-amber-500/10 text-amber-500'
                         : isDark
                           ? 'border-white/8 text-white/30 hover:bg-white/5'
                           : 'border-slate-200 text-slate-400 hover:bg-slate-50'
-                      }`}
+                    }`}
                   >
                     <Sun className="w-3.5 h-3.5" /> {i.tcLight}
                   </button>
                   <button
                     onClick={() => updateCustomThemeConfig({ type: 'dark' })}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] transition-all border ${customThemeConfig.type === 'dark'
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] transition-all border ${
+                      customThemeConfig.type === 'dark'
                         ? 'border-indigo-400/30 bg-indigo-500/10 text-indigo-400'
                         : isDark
                           ? 'border-white/8 text-white/30 hover:bg-white/5'
                           : 'border-slate-200 text-slate-400 hover:bg-slate-50'
-                      }`}
+                    }`}
                   >
                     <Moon className="w-3.5 h-3.5" /> {i.tcDark}
                   </button>
@@ -722,14 +729,15 @@ export function ThemeCustomizer() {
                           fonts: { ...customThemeConfig.fonts, sans: font.value },
                         })
                       }
-                      className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-[12px] transition-all ${customThemeConfig.fonts.sans === font.value
+                      className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-[12px] transition-all ${
+                        customThemeConfig.fonts.sans === font.value
                           ? isDark
                             ? 'bg-purple-500/10 text-purple-300 border border-purple-500/20'
                             : 'bg-purple-50 text-purple-600 border border-purple-200/40'
                           : isDark
                             ? 'text-white/50 hover:bg-white/5'
                             : 'text-slate-500 hover:bg-slate-50'
-                        }`}
+                      }`}
                     >
                       <span style={{ fontFamily: font.value }}>
                         {'labelKey' in font ? resolveKey(i, font.labelKey || '') : font.label}
@@ -767,14 +775,15 @@ export function ThemeCustomizer() {
                           fonts: { ...customThemeConfig.fonts, mono: font.value },
                         })
                       }
-                      className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-[12px] transition-all ${customThemeConfig.fonts.mono === font.value
+                      className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-[12px] transition-all ${
+                        customThemeConfig.fonts.mono === font.value
                           ? isDark
                             ? 'bg-purple-500/10 text-purple-300 border border-purple-500/20'
                             : 'bg-purple-50 text-purple-600 border border-purple-200/40'
                           : isDark
                             ? 'text-white/50 hover:bg-white/5'
                             : 'text-slate-500 hover:bg-slate-50'
-                        }`}
+                      }`}
                     >
                       <span style={{ fontFamily: font.value }}>{font.label}</span>
                       <span
@@ -820,14 +829,15 @@ export function ThemeCustomizer() {
                             radius: { sm: opt.sm, md: opt.md, lg: opt.lg },
                           })
                         }
-                        className={`flex flex-col items-center gap-2 p-3 rounded-xl border transition-all ${isActive
+                        className={`flex flex-col items-center gap-2 p-3 rounded-xl border transition-all ${
+                          isActive
                             ? isDark
                               ? 'border-purple-500/30 bg-purple-500/8'
                               : 'border-purple-300/50 bg-purple-50/50'
                             : isDark
                               ? 'border-white/6 hover:border-white/12'
                               : 'border-slate-200 hover:border-slate-300'
-                          }`}
+                        }`}
                       >
                         <div
                           className="w-10 h-10 border-2"
@@ -880,10 +890,11 @@ export function ThemeCustomizer() {
                             radius: { ...customThemeConfig.radius, [size]: e.target.value },
                           })
                         }
-                        className={`w-full px-3 py-2 rounded-lg text-[11px] font-mono ${isDark
+                        className={`w-full px-3 py-2 rounded-lg text-[11px] font-mono ${
+                          isDark
                             ? 'bg-white/4 border border-white/8 text-white/70 focus:border-purple-500/40'
                             : 'bg-slate-50 border border-slate-200 text-slate-600 focus:border-purple-500/40'
-                          } focus:outline-none`}
+                        } focus:outline-none`}
                       />
                     </div>
                   ))}
@@ -920,10 +931,11 @@ export function ThemeCustomizer() {
                       })
                     }
                     maxLength={50}
-                    className={`w-full px-3 py-2 rounded-lg text-[12px] ${isDark
+                    className={`w-full px-3 py-2 rounded-lg text-[12px] ${
+                      isDark
                         ? 'bg-white/4 border border-white/8 text-white/80 focus:border-purple-500/40'
                         : 'bg-slate-50 border border-slate-200 text-slate-700 focus:border-purple-500/40'
-                      } focus:outline-none`}
+                    } focus:outline-none`}
                   />
                 </div>
                 <div>
@@ -944,10 +956,11 @@ export function ThemeCustomizer() {
                       })
                     }
                     maxLength={50}
-                    className={`w-full px-3 py-2 rounded-lg text-[12px] ${isDark
+                    className={`w-full px-3 py-2 rounded-lg text-[12px] ${
+                      isDark
                         ? 'bg-white/4 border border-white/8 text-white/80 focus:border-purple-500/40'
                         : 'bg-slate-50 border border-slate-200 text-slate-700 focus:border-purple-500/40'
-                      } focus:outline-none`}
+                    } focus:outline-none`}
                   />
                 </div>
                 <div>
@@ -968,10 +981,11 @@ export function ThemeCustomizer() {
                       })
                     }
                     maxLength={100}
-                    className={`w-full px-3 py-2 rounded-lg text-[12px] ${isDark
+                    className={`w-full px-3 py-2 rounded-lg text-[12px] ${
+                      isDark
                         ? 'bg-white/4 border border-white/8 text-white/80 focus:border-purple-500/40'
                         : 'bg-slate-50 border border-slate-200 text-slate-700 focus:border-purple-500/40'
-                      } focus:outline-none`}
+                    } focus:outline-none`}
                   />
                 </div>
               </div>
@@ -1056,10 +1070,11 @@ export function ThemeCustomizer() {
                   type="text"
                   value={customThemeConfig.name}
                   onChange={(e) => updateCustomThemeConfig({ name: e.target.value })}
-                  className={`w-full px-3 py-2 rounded-lg text-[12px] ${isDark
+                  className={`w-full px-3 py-2 rounded-lg text-[12px] ${
+                    isDark
                       ? 'bg-white/4 border border-white/8 text-white/80 focus:border-purple-500/40'
                       : 'bg-slate-50 border border-slate-200 text-slate-700 focus:border-purple-500/40'
-                    } focus:outline-none`}
+                  } focus:outline-none`}
                 />
               </div>
 
@@ -1082,12 +1097,13 @@ export function ThemeCustomizer() {
                   </button>
                   <button
                     onClick={handleCopyJson}
-                    className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-[11px] transition-all border ${exportCopied
+                    className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-[11px] transition-all border ${
+                      exportCopied
                         ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20'
                         : isDark
                           ? 'text-white/40 border-white/10 hover:bg-white/5'
                           : 'text-slate-500 border-slate-200 hover:bg-slate-50'
-                      }`}
+                    }`}
                   >
                     {exportCopied ? (
                       <CheckCircle2 className="w-3.5 h-3.5" />
@@ -1118,10 +1134,11 @@ export function ThemeCustomizer() {
                 />
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-[11px] transition-all border border-dashed ${isDark
+                  className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-[11px] transition-all border border-dashed ${
+                    isDark
                       ? 'border-white/10 text-white/40 hover:text-white/60 hover:border-white/20'
                       : 'border-slate-300 text-slate-500 hover:text-slate-700 hover:border-slate-400'
-                    }`}
+                  }`}
                 >
                   <Upload className="w-3.5 h-3.5" /> {i.tcSelectJsonFile}
                 </button>

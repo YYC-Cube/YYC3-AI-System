@@ -72,13 +72,22 @@ Object.defineProperty(window, 'IntersectionObserver', {
 Element.prototype.scrollIntoView = vi.fn();
 
 // Mock localStorage
+const localStorageStore: Record<string, string> = {};
 const localStorageMock = {
-  getItem: vi.fn(),
-  setItem: vi.fn(),
-  removeItem: vi.fn(),
-  clear: vi.fn(),
-  length: 0,
-  key: vi.fn(),
+  getItem: vi.fn((key: string) => localStorageStore[key] ?? null),
+  setItem: vi.fn((key: string, value: string) => {
+    localStorageStore[key] = value;
+  }),
+  removeItem: vi.fn((key: string) => {
+    delete localStorageStore[key];
+  }),
+  clear: vi.fn(() => {
+    Object.keys(localStorageStore).forEach((key) => delete localStorageStore[key]);
+  }),
+  get length() {
+    return Object.keys(localStorageStore).length;
+  },
+  key: vi.fn((index: number) => Object.keys(localStorageStore)[index] ?? null),
 };
 
 Object.defineProperty(window, 'localStorage', {
@@ -86,13 +95,22 @@ Object.defineProperty(window, 'localStorage', {
 });
 
 // Mock sessionStorage
+const sessionStorageStore: Record<string, string> = {};
 const sessionStorageMock = {
-  getItem: vi.fn(),
-  setItem: vi.fn(),
-  removeItem: vi.fn(),
-  clear: vi.fn(),
-  length: 0,
-  key: vi.fn(),
+  getItem: vi.fn((key: string) => sessionStorageStore[key] ?? null),
+  setItem: vi.fn((key: string, value: string) => {
+    sessionStorageStore[key] = value;
+  }),
+  removeItem: vi.fn((key: string) => {
+    delete sessionStorageStore[key];
+  }),
+  clear: vi.fn(() => {
+    Object.keys(sessionStorageStore).forEach((key) => delete sessionStorageStore[key]);
+  }),
+  get length() {
+    return Object.keys(sessionStorageStore).length;
+  },
+  key: vi.fn((index: number) => Object.keys(sessionStorageStore)[index] ?? null),
 };
 
 Object.defineProperty(window, 'sessionStorage', {

@@ -906,7 +906,7 @@ export function DatabaseManager({ open, onClose }: DatabaseManagerProps) {
                           // Register SQL table/column completions with dynamic schema
                           monaco.languages.registerCompletionItemProvider('sql', {
                             triggerCharacters: ['.', ' '],
-                             
+
                             provideCompletionItems: (model: any, position: any) => {
                               const word = model.getWordUntilPosition(position);
                               const range = {

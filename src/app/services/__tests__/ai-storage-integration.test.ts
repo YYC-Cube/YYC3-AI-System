@@ -37,9 +37,8 @@ vi.mock('../../services/storage-service', () => ({
   },
 }));
 
- 
 const mockAI = aiProviderService as any;
- 
+
 const mockStorage = storageService as any;
 
 describe('AI and Storage Service Integration', () => {

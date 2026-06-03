@@ -97,8 +97,8 @@ describe('Theme System - getThemeTokens', () => {
 });
 
 describe('Theme System - THEME_PRESETS', () => {
-  test('should have all 5 theme presets', () => {
-    expect(THEME_PRESETS).toHaveLength(5);
+  test('should have all 6 theme presets', () => {
+    expect(THEME_PRESETS).toHaveLength(6);
   });
 
   test('should have light theme preset', () => {

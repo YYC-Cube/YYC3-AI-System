@@ -398,13 +398,13 @@ function escapeHtml(str: string): string {
 }
 
 /* ── Debounce utility ── */
- 
+
 export function debounce<T extends (...args: any[]) => any>(
   fn: T,
   ms: number
 ): T & { cancel: () => void } {
   let timer: ReturnType<typeof setTimeout> | null = null;
-   
+
   const debounced = ((...args: any[]) => {
     if (timer) clearTimeout(timer);
     timer = setTimeout(() => fn(...args), ms);

@@ -35,15 +35,15 @@ pnpm dev
 
 访问以下路由验证功能：
 
-- 登录页面: http://localhost:3156/login
-- 注册页面: http://localhost:3156/register
-- 忘记密码: http://localhost:3156/forgot-password
+- 登录页面: <http://localhost:3156/login>
+- 注册页面: <http://localhost:3156/register>
+- 忘记密码: <http://localhost:3156/forgot-password>
 
 ### 步骤 3: 测试演示账号
 
 使用演示账号登录：
 
-```
+```text
 邮箱: demo@example.com
 密码: password123
 ```
@@ -297,7 +297,7 @@ const refreshToken = async () => {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ refreshToken }),
   });
-  
+
   const result = await response.json();
   if (response.ok) {
     saveUserToStorage(result.user, result.token);
@@ -308,8 +308,9 @@ const refreshToken = async () => {
 ## 🆘 需要帮助？
 
 如有问题，请查看：
+
 - 使用文档: `docs/YYC3-2026-03-24-认证登录系统文档.md`
-- 或联系团队: admin@0379.email
+- 或联系团队: <admin@0379.email>
 
 ---
 

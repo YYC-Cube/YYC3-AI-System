@@ -9,11 +9,11 @@
  * @copyright Copyright (c) 2024 YYC³ Team
  */
 
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { BrowserRouter } from 'react-router-dom';
-import { vi, expect, describe, it, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { AuthProvider } from '../../contexts/AuthContext';
 import LoginPage from '../LoginPage';
@@ -114,14 +114,13 @@ describe('LoginPage', () => {
   });
 
   it('应该验证无效邮箱格式', async () => {
-    const user = userEvent.setup();
     renderLoginPage();
 
     const emailInput = screen.getByPlaceholderText('your.email@example.com');
-    await user.type(emailInput, 'invalid-email');
+    fireEvent.change(emailInput, { target: { value: 'invalid-email' } });
 
-    const submitButton = screen.getByRole('button', { name: '登录' });
-    await user.click(submitButton);
+    const form = emailInput.closest('form')!;
+    fireEvent.submit(form);
 
     await waitFor(() => {
       expect(screen.getByText('请输入有效的邮箱地址')).toBeInTheDocument();

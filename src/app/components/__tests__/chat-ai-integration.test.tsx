@@ -26,7 +26,6 @@ vi.mock('../../services/ai-provider', () => ({
   },
 }));
 
- 
 const mockAI = aiProviderService as any;
 
 // Mock store

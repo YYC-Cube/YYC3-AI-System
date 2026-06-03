@@ -117,15 +117,19 @@ export class ApiCacheService {
   }
 
   /**
-   * 获取API配置
+   * 获取API配置（匹配最具体的URL模式）
    */
   private getConfig(url: string): ApiCacheConfig {
+    let bestMatch: ApiCacheConfig | null = null;
+    let bestMatchLength = 0;
+
     for (const [pattern, config] of this.config.entries()) {
-      if (url.startsWith(pattern)) {
-        return config;
+      if (url.startsWith(pattern) && pattern.length > bestMatchLength) {
+        bestMatch = config;
+        bestMatchLength = pattern.length;
       }
     }
-    return this.defaultConfig;
+    return bestMatch || this.defaultConfig;
   }
 
   /**

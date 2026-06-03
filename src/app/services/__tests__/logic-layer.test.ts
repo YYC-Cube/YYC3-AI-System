@@ -22,6 +22,7 @@ describe('逻辑层服务测试', () => {
       undoRedoService = createUndoRedoService<{ value: number }>({
         maxHistorySize: 5,
         enablePersistence: false,
+        groupSimilarActions: false,
       });
     });
 

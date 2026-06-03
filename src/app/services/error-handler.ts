@@ -156,7 +156,7 @@ const ERROR_KNOWLEDGE_BASE: Record<
   },
 };
 
-class ErrorHandler {
+export class ErrorHandler {
   private options: Required<ErrorHandlerOptions>;
   private errorLog: ErrorLogEntry[] = [];
   private errorIdCounter = 0;

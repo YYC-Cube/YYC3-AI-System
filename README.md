@@ -210,7 +210,7 @@ graph TB
 
 ## 📦 项目结构
 
-```
+```text
 YYC3-Portable-Intelligent-AI-System/
 ├── .github/                        # GitHub配置
 │   └── workflows/                  # CI/CD工作流
@@ -525,7 +525,7 @@ git push origin feature/AmazingFeature
 感谢所有为YYC³项目做出贡献的开发者！
 
 <a href="https://github.com/YYC-Cube/YYC3-Portable-Intelligent-AI-System/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=YYC-Cube/YYC3-Portable-Intelligent-AI-System" />
+  <img src="https://contrib.rocks/image?repo=YYC-Cube/YYC3-Portable-Intelligent-AI-System" alt="贡献者" />
 </a>
 
 ---
@@ -534,7 +534,7 @@ git push origin feature/AmazingFeature
 
 本项目采用 [MIT License](LICENSE) 许可证。
 
-```
+```text
 Copyright (c) 2026 YanYuCloudCube Team
 
 Permission is hereby granted, free of charge, to any person obtaining a copy

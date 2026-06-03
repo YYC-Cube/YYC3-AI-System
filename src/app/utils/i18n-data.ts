@@ -22,7 +22,6 @@
  * notes: 拆分自 4306 行单体文件，按语言独立维护
  */
 
-
 import { en } from './i18n-en';
 import { jaOverrides } from './i18n-ja';
 import { koOverrides } from './i18n-ko';
