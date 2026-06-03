@@ -19,6 +19,10 @@ import htmlWorker from 'monaco-editor/esm/vs/language/html/html.worker?worker';
 import jsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker';
 import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker';
 
+import { createLogger } from '@/app/utils/logger';
+
+const log = createLogger('Monaco');
+
 /**
  * 常用语言列表 - 这些语言的语言服务会被立即加载
  */
@@ -124,9 +128,9 @@ async function loadLanguageService(language: string): Promise<void> {
       await new Promise((resolve) => setTimeout(resolve, 100));
 
       loadedLanguages.add(language);
-      console.log(`[Monaco] Language service ready: ${language}`);
+      log.info(`Language service ready: ${language}`);
     } catch (error) {
-      console.error(`[Monaco] Failed to load language service for ${language}:`, error);
+      log.error(`Failed to load language service for ${language}:`, error);
     } finally {
       loadingLanguages.delete(language);
     }
@@ -141,16 +145,16 @@ async function loadLanguageService(language: string): Promise<void> {
  * 这些语言会在应用初始化时自动加载
  */
 export async function preloadCommonLanguages() {
-  console.log('[Monaco] Preloading common languages...');
+  log.info('Preloading common languages...');
 
   const loadPromises = COMMON_LANGUAGES.map((lang) =>
     loadLanguageService(lang).catch((err) => {
-      console.warn(`[Monaco] Failed to preload ${lang}:`, err);
+      log.warn(`Failed to preload ${lang}:`, err);
     })
   );
 
   await Promise.all(loadPromises);
-  console.log('[Monaco] Common languages preloaded:', Array.from(loadedLanguages));
+  log.info('Common languages preloaded:', Array.from(loadedLanguages));
 }
 
 /**
@@ -163,7 +167,7 @@ export async function loadLanguageOnDemand(language: string): Promise<void> {
     return; // 常用语言已在初始化时加载
   }
 
-  console.log(`[Monaco] Loading language on demand: ${language}`);
+  log.info(`[Monaco] Loading language on demand: ${language}`);
   await loadLanguageService(language);
 }
 
@@ -189,7 +193,7 @@ export function unloadRareLanguages() {
   RARE_LANGUAGES.forEach((lang) => {
     if (loadedLanguages.has(lang)) {
       loadedLanguages.delete(lang);
-      console.log(`[Monaco] Unloaded language: ${lang}`);
+      log.info(`Unloaded language: ${lang}`);
     }
   });
 }
@@ -199,7 +203,7 @@ export function unloadRareLanguages() {
  * 配置Workers和预加载常用语言
  */
 export async function initializeMonaco(preloadCommon: boolean = true) {
-  console.log('[Monaco] Initializing Monaco Editor...');
+  log.info('Initializing Monaco Editor...');
 
   // 配置Workers
   configureMonacoWorkers();
@@ -209,7 +213,7 @@ export async function initializeMonaco(preloadCommon: boolean = true) {
     await preloadCommonLanguages();
   }
 
-  console.log('[Monaco] Initialization complete');
+  log.info('Initialization complete');
 }
 
 /**

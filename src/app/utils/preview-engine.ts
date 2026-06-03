@@ -398,13 +398,13 @@ function escapeHtml(str: string): string {
 }
 
 /* ── Debounce utility ── */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 export function debounce<T extends (...args: any[]) => any>(
   fn: T,
   ms: number
 ): T & { cancel: () => void } {
   let timer: ReturnType<typeof setTimeout> | null = null;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   const debounced = ((...args: any[]) => {
     if (timer) clearTimeout(timer);
     timer = setTimeout(() => fn(...args), ms);

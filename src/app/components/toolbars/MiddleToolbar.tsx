@@ -13,20 +13,20 @@
  */
 
 import {
-  ChevronLeft,
-  Eye,
-  Code,
-  Maximize,
-  Search,
-  MoreHorizontal,
-  Terminal,
-  Download,
-  Keyboard,
   BookOpen,
+  ChevronLeft,
+  Code,
+  Download,
+  Eye,
   FilePlus,
   FolderPlus,
-  RefreshCw,
+  Keyboard,
   Layers,
+  Maximize,
+  MoreHorizontal,
+  RefreshCw,
+  Search,
+  Terminal,
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
@@ -56,10 +56,10 @@ export function MiddleToolbar() {
     label: string;
     shortcut: string;
   }[] = [
-    { mode: 'fullscreen', icon: Maximize, label: i.fullscreenPreview, shortcut: '' },
-    { mode: 'preview', icon: Eye, label: i.preview, shortcut: 'Ctrl+1' },
-    { mode: 'code', icon: Code, label: i.code, shortcut: 'Ctrl+2' },
-  ];
+      { mode: 'fullscreen', icon: Maximize, label: i.fullscreenPreview, shortcut: '' },
+      { mode: 'preview', icon: Eye, label: i.preview, shortcut: 'Ctrl+1' },
+      { mode: 'code', icon: Code, label: i.code, shortcut: 'Ctrl+2' },
+    ];
 
   const handleNewFile = () => {
     if (newFileName.trim()) {
@@ -108,9 +108,8 @@ export function MiddleToolbar() {
               setViewMode(mode);
               toast.info(`${i.toastSwitchedTo} ${label}`);
             }}
-            className={`p-1 rounded ${t.transition} ${
-              viewMode === mode ? t.interactive.iconActive : t.interactive.iconBtn
-            }`}
+            className={`p-1 rounded ${t.transition} ${viewMode === mode ? t.interactive.iconActive : t.interactive.iconBtn
+              }`}
             title={shortcut ? `${label} (${shortcut})` : label}
           >
             <Icon className="w-3.5 h-3.5" />
@@ -171,9 +170,9 @@ export function MiddleToolbar() {
           </button>
           {showNewFileDialog && (
             <>
-              <div className="fixed inset-0 z-40" onClick={() => setShowNewFileDialog(false)} />
+              <div className="fixed inset-0 z-[200]" onClick={() => setShowNewFileDialog(false)} />
               <div
-                className={`absolute right-0 top-full mt-1 w-52 rounded-xl overflow-hidden z-50 p-3 ${t.surface.popover} ${t.border.popover} ${t.shadow.popover}`}
+                className={`fixed z-[201] right-4 top-12 w-52 rounded-xl overflow-hidden p-3 ${t.surface.popover} ${t.border.popover} ${t.shadow.popover}`}
               >
                 <p className="text-[11px] mb-2" style={{ fontWeight: 600 }}>
                   {i.newFile}
@@ -218,9 +217,9 @@ export function MiddleToolbar() {
           </button>
           {showNewFolderDialog && (
             <>
-              <div className="fixed inset-0 z-40" onClick={() => setShowNewFolderDialog(false)} />
+              <div className="fixed inset-0 z-[200]" onClick={() => setShowNewFolderDialog(false)} />
               <div
-                className={`absolute right-0 top-full mt-1 w-52 rounded-xl overflow-hidden z-50 p-3 ${t.surface.popover} ${t.border.popover} ${t.shadow.popover}`}
+                className={`fixed z-[201] right-4 top-12 w-52 rounded-xl overflow-hidden p-3 ${t.surface.popover} ${t.border.popover} ${t.shadow.popover}`}
               >
                 <p className="text-[11px] mb-2" style={{ fontWeight: 600 }}>
                   {i.newFolder}
@@ -258,9 +257,8 @@ export function MiddleToolbar() {
               setShowNewFileDialog(false);
               setShowNewFolderDialog(false);
             }}
-            className={`p-1 rounded ${t.transition} ${
-              showMoreMenu ? t.interactive.iconActive : t.interactive.iconBtn
-            }`}
+            className={`p-1 rounded ${t.transition} ${showMoreMenu ? t.interactive.iconActive : t.interactive.iconBtn
+              }`}
             title={`${i.more} (Ctrl+Shift+M)`}
           >
             <MoreHorizontal className="w-3.5 h-3.5" />
@@ -268,9 +266,9 @@ export function MiddleToolbar() {
 
           {showMoreMenu && (
             <>
-              <div className="fixed inset-0 z-40" onClick={() => setShowMoreMenu(false)} />
+              <div className="fixed inset-0 z-[200]" onClick={() => setShowMoreMenu(false)} />
               <div
-                className={`absolute right-0 top-full mt-1 w-52 rounded-xl overflow-hidden z-50 p-1 ${t.surface.popover} ${t.border.popover} ${t.shadow.popover}`}
+                className={`fixed z-[201] right-4 top-12 w-52 rounded-xl overflow-hidden p-1 ${t.surface.popover} ${t.border.popover} ${t.shadow.popover}`}
               >
                 {[
                   {

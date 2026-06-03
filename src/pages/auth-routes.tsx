@@ -11,7 +11,7 @@
 
 import { Routes, Route } from 'react-router-dom';
 
-import HomePage from '../components/HomePage';
+import { HomePage } from '../app/components/HomePage';
 import { useAuth } from '../contexts/AuthContext';
 import { ProtectedRoute } from '../contexts/AuthContext';
 
@@ -24,7 +24,7 @@ import ResetPasswordPage from './ResetPasswordPage';
  * AuthRoutes - 认证相关路由组件
  */
 export const AuthRoutes: React.FC = () => {
-  const { status } = useAuth();
+  useAuth();
 
   return (
     <Routes>

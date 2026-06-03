@@ -26,7 +26,7 @@ vi.mock('../../services/ai-provider', () => ({
   },
 }));
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 const mockAI = aiProviderService as any;
 
 // Mock store

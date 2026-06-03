@@ -13,16 +13,15 @@
 
 import { CacheableResponsePlugin } from 'workbox-cacheable-response';
 import {
-  precacheAndRoute,
   cleanupOutdatedCaches,
-  createHandlerBoundToURL,
+  precacheAndRoute,
 } from 'workbox-precaching';
-import { registerRoute, NavigationRoute } from 'workbox-routing';
+import { NavigationRoute, registerRoute } from 'workbox-routing';
 import {
-  StaleWhileRevalidate,
-  NetworkFirst,
   CacheFirst,
   ExpirationPlugin,
+  NetworkFirst,
+  StaleWhileRevalidate,
 } from 'workbox-strategies';
 
 // ============================================================
@@ -77,7 +76,7 @@ self.addEventListener('install', (event) => {
       // 执行预缓存
       precacheAndRoute(self.__WB_MANIFEST || PRECACHE_URLS),
       // 创建API缓存
-      caches.open(`${CACHE_VERSION}-api`).then((cache) => {
+      caches.open(`${CACHE_VERSION}-api`).then((_cache) => {
         console.log('[YYC³ SW] API cache created');
       }),
     ]).then(() => {
@@ -392,6 +391,7 @@ registerRoute(navigationRoute);
 /**
  * 获取缓存统计信息
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function getCacheStats() {
   const cacheNames = await caches.keys();
   const stats = {
@@ -424,6 +424,7 @@ async function getCacheStats() {
 /**
  * 清理所有缓存
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function clearAllCaches() {
   const cacheNames = await caches.keys();
   await Promise.all(cacheNames.map((name) => caches.delete(name)));

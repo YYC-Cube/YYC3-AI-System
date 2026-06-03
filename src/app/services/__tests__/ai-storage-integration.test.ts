@@ -37,9 +37,9 @@ vi.mock('../../services/storage-service', () => ({
   },
 }));
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 const mockAI = aiProviderService as any;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 const mockStorage = storageService as any;
 
 describe('AI and Storage Service Integration', () => {

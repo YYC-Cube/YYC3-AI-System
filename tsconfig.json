@@ -2,11 +2,14 @@
   "compilerOptions": {
     "target": "ES2020",
     "useDefineForClassFields": true,
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ES2020",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "module": "ESNext",
     "skipLibCheck": true,
     "downlevelIteration": true,
-
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
@@ -14,20 +17,19 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
-
     /* Path mapping */
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ]
     },
-
     /* Additional options */
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
@@ -38,7 +40,22 @@
     "removeComments": false,
     "preserveConstEnums": true
   },
-  "include": ["src/app", "src/imports", "src/types/sql.js.d.ts"],
-  "exclude": ["node_modules", "dist", "build", "src/services", "src/contexts", "src/pages", "src/sw.ts", "src/test", "src/utils/__tests__", "**/__tests__/**", "**/*.test.*", "**/*.spec.*"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "build",
+    "**/__tests__/**",
+    "**/*.test.*",
+    "**/*.spec.*",
+    "src/test/**",
+    "src/sw.ts"
+  ],
+  "references": [
+    {
+      "path": "./tsconfig.node.json"
+    }
+  ]
 }

@@ -377,7 +377,7 @@ class WorkflowExecutor {
               });
               return;
             }
-          } catch (retryError) {
+          } catch (_retryError) {
             continue;
           }
         }

@@ -13,17 +13,17 @@
  */
 
 import {
+  BookOpen,
   Bot,
+  Download,
+  HelpCircle,
+  Info,
+  Loader2,
+  MessageSquare,
   Puzzle,
   Settings,
-  HelpCircle,
-  Loader2,
-  BookOpen,
-  MessageSquare,
-  Zap,
-  Download,
   Star,
-  Info,
+  Zap,
 } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
@@ -149,9 +149,9 @@ export function LeftToolbar() {
           </button>
           {showPlugins && (
             <>
-              <div className="fixed inset-0 z-40" onClick={() => setShowPlugins(false)} />
+              <div className="fixed inset-0 z-[200]" onClick={() => setShowPlugins(false)} />
               <div
-                className={`absolute left-0 top-full mt-1 w-56 rounded-xl overflow-hidden z-50 p-1.5 ${t.surface.popover} ${t.border.popover} ${t.shadow.popover}`}
+                className={`fixed z-[201] left-4 top-12 w-56 rounded-xl overflow-hidden p-1.5 ${t.surface.popover} ${t.border.popover} ${t.shadow.popover}`}
               >
                 <div
                   className={`px-3 py-1.5 text-[10px] uppercase tracking-wider ${t.text.muted}`}
@@ -229,9 +229,9 @@ export function LeftToolbar() {
           </button>
           {showHelp && (
             <>
-              <div className="fixed inset-0 z-40" onClick={() => setShowHelp(false)} />
+              <div className="fixed inset-0 z-[200]" onClick={() => setShowHelp(false)} />
               <div
-                className={`absolute right-0 top-full mt-1 w-48 rounded-xl overflow-hidden z-50 p-1 ${t.surface.popover} ${t.border.popover} ${t.shadow.popover}`}
+                className={`fixed z-[201] right-4 top-12 w-48 rounded-xl overflow-hidden p-1 ${t.surface.popover} ${t.border.popover} ${t.shadow.popover}`}
               >
                 <div
                   className={`px-3 py-1.5 text-[10px] uppercase tracking-wider ${t.text.muted}`}

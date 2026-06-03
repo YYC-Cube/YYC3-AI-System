@@ -307,7 +307,7 @@ export class CacheStrategyService {
       }
 
       return networkResponse;
-    } catch (error) {
+    } catch (_error) {
       // 网络失败，尝试从缓存获取
       console.log(`[Cache] Network failed, trying cache: ${request.url}`);
       const cachedResponse = await cache.match(request);

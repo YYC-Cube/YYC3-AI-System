@@ -150,7 +150,7 @@ export function MCPPanel({ onClose }: MCPPanelProps) {
       } else {
         toast.error(`Connection failed: ${result.error}`);
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error('Connection failed');
     } finally {
       setTestingId(null);

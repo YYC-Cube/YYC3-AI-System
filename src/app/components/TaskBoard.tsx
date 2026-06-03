@@ -15,160 +15,70 @@
  */
 
 import {
-  X,
-  Plus,
-  Search,
-  LayoutGrid,
-  List,
-  ChevronDown,
-  Trash2,
-  Archive,
-  Copy,
-  CheckSquare,
-  Square,
   AlertTriangle,
-  ArrowUp,
+  Archive,
   ArrowDown,
-  Minus,
-  Circle,
-  Bug,
-  Sparkles,
-  FileCode,
-  TestTube,
-  BookOpen,
-  Tag,
-  Calendar,
-  Timer,
   ArrowRight,
-  Bot,
-  CheckCircle2,
-  Loader2,
+  ArrowUp,
   Ban,
-  Eye,
-  Pencil,
+  Bot,
+  Calendar,
+  CheckCircle2,
+  CheckSquare,
+  ChevronDown,
+  Circle,
+  Copy,
   Download,
-  Save,
+  Eye,
   FileText,
-  Link2,
   GanttChart,
-  Undo2,
-  Redo2,
-  Link,
-  Zap,
-  TrendingDown,
   GitBranch,
+  LayoutGrid,
+  Link,
+  Link2,
+  List,
+  Loader2,
+  Pencil,
+  Plus,
+  Redo2,
+  Save,
+  Search,
+  Sparkles,
+  Square,
+  Tag,
+  Timer,
+  Trash2,
+  TrendingDown,
+  Undo2,
+  X,
+  Zap,
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
-import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react';
+import { AnimatePresence, motion } from 'motion/react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 import { toast } from 'sonner';
 
 import {
   useTaskStore,
   type Task,
-  type TaskStatus,
   type TaskPriority,
-  type TaskType,
   type TaskSortBy,
+  type TaskStatus,
+  type TaskType,
 } from '../services/task-store';
 import { useAppStore } from '../store';
 import { getI18n, type I18nStrings } from '../utils/i18n';
 import { getThemeTokens, type ThemeTokens } from '../utils/theme';
 
-// ── Constants ──
-
-const TASK_DND_TYPE = 'TASK_CARD';
-
-const STATUS_COLUMNS: {
-  status: TaskStatus;
-  colorClass: string;
-  iconDark: string;
-  iconLight: string;
-}[] = [
-  {
-    status: 'todo',
-    colorClass: 'text-slate-400',
-    iconDark: 'bg-slate-500/15',
-    iconLight: 'bg-slate-100',
-  },
-  {
-    status: 'in-progress',
-    colorClass: 'text-blue-400',
-    iconDark: 'bg-blue-500/15',
-    iconLight: 'bg-blue-50',
-  },
-  {
-    status: 'review',
-    colorClass: 'text-amber-400',
-    iconDark: 'bg-amber-500/15',
-    iconLight: 'bg-amber-50',
-  },
-  {
-    status: 'done',
-    colorClass: 'text-emerald-400',
-    iconDark: 'bg-emerald-500/15',
-    iconLight: 'bg-emerald-50',
-  },
-  {
-    status: 'blocked',
-    colorClass: 'text-red-400',
-    iconDark: 'bg-red-500/15',
-    iconLight: 'bg-red-50',
-  },
-];
-
-const PRIORITY_CONFIG: Record<
-  TaskPriority,
-  { icon: React.ComponentType<any>; color: string; label: string }
-> = {
-  critical: { icon: AlertTriangle, color: 'text-red-500', label: '紧急' },
-  high: { icon: ArrowUp, color: 'text-orange-400', label: '高' },
-  medium: { icon: Minus, color: 'text-yellow-400', label: '中' },
-  low: { icon: ArrowDown, color: 'text-green-400', label: '低' },
-};
-
-const TYPE_CONFIG: Record<TaskType, { icon: React.ComponentType<any>; color: string }> = {
-  feature: { icon: Sparkles, color: 'text-indigo-400' },
-  bug: { icon: Bug, color: 'text-red-400' },
-  refactor: { icon: FileCode, color: 'text-cyan-400' },
-  test: { icon: TestTube, color: 'text-green-400' },
-  documentation: { icon: BookOpen, color: 'text-amber-400' },
-  other: { icon: Circle, color: 'text-slate-400' },
-};
-
-// ── Helper: translate status ──
-function statusLabel(status: TaskStatus, i: I18nStrings): string {
-  const map: Record<TaskStatus, string> = {
-    todo: i.tbTodo || 'To Do',
-    'in-progress': i.tbInProgress || 'In Progress',
-    review: i.tbReview || 'Review',
-    done: i.tbDone || 'Done',
-    blocked: i.tbBlocked || 'Blocked',
-  };
-  return map[status];
-}
-
-function priorityLabel(p: TaskPriority, i: I18nStrings): string {
-  const map: Record<TaskPriority, string> = {
-    critical: i.tbCritical || 'Critical',
-    high: i.tbHigh || 'High',
-    medium: i.tbMedium || 'Medium',
-    low: i.tbLow || 'Low',
-  };
-  return map[p];
-}
-
-function typeLabel(t: TaskType, i: I18nStrings): string {
-  const map: Record<TaskType, string> = {
-    feature: i.tbFeature || 'Feature',
-    bug: i.tbBug || 'Bug',
-    refactor: i.tbRefactor || 'Refactor',
-    test: i.tbTest || 'Test',
-    documentation: i.tbDocumentation || 'Docs',
-    other: i.tbOther || 'Other',
-  };
-  return map[t];
-}
+import {
+  PRIORITY_CONFIG,
+  STATUS_COLUMNS,
+  TASK_DND_TYPE,
+  TYPE_CONFIG,
+  priorityLabel,
+  statusLabel,
+  typeLabel,
+} from './task-board-utils';
 
 // ── Status Icon ──
 function StatusIcon({ status }: { status: TaskStatus }) {
@@ -273,11 +183,10 @@ export function TaskBoard({ open, onClose }: { open: boolean; onClose: () => voi
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
             transition={{ duration: 0.2 }}
-            className={`fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[960px] max-w-[95vw] max-h-[88vh] rounded-2xl overflow-hidden border flex flex-col ${
-              t.isDark
-                ? 'bg-slate-900/95 border-white/10 shadow-2xl shadow-black/40'
-                : 'bg-white/95 border-slate-200 shadow-2xl shadow-slate-300/30'
-            } backdrop-blur-xl`}
+            className={`fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[960px] max-w-[95vw] max-h-[88vh] rounded-2xl overflow-hidden border flex flex-col ${t.isDark
+              ? 'bg-slate-900/95 border-white/10 shadow-2xl shadow-black/40'
+              : 'bg-white/95 border-slate-200 shadow-2xl shadow-slate-300/30'
+              } backdrop-blur-xl`}
           >
             {/* ── Header ── */}
             <div
@@ -328,12 +237,12 @@ export function TaskBoard({ open, onClose }: { open: boolean; onClose: () => voi
                   },
                   ...(stats.overdue > 0
                     ? [
-                        {
-                          label: stats.overdue,
-                          color: t.isDark ? 'bg-red-500/15 text-red-300' : 'bg-red-50 text-red-600',
-                          tip: 'Overdue',
-                        },
-                      ]
+                      {
+                        label: stats.overdue,
+                        color: t.isDark ? 'bg-red-500/15 text-red-300' : 'bg-red-50 text-red-600',
+                        tip: 'Overdue',
+                      },
+                    ]
                     : []),
                 ].map((b, idx) => (
                   <span
@@ -365,11 +274,10 @@ export function TaskBoard({ open, onClose }: { open: boolean; onClose: () => voi
                   value={filter.search || ''}
                   onChange={(e) => setFilter({ search: e.target.value || undefined })}
                   placeholder={i.tbSearch || 'Search tasks...'}
-                  className={`w-full pl-7 pr-3 py-1.5 rounded-lg text-[11px] outline-none ${
-                    t.isDark
-                      ? 'bg-white/5 text-slate-200 placeholder-slate-500 border border-white/8'
-                      : 'bg-slate-50 text-slate-800 placeholder-slate-400 border border-slate-200'
-                  }`}
+                  className={`w-full pl-7 pr-3 py-1.5 rounded-lg text-[11px] outline-none ${t.isDark
+                    ? 'bg-white/5 text-slate-200 placeholder-slate-500 border border-white/8'
+                    : 'bg-slate-50 text-slate-800 placeholder-slate-400 border border-slate-200'
+                    }`}
                 />
               </div>
 
@@ -454,15 +362,14 @@ export function TaskBoard({ open, onClose }: { open: boolean; onClose: () => voi
                   <button
                     key={v.mode}
                     onClick={() => setViewMode(v.mode)}
-                    className={`p-1.5 ${
-                      viewMode === v.mode
-                        ? t.isDark
-                          ? 'bg-indigo-500/20 text-indigo-300'
-                          : 'bg-indigo-50 text-indigo-600'
-                        : t.isDark
-                          ? 'text-slate-400 hover:bg-white/5'
-                          : 'text-slate-500 hover:bg-slate-50'
-                    }`}
+                    className={`p-1.5 ${viewMode === v.mode
+                      ? t.isDark
+                        ? 'bg-indigo-500/20 text-indigo-300'
+                        : 'bg-indigo-50 text-indigo-600'
+                      : t.isDark
+                        ? 'text-slate-400 hover:bg-white/5'
+                        : 'text-slate-500 hover:bg-slate-50'
+                      }`}
                   >
                     <v.icon className="w-3.5 h-3.5" />
                   </button>
@@ -472,11 +379,10 @@ export function TaskBoard({ open, onClose }: { open: boolean; onClose: () => voi
               {/* Add Task */}
               <button
                 onClick={() => setShowAddForm(true)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] ${
-                  t.isDark
-                    ? 'bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30'
-                    : 'bg-indigo-50 text-indigo-600 hover:bg-indigo-100'
-                }`}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] ${t.isDark
+                  ? 'bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30'
+                  : 'bg-indigo-50 text-indigo-600 hover:bg-indigo-100'
+                  }`}
                 style={{ fontWeight: 600 }}
               >
                 <Plus className="w-3.5 h-3.5" />
@@ -524,11 +430,10 @@ export function TaskBoard({ open, onClose }: { open: boolean; onClose: () => voi
                     toast.error(i.tbInferError || 'AI inference failed');
                   }
                 }}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] ${
-                  t.isDark
-                    ? 'bg-purple-500/20 text-purple-300 hover:bg-purple-500/30'
-                    : 'bg-purple-50 text-purple-600 hover:bg-purple-100'
-                }`}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] ${t.isDark
+                  ? 'bg-purple-500/20 text-purple-300 hover:bg-purple-500/30'
+                  : 'bg-purple-50 text-purple-600 hover:bg-purple-100'
+                  }`}
                 style={{ fontWeight: 600 }}
                 title={i.tbAiInfer || 'AI Infer Tasks from Chat'}
               >
@@ -830,15 +735,14 @@ function KanbanColumn({
     <div
       ref={dropRef as unknown as React.Ref<HTMLDivElement>}
       key={status}
-      className={`flex-1 min-w-[180px] rounded-xl border p-2.5 flex flex-col transition-all ${
-        isOver
-          ? t.isDark
-            ? 'bg-indigo-500/10 border-indigo-500/30 ring-1 ring-indigo-500/20'
-            : 'bg-indigo-50/60 border-indigo-300 ring-1 ring-indigo-200'
-          : t.isDark
-            ? 'bg-slate-800/30 border-white/5'
-            : 'bg-slate-50/50 border-slate-200/50'
-      }`}
+      className={`flex-1 min-w-[180px] rounded-xl border p-2.5 flex flex-col transition-all ${isOver
+        ? t.isDark
+          ? 'bg-indigo-500/10 border-indigo-500/30 ring-1 ring-indigo-500/20'
+          : 'bg-indigo-50/60 border-indigo-300 ring-1 ring-indigo-200'
+        : t.isDark
+          ? 'bg-slate-800/30 border-white/5'
+          : 'bg-slate-50/50 border-slate-200/50'
+        }`}
     >
       {/* Column header */}
       <div className="flex items-center gap-2 mb-2.5 px-1">
@@ -1598,15 +1502,14 @@ function TimelineView({
             <button
               key={z}
               onClick={() => setZoom(z)}
-              className={`px-2.5 py-1 text-[10px] ${
-                zoom === z
-                  ? t.isDark
-                    ? 'bg-indigo-500/20 text-indigo-300'
-                    : 'bg-indigo-50 text-indigo-600'
-                  : t.isDark
-                    ? 'text-slate-400 hover:bg-white/5'
-                    : 'text-slate-500 hover:bg-slate-50'
-              }`}
+              className={`px-2.5 py-1 text-[10px] ${zoom === z
+                ? t.isDark
+                  ? 'bg-indigo-500/20 text-indigo-300'
+                  : 'bg-indigo-50 text-indigo-600'
+                : t.isDark
+                  ? 'text-slate-400 hover:bg-white/5'
+                  : 'text-slate-500 hover:bg-slate-50'
+                }`}
               style={{ fontWeight: zoom === z ? 600 : 400 }}
             >
               {z === 'day'
@@ -1643,15 +1546,14 @@ function TimelineView({
         {/* Critical path toggle */}
         <button
           onClick={() => setShowCriticalPath((v) => !v)}
-          className={`px-2 py-0.5 rounded text-[10px] ${
-            showCriticalPath
-              ? t.isDark
-                ? 'bg-amber-500/20 text-amber-300 ring-1 ring-amber-500/30'
-                : 'bg-amber-50 text-amber-700 ring-1 ring-amber-200'
-              : t.isDark
-                ? 'text-slate-400 hover:bg-white/5'
-                : 'text-slate-500 hover:bg-slate-50'
-          }`}
+          className={`px-2 py-0.5 rounded text-[10px] ${showCriticalPath
+            ? t.isDark
+              ? 'bg-amber-500/20 text-amber-300 ring-1 ring-amber-500/30'
+              : 'bg-amber-50 text-amber-700 ring-1 ring-amber-200'
+            : t.isDark
+              ? 'text-slate-400 hover:bg-white/5'
+              : 'text-slate-500 hover:bg-slate-50'
+            }`}
           style={{ fontWeight: 500 }}
           title={i.tbCriticalPath || 'Critical Path'}
         >
@@ -1664,15 +1566,14 @@ function TimelineView({
             setDepEditMode((v) => !v);
             setConnectSource(null);
           }}
-          className={`px-2 py-0.5 rounded text-[10px] ${
-            depEditMode
-              ? t.isDark
-                ? 'bg-cyan-500/20 text-cyan-300 ring-1 ring-cyan-500/30'
-                : 'bg-cyan-50 text-cyan-700 ring-1 ring-cyan-200'
-              : t.isDark
-                ? 'text-slate-400 hover:bg-white/5'
-                : 'text-slate-500 hover:bg-slate-50'
-          }`}
+          className={`px-2 py-0.5 rounded text-[10px] ${depEditMode
+            ? t.isDark
+              ? 'bg-cyan-500/20 text-cyan-300 ring-1 ring-cyan-500/30'
+              : 'bg-cyan-50 text-cyan-700 ring-1 ring-cyan-200'
+            : t.isDark
+              ? 'text-slate-400 hover:bg-white/5'
+              : 'text-slate-500 hover:bg-slate-50'
+            }`}
           style={{ fontWeight: 500 }}
           title={i.tbDepEdit || 'Edit Dependencies'}
         >
@@ -1682,15 +1583,14 @@ function TimelineView({
         {/* Dependency Graph toggle */}
         <button
           onClick={() => setShowDepGraph((v) => !v)}
-          className={`px-2 py-0.5 rounded text-[10px] ${
-            showDepGraph
-              ? t.isDark
-                ? 'bg-violet-500/20 text-violet-300 ring-1 ring-violet-500/30'
-                : 'bg-violet-50 text-violet-700 ring-1 ring-violet-200'
-              : t.isDark
-                ? 'text-slate-400 hover:bg-white/5'
-                : 'text-slate-500 hover:bg-slate-50'
-          }`}
+          className={`px-2 py-0.5 rounded text-[10px] ${showDepGraph
+            ? t.isDark
+              ? 'bg-violet-500/20 text-violet-300 ring-1 ring-violet-500/30'
+              : 'bg-violet-50 text-violet-700 ring-1 ring-violet-200'
+            : t.isDark
+              ? 'text-slate-400 hover:bg-white/5'
+              : 'text-slate-500 hover:bg-slate-50'
+            }`}
           style={{ fontWeight: 500 }}
           title={i.tbDepGraph || 'Dependency Graph'}
         >
@@ -1701,15 +1601,14 @@ function TimelineView({
         {showCriticalPath && criticalPathIds.size > 1 && (
           <button
             onClick={() => setShowAiOptimize((v) => !v)}
-            className={`px-2 py-0.5 rounded text-[10px] ${
-              showAiOptimize
-                ? t.isDark
-                  ? 'bg-purple-500/20 text-purple-300 ring-1 ring-purple-500/30'
-                  : 'bg-purple-50 text-purple-700 ring-1 ring-purple-200'
-                : t.isDark
-                  ? 'text-slate-400 hover:bg-white/5'
-                  : 'text-slate-500 hover:bg-slate-50'
-            }`}
+            className={`px-2 py-0.5 rounded text-[10px] ${showAiOptimize
+              ? t.isDark
+                ? 'bg-purple-500/20 text-purple-300 ring-1 ring-purple-500/30'
+                : 'bg-purple-50 text-purple-700 ring-1 ring-purple-200'
+              : t.isDark
+                ? 'text-slate-400 hover:bg-white/5'
+                : 'text-slate-500 hover:bg-slate-50'
+              }`}
             style={{ fontWeight: 500 }}
             title={i.tbAiOptimize || 'AI Optimize'}
           >
@@ -1822,15 +1721,14 @@ function TimelineView({
             {headerLabels.map((hl, idx) => (
               <div
                 key={idx}
-                className={`text-center text-[8px] border-r flex-shrink-0 ${
-                  hl.isToday
-                    ? t.isDark
-                      ? 'bg-indigo-500/10 text-indigo-300 border-indigo-500/20'
-                      : 'bg-indigo-50 text-indigo-600 border-indigo-200'
-                    : t.isDark
-                      ? 'text-slate-500 border-white/5'
-                      : 'text-slate-400 border-slate-100'
-                }`}
+                className={`text-center text-[8px] border-r flex-shrink-0 ${hl.isToday
+                  ? t.isDark
+                    ? 'bg-indigo-500/10 text-indigo-300 border-indigo-500/20'
+                    : 'bg-indigo-50 text-indigo-600 border-indigo-200'
+                  : t.isDark
+                    ? 'text-slate-500 border-white/5'
+                    : 'text-slate-400 border-slate-100'
+                  }`}
                 style={{ width: hl.widthPx, fontWeight: hl.isToday ? 700 : 400 }}
               >
                 {hl.label}
@@ -2123,11 +2021,10 @@ function TimelineView({
       {/* Drag date tooltip */}
       {dragTooltip && (
         <div
-          className={`fixed z-[9999] px-2 py-1 rounded-md text-[10px] pointer-events-none shadow-lg ${
-            t.isDark
-              ? 'bg-slate-800 text-indigo-300 border border-indigo-500/30'
-              : 'bg-white text-indigo-700 border border-indigo-200'
-          }`}
+          className={`fixed z-[9999] px-2 py-1 rounded-md text-[10px] pointer-events-none shadow-lg ${t.isDark
+            ? 'bg-slate-800 text-indigo-300 border border-indigo-500/30'
+            : 'bg-white text-indigo-700 border border-indigo-200'
+            }`}
           style={{ left: dragTooltip.x + 12, top: dragTooltip.y - 28, fontWeight: 600 }}
         >
           {dragTooltip.label}
@@ -2341,17 +2238,16 @@ function TaskCard({
   return (
     <div
       ref={dragRef as unknown as React.Ref<HTMLDivElement>}
-      className={`rounded-lg border p-2.5 cursor-grab active:cursor-grabbing transition-all ${
-        isDragging
-          ? 'opacity-40 scale-95'
-          : isSelected
-            ? t.isDark
-              ? 'bg-indigo-500/10 border-indigo-500/30'
-              : 'bg-indigo-50 border-indigo-300'
-            : t.isDark
-              ? 'bg-slate-900/40 border-white/5 hover:border-white/10'
-              : 'bg-white border-slate-200/60 hover:border-slate-300'
-      }`}
+      className={`rounded-lg border p-2.5 cursor-grab active:cursor-grabbing transition-all ${isDragging
+        ? 'opacity-40 scale-95'
+        : isSelected
+          ? t.isDark
+            ? 'bg-indigo-500/10 border-indigo-500/30'
+            : 'bg-indigo-50 border-indigo-300'
+          : t.isDark
+            ? 'bg-slate-900/40 border-white/5 hover:border-white/10'
+            : 'bg-white border-slate-200/60 hover:border-slate-300'
+        }`}
       onClick={onExpand}
     >
       {/* Top row */}
@@ -2533,15 +2429,14 @@ function TaskListRow({
 
   return (
     <div
-      className={`flex items-center gap-3 px-3 py-2 rounded-lg border transition-all ${
-        isSelected
-          ? t.isDark
-            ? 'bg-indigo-500/10 border-indigo-500/20'
-            : 'bg-indigo-50 border-indigo-200'
-          : t.isDark
-            ? 'bg-slate-800/20 border-white/5 hover:bg-slate-800/40'
-            : 'bg-white/60 border-slate-200/50 hover:bg-white'
-      }`}
+      className={`flex items-center gap-3 px-3 py-2 rounded-lg border transition-all ${isSelected
+        ? t.isDark
+          ? 'bg-indigo-500/10 border-indigo-500/20'
+          : 'bg-indigo-50 border-indigo-200'
+        : t.isDark
+          ? 'bg-slate-800/20 border-white/5 hover:bg-slate-800/40'
+          : 'bg-white/60 border-slate-200/50 hover:bg-white'
+        }`}
     >
       <button onClick={onToggleSelect} className="flex-shrink-0">
         {isSelected ? (
@@ -2941,9 +2836,9 @@ function EditTaskModal({
       type,
       tags: tags
         ? tags
-            .split(',')
-            .map((t) => t.trim())
-            .filter(Boolean)
+          .split(',')
+          .map((t) => t.trim())
+          .filter(Boolean)
         : undefined,
       estimatedHours: estimatedHours ? parseFloat(estimatedHours) : undefined,
       dueDate: dueDate ? new Date(dueDate).getTime() : undefined,

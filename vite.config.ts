@@ -299,12 +299,9 @@ export default defineConfig({
             '@radix-ui/react-select',
             '@radix-ui/react-tabs',
             '@radix-ui/react-tooltip',
-            '@mui/material',
-            '@mui/icons-material',
             'lucide-react',
           ],
           // Monaco Editor - 懒加载，独立chunk
-          // @monaco-editor/react包会自动处理语言服务的懒加载
           'monaco-editor': [
             '@monaco-editor/react',
           ],
@@ -323,6 +320,12 @@ export default defineConfig({
           'dnd': ['react-dnd', 'react-dnd-html5-backend'],
           // 表单处理
           'forms': ['react-hook-form'],
+          // Markdown 渲染
+          'markdown': ['react-markdown', 'remark-gfm', 'react-syntax-highlighter'],
+          // 动画库
+          'motion': ['motion'],
+          // 通知系统
+          'notifications': ['sonner'],
           // 其他大型依赖
           'vendor': [
             'zustand',

@@ -10,7 +10,7 @@
  */
 
 import { Eye, EyeOff, Lock, Mail, AlertCircle } from 'lucide-react';
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 
 import { useAuth } from '../contexts/AuthContext';

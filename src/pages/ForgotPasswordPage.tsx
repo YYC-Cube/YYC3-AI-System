@@ -11,13 +11,12 @@
 
 import { Mail, ArrowLeft, AlertCircle, CheckCircle } from 'lucide-react';
 import React, { useState, useCallback } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import { useAuth } from '../contexts/AuthContext';
 import { ForgotPasswordFormData } from '../types/auth';
 
 const ForgotPasswordPage: React.FC = () => {
-  const navigate = useNavigate();
   const { forgotPassword, isLoading } = useAuth();
 
   const [formData, setFormData] = useState<ForgotPasswordFormData>({

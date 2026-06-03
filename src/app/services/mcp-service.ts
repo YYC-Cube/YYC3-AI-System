@@ -15,6 +15,9 @@
  */
 
 import type { McpConfig } from '../settingsStore';
+import { createLogger } from '../utils/logger';
+
+const log = createLogger('MCP');
 
 // ═════════════════════════════════════════════════════
 // MCP Types
@@ -73,7 +76,7 @@ class MCPService {
    * Initialize MCP service from config
    */
   async initialize(configs: McpConfig[]): Promise<void> {
-    console.log('[MCP] Initializing with', configs.length, 'servers');
+    log.info('Initializing with', configs.length, 'servers');
 
     for (const config of configs) {
       if (config.enabled) {
@@ -86,7 +89,7 @@ class MCPService {
    * Connect to a single MCP server
    */
   async connectServer(config: McpConfig): Promise<void> {
-    console.log('[MCP] Connecting to server:', config.name, config.type, config.endpoint);
+    log.info('Connecting to server:', config.name, config.type, config.endpoint);
 
     const server: MCPServer = {
       config,
@@ -116,11 +119,11 @@ class MCPService {
       // Discover tools, resources, and prompts
       await this.discoverCapabilities(server);
 
-      console.log('[MCP] Connected to server:', config.name);
+      log.info('Connected to server:', config.name);
     } catch (error) {
       server.status = 'error';
       server.error = error instanceof Error ? error.message : 'Connection failed';
-      console.error('[MCP] Connection error:', server.error);
+      log.error('Connection error:', server.error);
     }
 
     this.servers.set(config.id, server);
@@ -133,7 +136,7 @@ class MCPService {
     // In production with Tauri, this would invoke a Rust command
     // For now, simulate connection
     await new Promise((resolve) => setTimeout(resolve, 500));
-    console.log('[MCP] Stdio connection simulated for:', server.config.endpoint);
+    log.info('Stdio connection simulated for:', server.config.endpoint);
   }
 
   /**
@@ -145,12 +148,12 @@ class MCPService {
         this.eventSource = new EventSource(server.config.endpoint);
 
         this.eventSource.onopen = () => {
-          console.log('[MCP] SSE connection opened');
+          log.info('SSE connection opened');
           resolve(undefined);
         };
 
         this.eventSource.onerror = (error) => {
-          console.error('[MCP] SSE connection error:', error);
+          log.error('SSE connection error:', error);
           reject(new Error('SSE connection failed'));
           this.handleSSEError(server);
         };
@@ -160,9 +163,9 @@ class MCPService {
           try {
             const tools = JSON.parse(event.data);
             server.tools = tools;
-            console.log('[MCP] Discovered tools:', tools.length);
+            log.info('Discovered tools:', tools.length);
           } catch (e) {
-            console.error('[MCP] Failed to parse tools:', e);
+            log.error('Failed to parse tools:', e);
           }
         });
 
@@ -171,9 +174,9 @@ class MCPService {
           try {
             const resources = JSON.parse(event.data);
             server.resources = resources;
-            console.log('[MCP] Discovered resources:', resources.length);
+            log.info('Discovered resources:', resources.length);
           } catch (e) {
-            console.error('[MCP] Failed to parse resources:', e);
+            log.error('Failed to parse resources:', e);
           }
         });
 
@@ -206,12 +209,12 @@ class MCPService {
       }
 
       const info = await response.json();
-      console.log('[MCP] HTTP server info:', info);
+      log.info('HTTP server info:', info);
 
       // Discover capabilities
       await this.discoverCapabilities(server);
     } catch (error) {
-      console.error('[MCP] HTTP connection error:', error);
+      log.error('HTTP connection error:', error);
       // Continue anyway for demo purposes
     }
   }
@@ -231,7 +234,7 @@ class MCPService {
     }
 
     this.sseReconnectTimer = window.setTimeout(() => {
-      console.log('[MCP] Attempting reconnection...');
+      log.info('Attempting reconnection...');
       this.connectServer(server.config);
     }, 5000);
   }
@@ -245,7 +248,7 @@ class MCPService {
       const tools = await this.listTools(server.config.id);
       server.tools = tools;
     } catch (error) {
-      console.warn('[MCP] Failed to list tools:', error);
+      log.warn('Failed to list tools:', error);
     }
 
     // Try to list resources
@@ -253,7 +256,7 @@ class MCPService {
       const resources = await this.listResources(server.config.id);
       server.resources = resources;
     } catch (error) {
-      console.warn('[MCP] Failed to list resources:', error);
+      log.warn('Failed to list resources:', error);
     }
 
     // Try to list prompts
@@ -261,7 +264,7 @@ class MCPService {
       const prompts = await this.listPrompts(server.config.id);
       server.prompts = prompts;
     } catch (error) {
-      console.warn('[MCP] Failed to list prompts:', error);
+      log.warn('Failed to list prompts:', error);
     }
   }
 
@@ -326,7 +329,7 @@ class MCPService {
     const startTime = Date.now();
 
     try {
-      console.log('[MCP] Calling tool:', toolName, 'with args:', args);
+      log.info('Calling tool:', toolName, 'with args:', args);
 
       // In production, this would make an actual MCP protocol call
       // For demo, simulate tool execution
@@ -335,7 +338,7 @@ class MCPService {
       const result = this.simulateToolResult(toolName, args);
       const duration = Date.now() - startTime;
 
-      console.log('[MCP] Tool call completed in', duration, 'ms');
+      log.info('Tool call completed in', duration, 'ms');
 
       return {
         success: true,

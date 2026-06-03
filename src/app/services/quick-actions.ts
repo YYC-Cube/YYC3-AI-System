@@ -479,11 +479,11 @@ export class QuickActionsService {
         explanation,
         duration: Date.now() - start,
       };
-    } catch (err: any) {
+    } catch (err: unknown) {
       return {
         type: action.type,
         status: 'error',
-        error: err.message || 'Action failed',
+        error: (err as Error).message || 'Action failed',
         duration: Date.now() - start,
       };
     }
@@ -550,21 +550,21 @@ export class QuickActionsService {
         const messages = isClaude
           ? [{ role: 'user' as const, content: userPrompt }]
           : [
-              { role: 'system' as const, content: systemPrompt },
-              { role: 'user' as const, content: userPrompt },
-            ];
+            { role: 'system' as const, content: systemPrompt },
+            { role: 'user' as const, content: userPrompt },
+          ];
 
         const body = isClaude
           ? { model: activeModel.name, system: systemPrompt, messages, max_tokens: 4096 }
           : activeModel.provider === 'ollama'
             ? {
-                model: activeModel.name,
-                messages: [
-                  { role: 'system', content: systemPrompt },
-                  { role: 'user', content: userPrompt },
-                ],
-                stream: false,
-              }
+              model: activeModel.name,
+              messages: [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: userPrompt },
+              ],
+              stream: false,
+            }
             : { model: activeModel.name, messages, max_tokens: 4096 };
 
         const resp = await fetch(activeModel.endpoint, {

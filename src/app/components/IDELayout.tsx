@@ -39,10 +39,11 @@
  */
 
 import { GripVertical, Loader2 } from 'lucide-react';
-import React, { useEffect, useCallback, Suspense, lazy } from 'react';
+import React, { lazy, Suspense, useCallback, useEffect } from 'react';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
+import { useSearchParams } from 'react-router';
 
 import { useAppStore } from '../store';
 import { collabManager } from '../utils/collaboration';
@@ -53,7 +54,6 @@ import { ChatInterface } from './ChatInterface';
 import { CommandPalette } from './CommandPalette';
 import { FileManager } from './FileManager';
 import { Header } from './Header';
-const CodeEditor = lazy(() => import('./CodeEditor').then((m) => ({ default: m.CodeEditor })));
 import { IntegratedTerminal } from './IntegratedTerminal';
 import { LayoutManager, PanelTypeSelector } from './LayoutManager';
 import { PreviewPanel } from './PreviewPanel';
@@ -61,6 +61,7 @@ import { ShortcutsDialog } from './ShortcutsDialog';
 import { LeftToolbar } from './toolbars/LeftToolbar';
 import { MiddleToolbar } from './toolbars/MiddleToolbar';
 import { RightToolbar } from './toolbars/RightToolbar';
+const CodeEditor = lazy(() => import('./CodeEditor').then((m) => ({ default: m.CodeEditor })));
 
 /* ── Lazy-loaded feature panels (React.lazy code splitting) ── */
 const ModelSettings = lazy(() =>
@@ -203,13 +204,12 @@ function DragHandle({
   return (
     <div
       ref={drag}
-      className={`cursor-grab active:cursor-grabbing p-0.5 rounded transition-all ${
-        isDragging
-          ? 'opacity-50 scale-90'
-          : isDark
-            ? 'text-white/15 hover:text-white/40 hover:bg-white/5'
-            : 'text-slate-300 hover:text-slate-500 hover:bg-slate-100'
-      }`}
+      className={`cursor-grab active:cursor-grabbing p-0.5 rounded transition-all ${isDragging
+        ? 'opacity-50 scale-90'
+        : isDark
+          ? 'text-white/15 hover:text-white/40 hover:bg-white/5'
+          : 'text-slate-300 hover:text-slate-500 hover:bg-slate-100'
+        }`}
       title={i18n.dragToSwap}
     >
       <GripVertical className="w-3.5 h-3.5" />
@@ -404,6 +404,40 @@ export function IDELayout() {
 
   const t = getThemeTokens(theme);
   const i = getI18n(language);
+
+  // ── Handle intent params from HomePage navigation ──
+  const [searchParams] = useSearchParams();
+  useEffect(() => {
+    const intent = searchParams.get('intent');
+    const panel = searchParams.get('panel');
+    if (!intent) return;
+
+    // Ensure code view mode (not preview/fullscreen from previous session)
+    const state = useAppStore.getState();
+    if (state.viewMode !== 'code') {
+      state.setViewMode('code');
+    }
+
+    // Switch left panel based on intent
+    const currentPanelMap = { ...state.panelMap };
+    if (panel && ['chat', 'files', 'code', 'preview', 'terminal', 'workspace', 'database'].includes(panel)) {
+      currentPanelMap.left = panel as ContentType;
+      state.setPanelMap(currentPanelMap);
+    }
+
+    // Open special panels based on intent action
+    switch (intent) {
+      case 'help':
+        state.setShortcutsDialogOpen(true);
+        break;
+      case 'debug':
+        state.setQuickActionsPanelOpen(true);
+        break;
+      case 'deploy':
+        state.setDeployPanelOpen(true);
+        break;
+    }
+  }, [searchParams]);
 
   const panelMap = storedPanelMap as Record<PanelSlot, ContentType>;
 

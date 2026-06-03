@@ -74,9 +74,10 @@ export function preloadRoute(routeName: string): void {
 }
 
 export function preloadCriticalResources(): void {
+  // CodeEditor (Monaco ~7MB) 降级为低优先级，避免阻塞首屏渲染
   preloadComponent(
     () => import('../components/CodeEditor').then((m) => ({ default: m.CodeEditor })),
-    { priority: 'high' }
+    { priority: 'low' }
   );
 
   preloadComponent(

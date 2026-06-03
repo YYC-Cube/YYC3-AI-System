@@ -498,7 +498,7 @@ export class OfflineDegradationService {
           strategy: DegradationStrategy.SILENT,
           queued: false,
         };
-      } catch (error) {
+      } catch (_error) {
         // 执行失败，根据策略处理
         return this.handleOfflineOperationFallback(
           type,

@@ -153,9 +153,9 @@ export function RightToolbar() {
           </button>
           {showGit && (
             <>
-              <div className="fixed inset-0 z-40" onClick={() => setShowGit(false)} />
+              <div className="fixed inset-0 z-[200]" onClick={() => setShowGit(false)} />
               <div
-                className={`absolute left-0 top-full mt-1 w-56 rounded-xl overflow-hidden z-50 p-1.5 ${t.surface.popover} ${t.border.popover} ${t.shadow.popover}`}
+                className={`fixed z-[201] left-4 top-12 w-56 rounded-xl overflow-hidden p-1.5 ${t.surface.popover} ${t.border.popover} ${t.shadow.popover}`}
               >
                 <div
                   className={`px-3 py-1.5 text-[10px] uppercase tracking-wider ${t.text.muted}`}

@@ -15,51 +15,51 @@
  */
 
 import {
-  X,
-  Plus,
-  Trash2,
-  Edit3,
+  Activity,
+  AlertCircle,
+  ArrowRight,
+  BarChart3,
+  Bot,
+  Bug,
   Check,
+  CheckCircle2,
   ChevronDown,
   ChevronRight,
-  Server,
+  Clock,
   Cloud,
-  Bot,
-  Sparkles,
-  RefreshCw,
+  Copy,
+  Cpu,
+  Edit3,
   ExternalLink,
   Eye,
   EyeOff,
-  AlertCircle,
-  CheckCircle2,
-  Copy,
-  Search,
-  Zap,
+  FileCode2,
+  Globe,
+  Lightbulb,
   Loader2,
-  XCircle,
-  Clock,
+  MinusCircle,
+  Plug,
+  Plus,
+  PlusCircle,
+  RefreshCw,
+  Search,
+  Server,
   Settings2,
   Shield,
-  Globe,
-  Cpu,
-  Activity,
-  Plug,
-  BarChart3,
-  FileCode2,
-  PlusCircle,
-  MinusCircle,
-  Lightbulb,
-  Bug,
-  ArrowRight,
+  Sparkles,
   Terminal,
+  Trash2,
   Wifi,
+  X,
+  XCircle,
+  Zap,
 } from 'lucide-react';
-import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 import { aiProviderService } from '../services/ai-provider';
 import { useAppStore } from '../store';
-import type { AIModelProvider, AIPerformanceMetrics, AIErrorAnalysis } from '../types';
+import type { AIErrorAnalysis, AIModelProvider, AIPerformanceMetrics } from '../types';
 import { getI18n, resolveKey } from '../utils/i18n';
 import { getThemeTokens } from '../utils/theme';
 
@@ -290,11 +290,7 @@ const PROVIDERS: ProviderDef[] = [
     apiKeyPlaceholder: '',
     openaiCompatible: false,
     docsUrl: 'https://ollama.com',
-    models: [
-      { id: 'llama3.1:8b', name: 'Llama 3.1 8B', description: 'msDescLlama31' },
-      { id: 'codellama:13b', name: 'CodeLlama 13B', description: 'msDescCodellama' },
-      { id: 'qwen2.5:7b', name: 'Qwen 2.5 7B', description: 'msDescQwen25Local' },
-    ],
+    models: [], // All models auto-detected via /api/tags — no hardcoded models
   },
 ];
 
@@ -328,14 +324,7 @@ const DEFAULT_MCP_SERVERS: MCPServerConfig[] = [
   },
 ];
 
-const SIMULATED_OLLAMA_MODELS: OllamaDetectedModel[] = [
-  { name: 'llama3.1:8b', size: '4.7 GB', status: 'online', quantization: 'Q4_K_M' },
-  { name: 'codellama:13b', size: '7.4 GB', status: 'online', quantization: 'Q4_0' },
-  { name: 'qwen2.5:7b', size: '4.4 GB', status: 'online', quantization: 'Q4_K_M' },
-  { name: 'deepseek-coder:6.7b', size: '3.8 GB', status: 'offline', quantization: 'Q5_K_M' },
-  { name: 'mistral:7b', size: '4.1 GB', status: 'online', quantization: 'Q4_0' },
-  { name: 'glm4:9b', size: '5.5 GB', status: 'online', quantization: 'Q4_K_M' },
-];
+// No hardcoded models - all Ollama models are auto-detected via /api/tags
 
 /* ================================================================
    LocalStorage helpers
@@ -373,7 +362,7 @@ function CopyBtn({ text }: { text: string }) {
   return (
     <button
       onClick={() => {
-        navigator.clipboard.writeText(text).catch(() => {});
+        navigator.clipboard.writeText(text).catch(() => { });
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
       }}
@@ -439,11 +428,10 @@ function ProviderCard({
 
   return (
     <div
-      className={`rounded-xl border overflow-hidden transition-all ${
-        hasActiveModel
-          ? 'border-indigo-500/25 bg-indigo-500/[0.02]'
-          : 'border-white/[0.06] bg-white/[0.02]'
-      }`}
+      className={`rounded-xl border overflow-hidden transition-all ${hasActiveModel
+        ? 'border-indigo-500/25 bg-indigo-500/[0.02]'
+        : 'border-white/[0.06] bg-white/[0.02]'
+        }`}
       style={{
         boxShadow: hasActiveModel
           ? '0 0 20px -6px rgba(99,102,241,0.12), inset 0 1px 0 rgba(255,255,255,0.04)'
@@ -619,24 +607,22 @@ function ProviderCard({
                 return (
                   <div
                     key={model.id}
-                    className={`flex items-center gap-2.5 px-3 py-2 rounded-lg transition-all group ${
-                      isActive
-                        ? 'bg-indigo-500/[0.08] border border-indigo-500/25'
-                        : 'bg-white/[0.01] hover:bg-white/[0.03] border border-transparent'
-                    }`}
+                    className={`flex items-center gap-2.5 px-3 py-2 rounded-lg transition-all group ${isActive
+                      ? 'bg-indigo-500/[0.08] border border-indigo-500/25'
+                      : 'bg-white/[0.01] hover:bg-white/[0.03] border border-transparent'
+                      }`}
                   >
                     <div
-                      className={`w-1.5 h-1.5 rounded-full shrink-0 ${
-                        isActive
-                          ? 'bg-indigo-400'
-                          : diag?.status === 'success'
-                            ? 'bg-emerald-400'
-                            : diag?.status === 'error'
-                              ? 'bg-red-400'
-                              : diag?.status === 'testing'
-                                ? 'bg-cyan-400 animate-pulse'
-                                : 'bg-white/10'
-                      }`}
+                      className={`w-1.5 h-1.5 rounded-full shrink-0 ${isActive
+                        ? 'bg-indigo-400'
+                        : diag?.status === 'success'
+                          ? 'bg-emerald-400'
+                          : diag?.status === 'error'
+                            ? 'bg-red-400'
+                            : diag?.status === 'testing'
+                              ? 'bg-cyan-400 animate-pulse'
+                              : 'bg-white/10'
+                        }`}
                     />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
@@ -971,11 +957,10 @@ function MCPConfigPanel() {
           {servers.map((server) => (
             <div
               key={server.id}
-              className={`rounded-xl border p-3 space-y-2 transition-all ${
-                server.enabled
-                  ? 'border-white/[0.06] bg-white/[0.02]'
-                  : 'border-white/[0.03] bg-white/[0.01] opacity-50'
-              }`}
+              className={`rounded-xl border p-3 space-y-2 transition-all ${server.enabled
+                ? 'border-white/[0.06] bg-white/[0.02]'
+                : 'border-white/[0.03] bg-white/[0.01] opacity-50'
+                }`}
             >
               <div className="flex items-center gap-2.5">
                 <button onClick={() => handleToggle(server.id)} className="shrink-0">
@@ -983,9 +968,8 @@ function MCPConfigPanel() {
                     className={`w-8 h-4 rounded-full transition-all ${server.enabled ? 'bg-violet-500/30' : 'bg-white/[0.06]'}`}
                   >
                     <div
-                      className={`w-3.5 h-3.5 rounded-full transition-all mt-[1px] ${
-                        server.enabled ? 'bg-violet-400 ml-[17px]' : 'bg-white/20 ml-[1px]'
-                      }`}
+                      className={`w-3.5 h-3.5 rounded-full transition-all mt-[1px] ${server.enabled ? 'bg-violet-400 ml-[17px]' : 'bg-white/20 ml-[1px]'
+                        }`}
                     />
                   </div>
                 </button>
@@ -1209,15 +1193,14 @@ function SmartDiagnosticsPanel({
               return (
                 <div
                   key={model.id}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all group ${
-                    isActive
-                      ? 'bg-indigo-500/[0.06] border border-indigo-500/20'
-                      : diag.status === 'success'
-                        ? 'bg-emerald-500/[0.03] border border-emerald-500/10 hover:border-emerald-500/20'
-                        : diag.status === 'error'
-                          ? 'bg-red-500/[0.03] border border-red-500/10'
-                          : 'bg-white/[0.01] border border-white/[0.04]'
-                  }`}
+                  className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all group ${isActive
+                    ? 'bg-indigo-500/[0.06] border border-indigo-500/20'
+                    : diag.status === 'success'
+                      ? 'bg-emerald-500/[0.03] border border-emerald-500/10 hover:border-emerald-500/20'
+                      : diag.status === 'error'
+                        ? 'bg-red-500/[0.03] border border-red-500/10'
+                        : 'bg-white/[0.01] border border-white/[0.04]'
+                    }`}
                 >
                   {isActive ? (
                     <CheckCircle2 className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
@@ -1594,16 +1577,22 @@ export function ModelSettings() {
   // Real HTTP diagnostic test
   const handleTestConnection = useCallback(
     async (providerId: string, modelId: string) => {
-      const provider = allProviders.find((p) => p.id === providerId);
-      if (!provider) return;
-      const model = provider.models.find((m) => m.id === modelId);
-      if (!model) return;
-      const diagKey = providerId + ':' + modelId;
-
-      // Get config from aiProviderService
       const providerConfig = aiProviderService.getProvider(providerId);
+      const baseUrl = providerConfig?.baseURL || '';
       const apiKey = providerConfig?.apiKey || '';
-      const baseUrl = providerConfig?.baseURL || provider.baseURL;
+
+      // Resolve model name: for Ollama, look up in aiModels; for presets, use allProviders
+      let modelName = modelId;
+      const aiModel = aiModels.find((m) => m.id === modelId);
+      if (aiModel) {
+        modelName = aiModel.name;
+      } else {
+        const provider = allProviders.find((p) => p.id === providerId);
+        const preset = provider?.models.find((m) => m.id === modelId);
+        if (preset) modelName = preset.name;
+      }
+
+      const diagKey = providerId + ':' + modelId;
 
       // Check API key
       if (providerId !== 'ollama' && !apiKey) {
@@ -1611,7 +1600,7 @@ export function ModelSettings() {
           ...prev,
           [diagKey]: {
             providerId,
-            modelName: model.name,
+            modelName: modelName,
             status: 'error',
             message: 'API Key not configured',
             timestamp: Date.now(),
@@ -1624,7 +1613,7 @@ export function ModelSettings() {
         ...prev,
         [diagKey]: {
           providerId,
-          modelName: model.name,
+          modelName: modelName,
           status: 'testing',
           message: 'Sending test request...',
           timestamp: Date.now(),
@@ -1646,7 +1635,7 @@ export function ModelSettings() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              model: model.id,
+              model: modelName,
               messages: [{ role: 'user', content: 'Hi, respond with: YYC3_OK' }],
               stream: false,
             }),
@@ -1663,7 +1652,7 @@ export function ModelSettings() {
               'anthropic-dangerous-direct-browser-access': 'true',
             },
             body: JSON.stringify({
-              model: model.id,
+              model: modelName,
               max_tokens: 20,
               messages: [{ role: 'user', content: 'Hi, respond with: YYC3_OK' }],
             }),
@@ -1681,7 +1670,7 @@ export function ModelSettings() {
               Authorization: `Bearer ${apiKey}`,
             },
             body: JSON.stringify({
-              model: model.id,
+              model: modelName,
               messages: [{ role: 'user', content: 'Hi, respond with: YYC3_OK' }],
               stream: false,
               max_tokens: 20,
@@ -1714,7 +1703,7 @@ export function ModelSettings() {
             ...prev,
             [diagKey]: {
               providerId,
-              modelName: model.name,
+              modelName: modelName,
               status: 'error',
               message: statusMsg + (detail ? ': ' + detail : ''),
               latency,
@@ -1733,7 +1722,7 @@ export function ModelSettings() {
           ...prev,
           [diagKey]: {
             providerId,
-            modelName: model.name,
+            modelName: modelName,
             status: 'success',
             message: 'Connected',
             latency,
@@ -1749,7 +1738,7 @@ export function ModelSettings() {
             ...prev,
             [diagKey]: {
               providerId,
-              modelName: model.name,
+              modelName: modelName,
               status: 'error',
               message: 'Timeout (10s)',
               latency,
@@ -1758,14 +1747,14 @@ export function ModelSettings() {
         } else {
           const msg =
             (error.message || '').includes('fetch') ||
-            (error.message || '').includes('NetworkError')
+              (error.message || '').includes('NetworkError')
               ? 'Network error, check CORS or service status'
               : 'Test error: ' + (error.message || '').slice(0, 200);
           setDiagnostics((prev) => ({
             ...prev,
             [diagKey]: {
               providerId,
-              modelName: model.name,
+              modelName: modelName,
               status: 'error',
               message: msg,
               latency,
@@ -1774,59 +1763,52 @@ export function ModelSettings() {
         }
       }
     },
-    [allProviders]
+    [allProviders, aiModels]
   );
 
-  // Select model → add to store + activate
+  // Select model → activate in store
   const handleSelectModel = useCallback(
     (providerId: string, modelId: string) => {
       console.log('[ModelSettings] handleSelectModel called:', { providerId, modelId });
 
-      const provider = allProviders.find((p) => p.id === providerId);
-      if (!provider) {
-        console.error('[ModelSettings] Provider not found:', providerId);
-        return;
-      }
-      const model = provider.models.find((m) => m.id === modelId);
-      if (!model) {
-        console.error('[ModelSettings] Model not found:', modelId);
-        return;
-      }
-
-      // Get config from aiProviderService
       const providerConfig = aiProviderService.getProvider(providerId);
-      const url = providerConfig?.baseURL || provider.baseURL;
-      const key = providerConfig?.apiKey || '';
-
       const providerType: AIModelProvider =
         providerId === 'openai' ? 'openai' : providerId === 'ollama' ? 'ollama' : 'custom';
 
-      console.log('[ModelSettings] Looking for existing model:', {
-        name: model.id,
-        provider: providerType,
-      });
-
-      // Check if model exists in store by name (match both model.id and model.name)
-      const existing = aiModels.find(
-        (m) => (m.name === model.id || m.name === model.name) && m.provider === providerType
-      );
+      // For Ollama, models are dynamically synced from aiProviderService
+      // Look up directly in aiModels by ID
+      const existing = aiModels.find((m) => m.id === modelId && m.provider === providerType);
       if (existing) {
         console.log('[ModelSettings] Found existing model, activating:', existing.id);
-        // Just activate existing model
         activateAIModel(existing.id);
       } else {
-        console.log('[ModelSettings] No existing model found, adding new model');
-        // Add new model - it will be activated via auto-activate effect
-        pendingActivationRef.current = model.id;
-        addAIModel({
-          name: model.id,
-          provider: providerType,
-          endpoint: url,
-          apiKey: key,
-          isActive: false,
-        });
+        // Try to find by name match (for preset models not yet imported)
+        const byName = aiModels.find(
+          (m) => m.name === modelId && m.provider === providerType
+        );
+        if (byName) {
+          console.log('[ModelSettings] Found model by name, activating:', byName.id);
+          activateAIModel(byName.id);
+        } else {
+          // Model not in store yet — import it
+          const provider = allProviders.find((p) => p.id === providerId);
+          const presetModel = provider?.models.find((m) => m.id === modelId);
+          const modelName = presetModel?.name || presetModel?.id || modelId;
+          const url = providerConfig?.baseURL || provider?.baseURL || '';
+          const key = providerConfig?.apiKey || '';
+
+          console.log('[ModelSettings] No existing model, adding:', modelName);
+          pendingActivationRef.current = modelId;
+          addAIModel({
+            name: modelName,
+            provider: providerType,
+            endpoint: url,
+            apiKey: key,
+            isActive: false,
+          });
+        }
       }
-      setSelectionToast(model.name);
+      setSelectionToast(modelId);
       setTimeout(() => setSelectionToast(null), 2500);
     },
     [allProviders, aiModels, activateAIModel, addAIModel]
@@ -1929,18 +1911,7 @@ export function ModelSettings() {
 
         if (isCorsError) {
           toast.error('CORS blocked - see docs/YYC3-P0-Ollama-CORS 配置指南.md');
-          // Still show simulated models for demo
-          let idx = 0;
-          const interval = setInterval(() => {
-            if (idx < SIMULATED_OLLAMA_MODELS.length) {
-              const m = SIMULATED_OLLAMA_MODELS[idx];
-              if (m) setOllamaModels((prev) => [...prev, m]);
-              idx++;
-            } else {
-              clearInterval(interval);
-              setOllamaConnected(false);
-            }
-          }, 350);
+          setOllamaConnected(false);
         } else if (error.name === 'AbortError' || error.name === 'TimeoutError') {
           toast.error('Ollama connection timeout - ensure "ollama serve" is running');
         } else {
@@ -1979,7 +1950,7 @@ export function ModelSettings() {
         endpoint: endpoint,
         apiKey: '',
         isActive: false,
-        isDetected: true,
+        status: 'idle',
       });
 
       // Force sync to appStore immediately (no setTimeout)
@@ -2058,11 +2029,10 @@ export function ModelSettings() {
             <button
               key={key}
               onClick={() => setActiveTab(key)}
-              className={`flex items-center gap-1.5 px-3 py-2 rounded-t-lg text-[11px] ${t.transition} border-b-2 whitespace-nowrap -mb-px ${
-                activeTab === key
-                  ? `${t.accent.activeText} border-current ${t.isDark ? 'bg-white/3' : 'bg-slate-50'}`
-                  : `${t.text.muted} border-transparent ${t.isDark ? 'hover:text-white/50' : 'hover:text-slate-600'}`
-              }`}
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-t-lg text-[11px] ${t.transition} border-b-2 whitespace-nowrap -mb-px ${activeTab === key
+                ? `${t.accent.activeText} border-current ${t.isDark ? 'bg-white/3' : 'bg-slate-50'}`
+                : `${t.text.muted} border-transparent ${t.isDark ? 'hover:text-white/50' : 'hover:text-slate-600'}`
+                }`}
               style={{ fontWeight: activeTab === key ? 500 : 400 }}
             >
               <Icon className="w-3.5 h-3.5" />
@@ -2117,7 +2087,20 @@ export function ModelSettings() {
                   );
                 })()}
 
-              {filteredProviders.map((provider) => {
+              {filteredProviders.map((rawProvider) => {
+                // For Ollama, merge imported models from aiProviderService dynamically
+                const provider = rawProvider.id === 'ollama'
+                  ? {
+                    ...rawProvider,
+                    models: aiModels
+                      .filter((m) => m.provider === 'ollama')
+                      .map((m) => ({
+                        id: m.id,
+                        name: m.name,
+                        description: m.displayName || m.name,
+                      })),
+                  }
+                  : rawProvider;
                 const providerDiags: Record<string, DiagnosticResult> = {};
                 provider.models.forEach((m) => {
                   const d = diagnostics[provider.id + ':' + m.id];
@@ -2149,7 +2132,7 @@ export function ModelSettings() {
                     onRemoveProvider={
                       !PROVIDERS.find((p) => p.id === provider.id)
                         ? () =>
-                            setCustomProviders((prev) => prev.filter((p) => p.id !== provider.id))
+                          setCustomProviders((prev) => prev.filter((p) => p.id !== provider.id))
                         : undefined
                     }
                     onAddModel={(model) => handleProviderAddModel(provider.id, model)}
@@ -2207,11 +2190,10 @@ export function ModelSettings() {
               ) : (
                 <button
                   onClick={() => setAddingProvider(true)}
-                  className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-dashed text-[12px] transition-all ${
-                    t.isDark
-                      ? 'border-white/[0.08] text-white/25 hover:text-white/50 hover:border-white/[0.15]'
-                      : 'border-slate-200 text-slate-400 hover:text-slate-600 hover:border-slate-300'
-                  }`}
+                  className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-dashed text-[12px] transition-all ${t.isDark
+                    ? 'border-white/[0.08] text-white/25 hover:text-white/50 hover:border-white/[0.15]'
+                    : 'border-slate-200 text-slate-400 hover:text-slate-600 hover:border-slate-300'
+                    }`}
                 >
                   <Plus className="w-4 h-4" /> {i.msAddProvider}
                 </button>

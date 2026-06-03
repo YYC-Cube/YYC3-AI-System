@@ -12,6 +12,10 @@
  * @tags utils,keyboard,shortcuts,hotkeys
  */
 
+import { createLogger } from './logger';
+
+const log = createLogger('Keyboard');
+
 export interface ShortcutDefinition {
   id: string;
   name: string;
@@ -288,7 +292,7 @@ class KeyboardShortcutsManager {
         });
       }
     } catch (e) {
-      console.warn('[KeyboardShortcuts] Failed to load shortcuts from storage:', e);
+      log.warn('Failed to load shortcuts from storage:', e);
     }
   }
 
@@ -307,7 +311,7 @@ class KeyboardShortcutsManager {
         this.updateBinding(id, key);
       });
     } catch (e) {
-      console.warn('[KeyboardShortcuts] Failed to import bindings:', e);
+      log.warn('Failed to import bindings:', e);
     }
   }
 }
@@ -356,7 +360,7 @@ export function initializeDefaultShortcuts(): void {
       category: 'ui',
       defaultKey: 'ctrl+b',
       action: () => {
-        console.log('Toggle sidebar');
+        log.info('Toggle sidebar');
       },
     },
     {
@@ -366,7 +370,7 @@ export function initializeDefaultShortcuts(): void {
       category: 'file',
       defaultKey: 'ctrl+n',
       action: () => {
-        console.log('New file');
+        log.info('New file');
       },
     },
     {
@@ -376,7 +380,7 @@ export function initializeDefaultShortcuts(): void {
       category: 'file',
       defaultKey: 'ctrl+s',
       action: () => {
-        console.log('Save file');
+        log.info('Save file');
       },
     },
     {
@@ -386,7 +390,7 @@ export function initializeDefaultShortcuts(): void {
       category: 'file',
       defaultKey: 'ctrl+shift+s',
       action: () => {
-        console.log('Save all');
+        log.info('Save all');
       },
     },
     {
@@ -396,7 +400,7 @@ export function initializeDefaultShortcuts(): void {
       category: 'ui',
       defaultKey: 'ctrl+w',
       action: () => {
-        console.log('Close tab');
+        log.info('Close tab');
       },
     },
     {
@@ -406,7 +410,7 @@ export function initializeDefaultShortcuts(): void {
       category: 'editor',
       defaultKey: 'alt+shift+f',
       action: () => {
-        console.log('Format code');
+        log.info('Format code');
       },
     },
     {
@@ -416,7 +420,7 @@ export function initializeDefaultShortcuts(): void {
       category: 'ai',
       defaultKey: 'ctrl+i',
       action: () => {
-        console.log('AI assist');
+        log.info('AI assist');
       },
     },
     {
@@ -426,7 +430,7 @@ export function initializeDefaultShortcuts(): void {
       category: 'ai',
       defaultKey: 'alt+\\',
       action: () => {
-        console.log('AI code complete');
+        log.info('AI code complete');
       },
     },
     {
@@ -436,7 +440,7 @@ export function initializeDefaultShortcuts(): void {
       category: 'navigation',
       defaultKey: 'f12',
       action: () => {
-        console.log('Go to definition');
+        log.info('Go to definition');
       },
     },
     {
@@ -446,7 +450,7 @@ export function initializeDefaultShortcuts(): void {
       category: 'navigation',
       defaultKey: 'ctrl+g',
       action: () => {
-        console.log('Go to line');
+        log.info('Go to line');
       },
     },
     {
@@ -456,7 +460,7 @@ export function initializeDefaultShortcuts(): void {
       category: 'editor',
       defaultKey: 'ctrl+f',
       action: () => {
-        console.log('Find');
+        log.info('Find');
       },
     },
     {
@@ -466,7 +470,7 @@ export function initializeDefaultShortcuts(): void {
       category: 'editor',
       defaultKey: 'ctrl+h',
       action: () => {
-        console.log('Find and replace');
+        log.info('Find and replace');
       },
     },
     {

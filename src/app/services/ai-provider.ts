@@ -31,6 +31,9 @@ import type {
   AIPerformanceMetrics,
   AIProviderConfig,
 } from '../types';
+import { createLogger } from '../utils/logger';
+
+const log = createLogger('AIProvider');
 
 // ── Default provider presets ──
 
@@ -278,6 +281,13 @@ export class AIProviderService {
 
   // ── Get all models across providers ──
 
+  private buildEndpoint(provider: AIProviderConfig): string {
+    // Ollama uses /api/chat, others use /chat/completions (OpenAI-compatible)
+    return provider.id === 'ollama'
+      ? `${provider.baseURL}/api/chat`
+      : `${provider.baseURL}/chat/completions`;
+  }
+
   getAllModels(): AIModel[] {
     const allModels: AIModel[] = [];
     for (const provider of this.providers) {
@@ -285,7 +295,7 @@ export class AIProviderService {
         allModels.push({
           ...model,
           provider: provider.id as any,
-          endpoint: `${provider.baseURL}/chat/completions`,
+          endpoint: this.buildEndpoint(provider),
           apiKey: provider.apiKey,
           isActive: model.id === this.activeModelId,
           status: 'idle',
@@ -304,7 +314,7 @@ export class AIProviderService {
         return {
           ...model,
           provider: provider.id as any,
-          endpoint: `${provider.baseURL}/chat/completions`,
+          endpoint: this.buildEndpoint(provider),
           apiKey: provider.apiKey,
           isActive: model.id === this.activeModelId,
           status: 'idle',
@@ -331,12 +341,12 @@ export class AIProviderService {
   syncToAppStore(): void {
     // Prevent concurrent sync operations
     if (this.syncInProgress) {
-      console.log('[AIProviderService] Sync already in progress, skipping');
+      log.info('Sync already in progress, skipping');
       return;
     }
 
     this.syncInProgress = true;
-    console.log('[AIProviderService] Starting sync to appStore...');
+    log.info('Starting sync to appStore...');
 
     try {
       // Use dynamic import to avoid circular dependency in tests
@@ -346,18 +356,18 @@ export class AIProviderService {
       const { syncAIModelsFromProvider } = useAppStore.getState();
       if (syncAIModelsFromProvider) {
         syncAIModelsFromProvider(models, this.activeModelId);
-        console.log('[AIProviderService] Sync completed:', {
+        log.info('Sync completed:', {
           modelCount: models.length,
           activeModelId: this.activeModelId,
         });
       } else {
-        console.warn('[AIProviderService] syncAIModelsFromProvider not available');
+        log.warn('syncAIModelsFromProvider not available');
       }
     } catch (e: unknown) {
       // Silently handle errors in test environment
       const error = e as Error & { code?: string };
       if (error.code !== 'MODULE_NOT_FOUND') {
-        console.warn('[AIProviderService] Failed to sync to appStore:', error.message || error);
+        log.warn('Failed to sync to appStore:', error.message || error);
       }
     } finally {
       this.syncInProgress = false;
@@ -368,7 +378,7 @@ export class AIProviderService {
    * Override addModel to auto-sync
    */
   addModel(providerId: string, model: AIModel): void {
-    console.log('[AIProviderService] addModel called:', { providerId, model });
+    log.info('addModel called:', { providerId, model });
     const provider = this.getProvider(providerId);
     if (provider) {
       // Check if model already exists in provider
@@ -378,14 +388,14 @@ export class AIProviderService {
       if (!existsInProvider) {
         provider.models.push(model);
         this.saveToStorage();
-        console.log('[AIProviderService] Model added to provider successfully');
+        log.info('Model added to provider successfully');
       } else {
-        console.log('[AIProviderService] Model already exists in provider, skipping');
+        log.info('Model already exists in provider, skipping');
       }
       // Always sync to appStore
       this.syncToAppStore();
     } else {
-      console.warn('[AIProviderService] Provider not found:', providerId);
+      log.warn('Provider not found:', providerId);
     }
   }
 
@@ -471,7 +481,7 @@ export class AIProviderService {
       // Attempt fallback
       const fallback = this.findFallbackProvider(provider.id);
       if (fallback) {
-        console.warn(`Falling back to ${fallback.displayName}`);
+        log.warn(`Falling back to ${fallback.displayName}`);
         this.activeProviderId = fallback.id;
         return this.chat(messages, options);
       }
@@ -574,7 +584,7 @@ export class AIProviderService {
         this.setActiveProvider(providerId);
         return await this.chat(messages);
       } catch (e) {
-        console.warn(`Provider ${providerId} failed, trying next:`, e);
+        log.warn(`Provider ${providerId} failed, trying next:`, e);
         continue;
       }
     }

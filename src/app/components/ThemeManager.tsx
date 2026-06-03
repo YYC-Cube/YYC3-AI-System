@@ -14,18 +14,18 @@
  * @tags component,theme,export,import
  */
 
-import { X, Palette, Download, Upload, Link, Trash2, CheckCircle, Save } from 'lucide-react';
-import React, { useState, useRef } from 'react';
+import { CheckCircle, Download, Link, Palette, Save, Trash2, Upload, X } from 'lucide-react';
+import React, { useRef, useState } from 'react';
 import { toast } from 'sonner';
 
 import { useAppStore } from '../store';
 import { getI18n } from '../utils/i18n';
-import { getThemeTokens, THEME_PRESETS } from '../utils/theme';
+import { getThemeTokens, THEME_PRESETS, type ThemeMode } from '../utils/theme';
 
 interface SavedTheme {
   id: string;
   name: string;
-  config: any;
+  config: { theme?: string;[key: string]: unknown };
   createdAt: number;
 }
 
@@ -155,7 +155,7 @@ export function ThemeManager({ open, onClose }: { open: boolean; onClose: () => 
   };
 
   const handleApplyTheme = (st: SavedTheme) => {
-    if (st.config.theme) setTheme(st.config.theme);
+    if (st.config.theme) setTheme(st.config.theme as ThemeMode);
     toast.success(i.tmApply);
   };
 
@@ -247,11 +247,10 @@ export function ThemeManager({ open, onClose }: { open: boolean; onClose: () => 
                   <button
                     key={preset.id}
                     onClick={() => setTheme(preset.id)}
-                    className={`p-2 rounded-lg text-[10px] text-center ${t.transition} ${
-                      theme === preset.id
-                        ? `ring-2 ring-indigo-500 ${t.accent.activeBg}`
-                        : t.interactive.iconBtn
-                    }`}
+                    className={`p-2 rounded-lg text-[10px] text-center ${t.transition} ${theme === preset.id
+                      ? `ring-2 ring-indigo-500 ${t.accent.activeBg}`
+                      : t.interactive.iconBtn
+                      }`}
                   >
                     <div className="text-[16px] mb-1">{preset.icon}</div>
                     <div style={{ fontWeight: theme === preset.id ? 600 : 400 }}>{preset.id}</div>
@@ -284,11 +283,10 @@ export function ThemeManager({ open, onClose }: { open: boolean; onClose: () => 
                 <button
                   onClick={handleSaveTheme}
                   disabled={!newThemeName.trim()}
-                  className={`px-3 py-1.5 rounded-lg text-[11px] flex items-center space-x-1.5 ${t.transition} ${
-                    newThemeName.trim()
-                      ? `${t.accent.activeBg} ${t.accent.activeText}`
-                      : 'opacity-40 cursor-not-allowed'
-                  }`}
+                  className={`px-3 py-1.5 rounded-lg text-[11px] flex items-center space-x-1.5 ${t.transition} ${newThemeName.trim()
+                    ? `${t.accent.activeBg} ${t.accent.activeText}`
+                    : 'opacity-40 cursor-not-allowed'
+                    }`}
                 >
                   <Save className="w-3.5 h-3.5" />
                   <span>{i.tmSaveTheme}</span>
@@ -317,7 +315,7 @@ export function ThemeManager({ open, onClose }: { open: boolean; onClose: () => 
                         <div className="flex space-x-1">
                           {Object.values(st.config.colors || {})
                             .slice(0, 4)
-                            .map((c: any, idx: number) => (
+                            .map((c: string, idx: number) => (
                               <div
                                 key={idx}
                                 className="w-4 h-4 rounded-full"

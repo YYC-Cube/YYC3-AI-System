@@ -620,6 +620,7 @@ export interface I18nStrings {
   srLiquidGlassDesc: string;
 
   // Theme Presets
+  themeSystem: string;
   themeLight: string;
   themeDark: string;
   themeMidnight: string;

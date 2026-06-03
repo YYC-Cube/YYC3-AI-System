@@ -19,24 +19,24 @@ import CollaborationCursor from '@tiptap/extension-collaboration-cursor';
 import Highlight from '@tiptap/extension-highlight';
 import Placeholder from '@tiptap/extension-placeholder';
 import Typography from '@tiptap/extension-typography';
-import { useEditor, EditorContent } from '@tiptap/react';
+import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import {
   Bold,
-  Italic,
-  Strikethrough,
   Code,
-  List,
-  ListOrdered,
-  Quote,
-  Minus,
-  Undo2,
-  Redo2,
+  FileCode2,
   Heading1,
   Heading2,
   Heading3,
+  Italic,
+  List,
+  ListOrdered,
+  Minus,
   Pilcrow,
-  FileCode2,
+  Quote,
+  Redo2,
+  Strikethrough,
+  Undo2,
   Wifi,
   WifiOff,
 } from 'lucide-react';
@@ -97,7 +97,7 @@ export function RichTextEditor({
 
   // Build extensions based on collaboration mode
   const extensions = useMemo(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const base: any[] = [
       Placeholder.configure({ placeholder }),
       Highlight.configure({ multicolor: true }),
@@ -169,9 +169,8 @@ export function RichTextEditor({
       },
       editorProps: {
         attributes: {
-          class: `prose prose-sm max-w-none focus:outline-none min-h-[200px] px-4 py-3 ${
-            isDark ? 'prose-invert' : ''
-          }`,
+          class: `prose prose-sm max-w-none focus:outline-none min-h-[200px] px-4 py-3 ${isDark ? 'prose-invert' : ''
+            }`,
         },
       },
     },
@@ -223,8 +222,7 @@ export function RichTextEditor({
       onClick={onClick}
       title={title}
       disabled={disabled}
-      className={`p-1 rounded transition-colors ${
-        disabled
+      className={`p-1 rounded transition-colors ${disabled
           ? 'opacity-25 cursor-not-allowed'
           : active
             ? isDark
@@ -233,7 +231,7 @@ export function RichTextEditor({
             : isDark
               ? 'text-white/30 hover:text-white/60 hover:bg-white/5'
               : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100'
-      }`}
+        }`}
     >
       {children}
     </button>

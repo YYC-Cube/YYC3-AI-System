@@ -15,10 +15,21 @@
  */
 
 // ── Theme Mode Types ──
-export type ThemeMode = 'light' | 'dark' | 'midnight' | 'forest' | 'sunset';
+export type ThemeMode = 'light' | 'dark' | 'midnight' | 'forest' | 'sunset' | 'system';
+
+/** Resolve 'system' to actual light/dark based on OS preference */
+export function resolveTheme(mode: ThemeMode, media?: MediaQueryList): 'light' | 'dark' {
+  if (mode === 'system') {
+    const mq = media ?? (typeof window !== 'undefined' ? window.matchMedia('(prefers-color-scheme: dark)') : null);
+    return mq?.matches ? 'dark' : 'light';
+  }
+  // midnight, forest, sunset are dark variants; light is light
+  return mode === 'light' ? 'light' : 'dark';
+}
 
 /** All available themes for UI selection */
 export const THEME_PRESETS: { id: ThemeMode; labelKey: string; icon: string; accent: string }[] = [
+  { id: 'system', labelKey: 'themeSystem', icon: '🔄', accent: '#818cf8' },
   { id: 'light', labelKey: 'themeLight', icon: '☀️', accent: '#6366f1' },
   { id: 'dark', labelKey: 'themeDark', icon: '🌙', accent: '#818cf8' },
   { id: 'midnight', labelKey: 'themeMidnight', icon: '🌌', accent: '#60a5fa' },
@@ -88,6 +99,29 @@ function getPalette(theme: ThemeMode): Palette {
         appGradientTo: 'rgba(255,255,255,0)',
         ambientBlob: 'bg-orange-400/15',
       };
+    case 'system':
+    default: {
+      // Resolve system preference at call time
+      const isDarkOS = typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (isDarkOS) {
+        return {
+          dark: true,
+          base: 'slate',
+          accentName: 'indigo',
+          appGradientFrom: 'rgba(120,119,198,0.3)',
+          appGradientTo: 'rgba(255,255,255,0)',
+          ambientBlob: 'bg-indigo-600/15',
+        };
+      }
+      return {
+        dark: false,
+        base: 'slate',
+        accentName: 'indigo',
+        appGradientFrom: 'rgba(120,119,198,0.15)',
+        appGradientTo: 'rgba(255,255,255,0)',
+        ambientBlob: 'bg-indigo-400/20',
+      };
+    }
   }
 }
 
@@ -380,9 +414,9 @@ export function getThemeTokens(theme: ThemeMode) {
 /** Shorthand type for the resolved tokens object */
 export type ThemeTokens = ReturnType<typeof getThemeTokens>;
 
-/** Helper: cycle to the next theme (for quick toggle) */
+/** Helper: cycle to the next theme (for quick toggle). Skips 'system' mode. */
 export function nextTheme(current: ThemeMode): ThemeMode {
   const order: ThemeMode[] = ['light', 'dark', 'midnight', 'forest', 'sunset'];
-  const idx = order.indexOf(current);
+  const idx = order.indexOf(current as ThemeMode);
   return order[(idx + 1) % order.length];
 }

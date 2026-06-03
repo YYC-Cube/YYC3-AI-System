@@ -78,6 +78,7 @@ import React, {
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
+import { intentRouter } from '../services/intent-router';
 import { useAppStore } from '../store';
 import { getI18n, resolveKey } from '../utils/i18n';
 import { THEME_PRESETS, getThemeTokens } from '../utils/theme';
@@ -311,136 +312,43 @@ export function HomePage() {
     else if (showCommands && !val.startsWith('/')) setShowCommands(false);
   };
 
-  // Semantic understanding for user input
-  const analyzeUserIntent = (
-    input: string
-  ): {
-    action: 'chat' | 'code' | 'project' | 'question';
-    confidence: number;
-    keywords: string[];
-  } => {
-    const lower = input.toLowerCase().trim();
-
-    // Code generation keywords
-    const codeKeywords = [
-      '代码',
-      'code',
-      '生成',
-      'generate',
-      '创建',
-      'create',
-      '实现',
-      'implement',
-      '函数',
-      'function',
-      '组件',
-      'component',
-      '写一个',
-      'write a',
-      '做一个',
-      'make a',
-    ];
-
-    // Project management keywords
-    const projectKeywords = [
-      '项目',
-      'project',
-      '打开',
-      'open',
-      '新建',
-      'new',
-      '删除',
-      'delete',
-      '管理',
-      'manage',
-    ];
-
-    // Question keywords
-    const questionKeywords = [
-      '怎么',
-      'how',
-      '为什么',
-      'why',
-      '什么',
-      'what',
-      '吗',
-      '?',
-      '？',
-      '帮助',
-      'help',
-      '问题',
-      'question',
-    ];
-
-    // Calculate confidence
-    const codeCount = codeKeywords.filter((k) => lower.includes(k)).length;
-    const projectCount = projectKeywords.filter((k) => lower.includes(k)).length;
-    const questionCount = questionKeywords.filter((k) => lower.includes(k)).length;
-
-    const maxCount = Math.max(codeCount, projectCount, questionCount);
-    const confidence = maxCount > 0 ? Math.min(0.5 + maxCount * 0.15, 0.95) : 0.3;
-
-    // Determine action
-    let action: 'chat' | 'code' | 'project' | 'question' = 'chat';
-    if (codeCount >= 2 || (codeCount > 0 && maxCount === codeCount)) action = 'code';
-    else if (projectCount > 0 && maxCount === projectCount) action = 'project';
-    else if (questionCount > 0 && maxCount === questionCount) action = 'question';
-
-    return { action, confidence, keywords: [] };
-  };
-
-  const handleSend = () => {
+  const handleSend = async () => {
     const trimmedInput = input.trim();
 
-    // Prevent empty input navigation
+    // Prevent empty input
     if (!trimmedInput) {
       toast.warning('请输入内容后再发送');
       inputRef.current?.focus();
       return;
     }
 
-    // Analyze user intent
-    const intent = analyzeUserIntent(trimmedInput);
-    console.log('[HomePage] User intent:', intent);
-
-    // Add message to chat
+    // Add user message to chat
     addMessage({ role: 'user', content: trimmedInput });
     setInput('');
     setShowCommands(false);
 
-    // Simulate AI response based on intent
-    setTimeout(() => {
-      let aiResponse = '';
+    // Intent recognition: AI (Ollama) first, fallback to local keywords
+    const intent = await intentRouter.recognize(trimmedInput);
+    console.log('[HomePage] Intent:', intent);
 
-      if (intent.action === 'code') {
-        aiResponse = `我理解您想要${trimmedInput}。让我为您生成代码...\n\n已跳转到编程页面，您可以在那里查看和编辑生成的代码。`;
-      } else if (intent.action === 'project') {
-        aiResponse = `关于项目${trimmedInput}，我可以帮您管理项目设置、创建新项目或查看现有项目。`;
-      } else if (intent.action === 'question') {
-        aiResponse = `好问题！${trimmedInput}\n\n让我为您详细解答...`;
-      } else {
-        aiResponse = `收到您的需求："${trimmedInput}"\n\n正在分析并准备响应...`;
-      }
-
-      addMessage({ role: 'ai', content: aiResponse });
-    }, 500);
-
-    // Smart navigation based on intent
-    if (intent.action === 'code' && intent.confidence > 0.6) {
-      // High confidence code generation request - navigate to IDE
-      toast.info('正在跳转到编程页面...');
-      navigate('/ide');
-    } else if (intent.action === 'project' && intent.confidence > 0.7) {
-      // Project management - stay on homepage to show projects
-      toast.info('正在处理项目请求...');
-      setShowProjects(true);
-    } else if (intent.action === 'question') {
-      // Question - stay for AI response
-      toast.info('AI 正在思考中...');
-    } else {
-      // Default: navigate to IDE for further interaction
-      navigate('/ide');
+    // Build navigation target with intent params
+    const params = new URLSearchParams();
+    if (intent.panel) params.set('panel', intent.panel);
+    if (intent.searchParams) {
+      Object.entries(intent.searchParams).forEach(([k, v]) => params.set(k, String(v)));
     }
+    params.set('intent', intent.action);
+    params.set('source', intent.source);
+
+    // Add context message for IDE chat
+    addMessage({
+      role: 'ai',
+      content: intent.source === 'ai'
+        ? `AI 识别意图：${intent.action}（置信度 ${Math.round(intent.confidence * 100)}%）。正在为您跳转...`
+        : `正在为您跳转到${intent.panel || '工作区'}...`,
+    });
+
+    navigate(`${intent.route}?${params.toString()}`);
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -1462,13 +1370,12 @@ export function HomePage() {
                     {formatTime(project.updatedAt)}
                   </span>
                   <span
-                    className={`text-[10px] px-2 py-0.5 rounded-full ${
-                      project.status === 'active'
-                        ? 'bg-emerald-500/15 text-emerald-500'
-                        : project.status === 'draft'
-                          ? 'bg-amber-500/15 text-amber-500'
-                          : 'bg-slate-500/15 text-slate-500'
-                    }`}
+                    className={`text-[10px] px-2 py-0.5 rounded-full ${project.status === 'active'
+                      ? 'bg-emerald-500/15 text-emerald-500'
+                      : project.status === 'draft'
+                        ? 'bg-amber-500/15 text-amber-500'
+                        : 'bg-slate-500/15 text-slate-500'
+                      }`}
                     style={{ fontWeight: 500 }}
                   >
                     {project.status === 'active'

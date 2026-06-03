@@ -207,7 +207,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
    * 忘记密码函数
    */
   const forgotPassword = useCallback(
-    async (data: ForgotPasswordFormData): Promise<AuthResponse> => {
+    async (_data: ForgotPasswordFormData): Promise<AuthResponse> => {
       setIsLoading(true);
 
       await new Promise((resolve) => setTimeout(resolve, 1000));

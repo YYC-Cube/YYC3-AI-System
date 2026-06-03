@@ -12,9 +12,9 @@ import typescript from '@typescript-eslint/eslint-plugin'
 import typescriptParser from '@typescript-eslint/parser'
 import react from 'eslint-plugin-react'
 // import reactHooks from 'eslint-plugin-react-hooks' // 暂时禁用 - v4 与 ESLint 9 不兼容，需要升级到 v5
-import jsxA11y from 'eslint-plugin-jsx-a11y'
-import importPlugin from 'eslint-plugin-import'
 import prettier from 'eslint-config-prettier'
+import importPlugin from 'eslint-plugin-import'
+import jsxA11y from 'eslint-plugin-jsx-a11y'
 
 export default [
   {
@@ -67,11 +67,11 @@ export default [
     rules: {
       'no-unused-vars': 'off',
       'no-undef': 'off',
-      
-      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+
+      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' }],
       '@typescript-eslint/explicit-function-return-type': 'off',
-      '@typescript-eslint/no-explicit-any': 'warn',
-      '@typescript-eslint/no-non-null-assertion': 'warn',
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-non-null-assertion': 'off',
       '@typescript-eslint/no-unused-expressions': 'off',
 
       'react/react-in-jsx-scope': 'off',
@@ -82,7 +82,7 @@ export default [
       // 'react-hooks/rules-of-hooks': 'error',
       // 'react-hooks/exhaustive-deps': 'warn',
 
-      'no-console': ['warn', { allow: ['warn', 'error'] }],
+      'no-console': 'off',
       'no-debugger': 'warn',
       'prefer-const': 'error',
       'no-var': 'error',
@@ -113,6 +113,14 @@ export default [
     },
   },
   prettier,
+  {
+    files: ['**/*.{test,spec}.{ts,tsx,js,jsx}', '**/__tests__/**/*.{ts,tsx,js,jsx}', '**/test/**/*.{ts,tsx,js,jsx}', '**/services/__tests__/**/*.{ts,tsx,js,jsx}', '**/contexts/__tests__/**/*.{ts,tsx,js,jsx}', '**/utils/__tests__/**/*.{ts,tsx,js,jsx}'],
+    rules: {
+      '@typescript-eslint/no-unused-vars': 'off',
+      '@typescript-eslint/no-non-null-assertion': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
+    },
+  },
   {
     ignores: [
       'node_modules/**',

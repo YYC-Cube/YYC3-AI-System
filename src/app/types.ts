@@ -309,6 +309,17 @@ export interface Message {
   role: MessageRole;
   content: string;
   timestamp: number;
+  folded?: boolean; // 消息折叠状态（长文本/代码自动折叠）
+}
+
+// ── Chat Session ──
+
+export interface ChatSession {
+  sid: string;
+  title: string;
+  createAt: number;
+  updateAt: number;
+  messages: Message[];
 }
 
 // ── AI Model Management ──

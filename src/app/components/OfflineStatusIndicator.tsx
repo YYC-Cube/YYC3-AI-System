@@ -11,16 +11,16 @@
  * @tags component,offline,indicator,ui
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { OfflineDegradationService } from '../../services/offline-degradation-service';
-import { OfflineEventType } from '../../types/offline';
 import type {
-  OfflineState,
-  OfflineStatus,
-  OfflineStatistics,
   NetworkQuality,
+  OfflineState,
+  OfflineStatistics,
+  OfflineStatus,
 } from '../../types/offline';
+import { OfflineEventType } from '../../types/offline';
 
 /**
  * 离线状态指示器属性接口
@@ -62,7 +62,7 @@ export const OfflineStatusIndicator: React.FC<OfflineStatusIndicatorProps> = ({
     setStatistics(initialStatistics);
 
     // 监听状态变化
-    const handleStateChange = (data: any) => {
+    const handleStateChange = (data: { newState?: OfflineState }) => {
       const newStatus = offlineService.getOfflineStatus();
       const newStatistics = offlineService.getStatistics();
 
@@ -201,9 +201,8 @@ export const OfflineStatusIndicator: React.FC<OfflineStatusIndicatorProps> = ({
     >
       {/* 状态指示器 */}
       <div
-        className={`flex items-center gap-2 px-4 py-2 rounded-lg shadow-lg cursor-pointer transition-all hover:shadow-xl ${
-          clickable ? 'bg-white' : ''
-        }`}
+        className={`flex items-center gap-2 px-4 py-2 rounded-lg shadow-lg cursor-pointer transition-all hover:shadow-xl ${clickable ? 'bg-white' : ''
+          }`}
         onClick={() => clickable && setExpanded(!expanded)}
       >
         {/* 状态点 */}

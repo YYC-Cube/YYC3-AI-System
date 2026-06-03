@@ -15,14 +15,12 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-import { Message, DesignRoot, PanelSpec, AIModel, AIModelStatus } from './types';
+import { AIModel, AIModelStatus, ChatSession, DesignRoot, Message, PanelSpec } from './types';
 import { debounce } from './utils/debounce';
-import { Language, nextLanguage } from './utils/i18n';
-import { getI18n } from './utils/i18n';
+import { Language, getI18n, nextLanguage } from './utils/i18n';
 import { ThemeMode, nextTheme } from './utils/theme';
 
-export type { Message } from './types';
-export type { AIModel } from './types';
+export type { AIModel, Message } from './types';
 
 export type ViewMode = 'code' | 'preview' | 'fullscreen';
 
@@ -84,7 +82,26 @@ interface AppState {
 
   messages: Message[];
   addMessage: (msg: Omit<Message, 'id' | 'timestamp'>) => void;
+  updateMessage: (id: string, updates: Partial<Message>) => void;
   clearMessages: () => void;
+  quoteContent: string | null;
+  setQuoteContent: (content: string | null) => void;
+  activeMsgId: string | null;
+  setActiveMsgId: (id: string | null) => void;
+
+  // ── Multi-Session Chat ──
+  chatSessions: ChatSession[];
+  currentSessionId: string;
+  loadSession: (sid: string) => void;
+  createChatSession: () => string;
+  deleteChatSession: (sid: string) => void;
+  syncMessagesToSession: () => void;
+
+  // ── Global Search ──
+  searchQuery: string;
+  setSearchQuery: (q: string) => void;
+  searchResults: { sid: string; msg: Message }[];
+  doGlobalSearch: () => void;
 
   designRoot: DesignRoot;
   updatePanel: (panelId: string, updates: Partial<PanelSpec>) => void;
@@ -487,7 +504,96 @@ export const useAppStore = create<AppState>()(
           const newMessages = [...state.messages, newMessage].slice(-100);
           return { messages: newMessages };
         }),
+      updateMessage: (id, updates) =>
+        set((state) => ({
+          messages: state.messages.map((m) => (m.id === id ? { ...m, ...updates } : m)),
+        })),
       clearMessages: () => set({ messages: [] }),
+      quoteContent: null,
+      setQuoteContent: (content) => set({ quoteContent: content }),
+      activeMsgId: null,
+      setActiveMsgId: (id) => set({ activeMsgId: id }),
+
+      // ── Multi-Session Chat ──
+      chatSessions: [],
+      currentSessionId: '',
+      loadSession: (sid) =>
+        set((state) => {
+          const session = state.chatSessions.find((s) => s.sid === sid);
+          return {
+            currentSessionId: sid,
+            messages: session?.messages ?? [],
+          };
+        }),
+      createChatSession: () => {
+        const sid = Math.random().toString(36).substring(2, 11);
+        const now = new Date();
+        const newSession: ChatSession = {
+          sid,
+          title: `${now.getMonth() + 1}-${now.getDate()} ${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`,
+          createAt: Date.now(),
+          updateAt: Date.now(),
+          messages: [],
+        };
+        set((state) => ({
+          chatSessions: [...state.chatSessions, newSession],
+          currentSessionId: sid,
+          messages: [],
+        }));
+        return sid;
+      },
+      deleteChatSession: (sid) =>
+        set((state) => {
+          const next = state.chatSessions.filter((s) => s.sid !== sid);
+          if (state.currentSessionId === sid) {
+            if (next.length > 0) {
+              return {
+                chatSessions: next,
+                currentSessionId: next[next.length - 1].sid,
+                messages: next[next.length - 1].messages,
+              };
+            }
+            return { chatSessions: next, currentSessionId: '', messages: [] };
+          }
+          return { chatSessions: next };
+        }),
+      syncMessagesToSession: () =>
+        set((state) => {
+          const updated = state.chatSessions.map((s) => {
+            if (s.sid === state.currentSessionId) {
+              const firstUser = state.messages.find((m) => m.role === 'user');
+              return {
+                ...s,
+                messages: state.messages,
+                updateAt: Date.now(),
+                title: firstUser
+                  ? firstUser.content.slice(0, 30) + (firstUser.content.length > 30 ? '...' : '')
+                  : s.title,
+              };
+            }
+            return s;
+          });
+          return { chatSessions: updated };
+        }),
+
+      // ── Global Search ──
+      searchQuery: '',
+      setSearchQuery: (q) => set({ searchQuery: q }),
+      searchResults: [],
+      doGlobalSearch: () =>
+        set((state) => {
+          if (!state.searchQuery.trim()) return { searchResults: [] };
+          const q = state.searchQuery.toLowerCase();
+          const results: { sid: string; msg: Message }[] = [];
+          state.chatSessions.forEach((s) => {
+            s.messages.forEach((msg) => {
+              if (msg.content.toLowerCase().includes(q)) {
+                results.push({ sid: s.sid, msg });
+              }
+            });
+          });
+          return { searchResults: results.slice(0, 50) };
+        }),
 
       designRoot: initialDesignRoot,
       updatePanel: (panelId, updates) => {
@@ -553,13 +659,13 @@ export const useAppStore = create<AppState>()(
       activateAIModel: (id) => {
         // Update local mirror
         set((state) => {
-          // Also sync to aiProviderService if model name matches
+          // Sync active model ID to aiProviderService
           try {
             const { aiProviderService } = require('./services/ai-provider');
             const model = state.aiModels.find((m) => m.id === id);
-            if (model && model.name) {
-              // Set in aiProviderService using the model name
-              aiProviderService.setActiveModel(model.name);
+            if (model) {
+              // Sync the model ID (not name) to aiProviderService
+              aiProviderService.setActiveModel(id);
             }
           } catch (e) {
             console.warn('Failed to sync to aiProviderService:', e);
@@ -576,11 +682,11 @@ export const useAppStore = create<AppState>()(
           aiModels: state.aiModels.map((m) =>
             m.id === id
               ? {
-                  ...m,
-                  status,
-                  lastTestResult: result ?? m.lastTestResult,
-                  lastTestTime: Date.now(),
-                }
+                ...m,
+                status,
+                lastTestResult: result ?? m.lastTestResult,
+                lastTestTime: Date.now(),
+              }
               : m
           ),
         }));

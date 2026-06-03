@@ -15,7 +15,7 @@
  */
 
 import { useVirtualizer } from '@tanstack/react-virtual';
-import React, { useRef, useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 
 interface TanstackVirtualListProps<T> {
   items: T[];
@@ -242,9 +242,9 @@ export function TanstackVirtualListWithScrollMemory<T>({
         const storage =
           storageType === 'localStorage' ? window.localStorage : window.sessionStorage;
         storage.setItem(`virtual-scroll-${scrollId}`, String(scrollTop));
-      } catch (e) {
+      } catch (_e) {
         // Storage might be disabled
-        console.warn('Failed to save scroll position:', e);
+        console.warn('Failed to save scroll position:', _e);
       }
     },
     [scrollId, storageType]
@@ -256,7 +256,7 @@ export function TanstackVirtualListWithScrollMemory<T>({
       const storage = storageType === 'localStorage' ? window.localStorage : window.sessionStorage;
       const saved = storage.getItem(`virtual-scroll-${scrollId}`);
       return saved ? Number.parseInt(saved, 10) : 0;
-    } catch (e) {
+    } catch (_e) {
       return 0;
     }
   }, [scrollId, storageType]);

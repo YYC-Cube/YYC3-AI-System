@@ -447,7 +447,7 @@ class StdioTransport implements MCPTransport {
         try {
           const message = JSON.parse(line) as MCPMessage;
           this.eventHandlers.onMessage?.(message);
-        } catch (error) {
+        } catch (_error) {
           this.eventHandlers.onError?.(new Error(`解析消息失败: ${line}`));
         }
       }
@@ -486,7 +486,7 @@ class WebSocketTransport implements MCPTransport {
           try {
             const message = JSON.parse(event.data) as MCPMessage;
             this.eventHandlers.onMessage?.(message);
-          } catch (error) {
+          } catch (_error) {
             this.eventHandlers.onError?.(new Error(`解析消息失败`));
           }
         };
