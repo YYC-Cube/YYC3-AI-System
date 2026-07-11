@@ -55,6 +55,10 @@ interface PerformanceWithMemory extends Performance {
  * 性能指标类型定义
  */
 
+
+import { createLogger } from '@/app/utils/logger';
+
+const logger = createLogger('Performancemonitorservice');
 export interface PerformanceMetrics {
   // 核心指标
   fcp: number; // First Contentful Paint (ms)
@@ -192,7 +196,7 @@ class PerformanceMonitorService {
    */
   async initialize(config?: Partial<PerformanceConfig>): Promise<void> {
     if (this.isInitialized) {
-      console.warn('[PerformanceMonitor] Service already initialized');
+      logger.warn('[PerformanceMonitor] Service already initialized');
       return;
     }
 
@@ -214,7 +218,7 @@ class PerformanceMonitorService {
       }
 
       this.isInitialized = true;
-      console.log('[PerformanceMonitor] Service initialized successfully');
+      logger.debug('[PerformanceMonitor] Service initialized successfully');
 
       // 触发初始化事件
       this.emit('initialized', {
@@ -223,7 +227,7 @@ class PerformanceMonitorService {
         timestamp: Date.now(),
       });
     } catch (error) {
-      console.error('[PerformanceMonitor] Failed to initialize:', error);
+      logger.error('[PerformanceMonitor] Failed to initialize:', error);
       throw error;
     }
   }
@@ -233,7 +237,7 @@ class PerformanceMonitorService {
    */
   private async setupPerformanceObserver(): Promise<void> {
     if (!('PerformanceObserver' in window)) {
-      console.warn('[PerformanceMonitor] PerformanceObserver not supported');
+      logger.warn('[PerformanceMonitor] PerformanceObserver not supported');
       return;
     }
 
@@ -256,7 +260,7 @@ class PerformanceMonitorService {
         ],
       });
     } catch (error) {
-      console.error('[PerformanceMonitor] Failed to observe performance entries:', error);
+      logger.error('[PerformanceMonitor] Failed to observe performance entries:', error);
     }
   }
 
@@ -619,7 +623,7 @@ class PerformanceMonitorService {
     this.clearHistory();
 
     this.isInitialized = false;
-    console.log('[PerformanceMonitor] Service destroyed');
+    logger.debug('[PerformanceMonitor] Service destroyed');
   }
 }
 

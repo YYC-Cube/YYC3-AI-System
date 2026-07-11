@@ -18,6 +18,10 @@ import { SyncOperationStatus } from '../types/sync';
 
 import { StorageService } from './storage-service';
 
+import { createLogger } from '@/app/utils/logger';
+
+const logger = createLogger('Syncqueueservice');
+
 /**
  * 同步队列服务类
  * 管理离线操作队列，支持优先级排序和依赖管理
@@ -54,9 +58,9 @@ export class SyncQueueService {
       // 从存储中加载待同步操作
       await this.loadPendingOperations();
       this.isInitialized = true;
-      console.log('[SyncQueueService] 初始化成功');
+      logger.debug('[SyncQueueService] 初始化成功');
     } catch (error) {
-      console.error('[SyncQueueService] 初始化失败:', error);
+      logger.error('[SyncQueueService] 初始化失败:', error);
       throw error;
     }
   }
@@ -78,9 +82,9 @@ export class SyncQueueService {
           }
         }
       });
-      console.log(`[SyncQueueService] 加载了 ${this.queue.size} 个待同步操作`);
+      logger.debug(`[SyncQueueService] 加载了 ${this.queue.size} 个待同步操作`);
     } catch (error) {
-      console.error('[SyncQueueService] 加载待同步操作失败:', error);
+      logger.error('[SyncQueueService] 加载待同步操作失败:', error);
     }
   }
 
@@ -105,7 +109,7 @@ export class SyncQueueService {
     // 保存到存储
     await this.saveOperationToStorage(fullOperation);
 
-    console.log(
+    logger.debug(
       `[SyncQueueService] 添加操作 ${operation.type} - ${operation.resourceType}/${operation.resourceId}`
     );
     return id;
@@ -184,7 +188,7 @@ export class SyncQueueService {
   ): Promise<void> {
     const operation = this.queue.get(id);
     if (!operation) {
-      console.warn(`[SyncQueueService] 操作 ${id} 不存在`);
+      logger.warn(`[SyncQueueService] 操作 ${id} 不存在`);
       return;
     }
 
@@ -295,7 +299,7 @@ export class SyncQueueService {
         updatedAt: Date.now(),
       });
     } catch (error) {
-      console.error('[SyncQueueService] 保存操作失败:', error);
+      logger.error('[SyncQueueService] 保存操作失败:', error);
       throw error;
     }
   }

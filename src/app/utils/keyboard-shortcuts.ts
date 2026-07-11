@@ -120,11 +120,18 @@ class KeyboardShortcutsManager {
   private keyBindings: Map<string, string> = new Map();
   private enabled = true;
   private listeners: Set<(event: KeyboardEvent) => void> = new Set();
+  private boundKeyDown: ((event: KeyboardEvent) => void) | null = null;
 
   constructor() {
-    if (typeof window !== 'undefined') {
-      window.addEventListener('keydown', this.handleKeyDown.bind(this));
-    }
+    // Global keydown listener is NOT registered here to avoid test pollution.
+    // It is registered lazily in activate().
+  }
+
+  /** Register the global window keydown listener. Idempotent. */
+  activate(): void {
+    if (this.boundKeyDown || typeof window === 'undefined') return;
+    this.boundKeyDown = this.handleKeyDown.bind(this);
+    window.addEventListener('keydown', this.boundKeyDown);
   }
 
   register(shortcut: ShortcutDefinition): void {
@@ -327,8 +334,7 @@ export function initializeDefaultShortcuts(): void {
       category: 'navigation',
       defaultKey: 'ctrl+shift+p',
       action: () => {
-        const store = require('../store').useAppStore.getState();
-        store.setCommandPaletteOpen(true);
+        import('../store').then(({ useAppStore }) => useAppStore.getState().setCommandPaletteOpen(true));
       },
     },
     {
@@ -338,8 +344,7 @@ export function initializeDefaultShortcuts(): void {
       category: 'navigation',
       defaultKey: 'ctrl+p',
       action: () => {
-        const store = require('../store').useAppStore.getState();
-        store.setSearchPanelOpen(true);
+        import('../store').then(({ useAppStore }) => useAppStore.getState().setSearchPanelOpen(true));
       },
     },
     {
@@ -349,8 +354,7 @@ export function initializeDefaultShortcuts(): void {
       category: 'terminal',
       defaultKey: 'ctrl+`',
       action: () => {
-        const store = require('../store').useAppStore.getState();
-        store.toggleTerminal();
+        import('../store').then(({ useAppStore }) => useAppStore.getState().toggleTerminal());
       },
     },
     {
@@ -480,8 +484,7 @@ export function initializeDefaultShortcuts(): void {
       category: 'editor',
       defaultKey: 'ctrl+shift+f',
       action: () => {
-        const store = require('../store').useAppStore.getState();
-        store.setSearchPanelOpen(true);
+        import('../store').then(({ useAppStore }) => useAppStore.getState().setSearchPanelOpen(true));
       },
     },
     {
@@ -491,8 +494,7 @@ export function initializeDefaultShortcuts(): void {
       category: 'ui',
       defaultKey: 'ctrl+shift+t',
       action: () => {
-        const store = require('../store').useAppStore.getState();
-        store.toggleTheme();
+        import('../store').then(({ useAppStore }) => useAppStore.getState().toggleTheme());
       },
     },
     {
@@ -512,8 +514,7 @@ export function initializeDefaultShortcuts(): void {
       category: 'system',
       defaultKey: 'f1',
       action: () => {
-        const store = require('../store').useAppStore.getState();
-        store.setShortcutsDialogOpen(true);
+        import('../store').then(({ useAppStore }) => useAppStore.getState().setShortcutsDialogOpen(true));
       },
     },
   ];
@@ -522,9 +523,9 @@ export function initializeDefaultShortcuts(): void {
     keyboardShortcuts.register(shortcut);
   });
 
+  keyboardShortcuts.activate();
   keyboardShortcuts.loadFromStorage();
 }
 
-if (typeof window !== 'undefined') {
-  initializeDefaultShortcuts();
-}
+// NOTE: Auto-initialization is intentionally NOT done at module level.
+// App.tsx calls initializeDefaultShortcuts() in a useEffect to avoid test pollution.

@@ -6,7 +6,7 @@
  * @created 2024-03-24
  * @status stable
  * @license MIT
- * @copyright Copyright (c) 2024 YYC³ Team
+ * @copyright Copyright (c) 2026 YanYuCloudCube Team
  *
  * 这是一个完整的 App.tsx 集成示例，展示如何将认证系统集成到现有应用中
  *

@@ -22,13 +22,13 @@
  * notes: 修改配置后需要重启测试服务器
  */
 
+import { resolve } from 'path'
 import { defineConfig } from 'vitest/config'
-import path from 'path'
 
 export default defineConfig({
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      '@': resolve(__dirname, './src'),
     },
   },
   test: {
@@ -42,6 +42,12 @@ export default defineConfig({
     isolate: false,
     fileParallelism: false,
     maxConcurrency: 1,
+
+    server: {
+      deps: {
+        inline: ['react-router', 'react-router-dom'],
+      },
+    },
 
     // Temporarily skip problematic tests while keeping them in codebase
     // These will be fixed in next iteration

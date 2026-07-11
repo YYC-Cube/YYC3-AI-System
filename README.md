@@ -56,7 +56,7 @@
 
 ## �📋 项目简介
 
-YYC³便携式智能AI系统是一个基于 **React + TypeScript + Vite** 构建的现代化前端全栈应用。采用 **Front-End-Only Full-Stack (FEFS)** 架构模式，将业务逻辑、持久化和外部集成全部在前端运行时中实现，通过原生宿主桥接（Tauri）提供桌面应用体验。
+YYC³ Al System便携式智能AI系统是一个基于 **React + TypeScript + Vite** 构建的现代化前端全栈应用。采用 **Front-End-Only Full-Stack (FEFS)** 架构模式，将业务逻辑、持久化和外部集成全部在前端运行时中实现，通过原生宿主桥接（Tauri）提供桌面应用体验。
 
 ### 🎯 设计理念
 

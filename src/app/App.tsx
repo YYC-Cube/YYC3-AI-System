@@ -19,6 +19,7 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { router } from './routes';
 import { syncAIModelsToAppStore } from './services/settings-integration';
 import { useAppStore } from './store';
+import { initializeDefaultShortcuts } from './utils/keyboard-shortcuts';
 import { getThemeTokens } from './utils/theme';
 
 export default function App() {
@@ -28,6 +29,11 @@ export default function App() {
   // Sync AI models from aiProviderService on app mount
   useEffect(() => {
     syncAIModelsToAppStore();
+  }, []);
+
+  // Activate global keyboard shortcuts on app mount (lazy to avoid test pollution)
+  useEffect(() => {
+    initializeDefaultShortcuts();
   }, []);
 
   // Apply dark class for Tailwind
@@ -40,7 +46,8 @@ export default function App() {
     }
   }, [theme]);
 
-  // Apply customThemeConfig colors to CSS variables for runtime override
+  // Apply customThemeConfig colors to CSS variables for runtime override.
+  // Bridges JS theme layer to CSS variable layer (shadcn/ui components).
   useEffect(() => {
     if (!customThemeConfig) return;
     const root = document.documentElement;
@@ -49,20 +56,34 @@ export default function App() {
     const r = customThemeConfig.radius;
 
     if (c) {
-      if (c.primary) root.style.setProperty('--yyc3-primary', c.primary);
-      if (c.secondary) root.style.setProperty('--yyc3-secondary', c.secondary);
-      if (c.accent) root.style.setProperty('--yyc3-accent', c.accent);
-      if (c.background) root.style.setProperty('--yyc3-background', c.background);
-      if (c.card) root.style.setProperty('--yyc3-card', c.card);
-      if (c.border) root.style.setProperty('--yyc3-border', c.border);
-      // Derived alpha shades for glass effects
+      // Write to canonical CSS variables consumed by shadcn/ui + brand aliases
       if (c.primary) {
+        root.style.setProperty('--primary', c.primary);
+        root.style.setProperty('--yyc3-primary', c.primary);
         root.style.setProperty('--yyc3-primary-10', c.primary + '1a');
         root.style.setProperty('--yyc3-primary-20', c.primary + '33');
       }
+      if (c.secondary) {
+        root.style.setProperty('--secondary', c.secondary);
+        root.style.setProperty('--yyc3-secondary', c.secondary);
+      }
       if (c.accent) {
+        root.style.setProperty('--accent', c.accent);
+        root.style.setProperty('--yyc3-accent', c.accent);
         root.style.setProperty('--yyc3-accent-10', c.accent + '1a');
         root.style.setProperty('--yyc3-accent-20', c.accent + '33');
+      }
+      if (c.background) {
+        root.style.setProperty('--background', c.background);
+        root.style.setProperty('--yyc3-background', c.background);
+      }
+      if (c.card) {
+        root.style.setProperty('--card', c.card);
+        root.style.setProperty('--yyc3-card', c.card);
+      }
+      if (c.border) {
+        root.style.setProperty('--border', c.border);
+        root.style.setProperty('--yyc3-border', c.border);
       }
     }
     if (f) {
@@ -70,9 +91,9 @@ export default function App() {
       if (f.mono) root.style.setProperty('--yyc3-font-mono', f.mono);
     }
     if (r) {
-      if (r.sm) root.style.setProperty('--yyc3-radius-sm', r.sm);
-      if (r.md) root.style.setProperty('--yyc3-radius-md', r.md);
-      if (r.lg) root.style.setProperty('--yyc3-radius-lg', r.lg);
+      if (r.sm) root.style.setProperty('--radius-sm', r.sm);
+      if (r.md) root.style.setProperty('--radius', r.md);
+      if (r.lg) root.style.setProperty('--radius-lg', r.lg);
     }
   }, [customThemeConfig]);
 

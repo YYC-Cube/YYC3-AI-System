@@ -13,6 +13,10 @@
 
 import { openDB, DBSchema, IDBPDatabase } from 'idb';
 
+import { createLogger } from '@/app/utils/logger';
+
+const logger = createLogger('Storageservice');
+
 /**
  * IndexedDB数据库结构
  */
@@ -194,9 +198,9 @@ export class StorageService {
         },
       });
 
-      console.log(`[Storage] Initialized database: ${this.DB_NAME} v${this.DB_VERSION}`);
+      logger.debug(`[Storage] Initialized database: ${this.DB_NAME} v${this.DB_VERSION}`);
     } catch (error) {
-      console.error('[Storage] Failed to initialize database:', error);
+      logger.error('[Storage] Failed to initialize database:', error);
       throw error;
     }
   }
@@ -221,7 +225,7 @@ export class StorageService {
   async saveFile(file: FileData): Promise<void> {
     const db = await this.ensureDB();
     await db.put('files', file);
-    console.log(`[Storage] Saved file: ${file.id}`);
+    logger.debug(`[Storage] Saved file: ${file.id}`);
   }
 
   /**
@@ -262,7 +266,7 @@ export class StorageService {
   async deleteFile(id: string): Promise<void> {
     const db = await this.ensureDB();
     await db.delete('files', id);
-    console.log(`[Storage] Deleted file: ${id}`);
+    logger.debug(`[Storage] Deleted file: ${id}`);
   }
 
   /**
@@ -271,7 +275,7 @@ export class StorageService {
   async deleteAllFiles(): Promise<void> {
     const db = await this.ensureDB();
     await db.clear('files');
-    console.log('[Storage] Cleared all files');
+    logger.debug('[Storage] Cleared all files');
   }
 
   /**
@@ -307,7 +311,7 @@ export class StorageService {
   async saveAICache(cache: AICacheData): Promise<void> {
     const db = await this.ensureDB();
     await db.put('aiCache', cache);
-    console.log(`[Storage] Saved AI cache: ${cache.id}`);
+    logger.debug(`[Storage] Saved AI cache: ${cache.id}`);
   }
 
   /**
@@ -366,7 +370,7 @@ export class StorageService {
   async deleteAICache(id: string): Promise<void> {
     const db = await this.ensureDB();
     await db.delete('aiCache', id);
-    console.log(`[Storage] Deleted AI cache: ${id}`);
+    logger.debug(`[Storage] Deleted AI cache: ${id}`);
   }
 
   /**
@@ -375,7 +379,7 @@ export class StorageService {
   async deleteAllAICache(): Promise<void> {
     const db = await this.ensureDB();
     await db.clear('aiCache');
-    console.log('[Storage] Cleared all AI cache');
+    logger.debug('[Storage] Cleared all AI cache');
   }
 
   /**
@@ -392,7 +396,7 @@ export class StorageService {
     }
 
     if (expiredCache.length > 0) {
-      console.log(`[Storage] Cleaned up ${expiredCache.length} expired AI cache entries`);
+      logger.debug(`[Storage] Cleaned up ${expiredCache.length} expired AI cache entries`);
     }
 
     return expiredCache.length;
@@ -436,7 +440,7 @@ export class StorageService {
       updatedAt: Date.now(),
     };
     await db.put('settings', setting);
-    console.log(`[Storage] Saved setting: ${key}`);
+    logger.debug(`[Storage] Saved setting: ${key}`);
   }
 
   /**
@@ -469,7 +473,7 @@ export class StorageService {
   async deleteSetting(key: string): Promise<void> {
     const db = await this.ensureDB();
     await db.delete('settings', key);
-    console.log(`[Storage] Deleted setting: ${key}`);
+    logger.debug(`[Storage] Deleted setting: ${key}`);
   }
 
   /**
@@ -478,7 +482,7 @@ export class StorageService {
   async deleteAllSettings(): Promise<void> {
     const db = await this.ensureDB();
     await db.clear('settings');
-    console.log('[Storage] Cleared all settings');
+    logger.debug('[Storage] Cleared all settings');
   }
 
   // ============================================================
@@ -506,7 +510,7 @@ export class StorageService {
       updatedAt: now,
       expiresAt: now + ttl,
     });
-    console.log(`[Storage] Saved session: ${session.id}`);
+    logger.debug(`[Storage] Saved session: ${session.id}`);
   }
 
   /**
@@ -562,7 +566,7 @@ export class StorageService {
   async deleteSession(id: string): Promise<void> {
     const db = await this.ensureDB();
     await db.delete('sessions', id);
-    console.log(`[Storage] Deleted session: ${id}`);
+    logger.debug(`[Storage] Deleted session: ${id}`);
   }
 
   /**
@@ -576,7 +580,7 @@ export class StorageService {
       await db.delete('sessions', session.id);
     }
 
-    console.log(`[Storage] Deleted ${sessions.length} sessions for user: ${userId}`);
+    logger.debug(`[Storage] Deleted ${sessions.length} sessions for user: ${userId}`);
   }
 
   /**
@@ -593,7 +597,7 @@ export class StorageService {
     }
 
     if (expiredSessions.length > 0) {
-      console.log(`[Storage] Cleaned up ${expiredSessions.length} expired sessions`);
+      logger.debug(`[Storage] Cleaned up ${expiredSessions.length} expired sessions`);
     }
 
     return expiredSessions.length;
@@ -612,7 +616,7 @@ export class StorageService {
 
     for (const storeName of stores) {
       await db.clear(storeName as 'settings' | 'sessions' | 'files' | 'aiCache');
-      console.log(`[Storage] Cleared store: ${storeName}`);
+      logger.debug(`[Storage] Cleared store: ${storeName}`);
     }
   }
 
@@ -704,11 +708,11 @@ export class StorageService {
     const sizeMB = (stats.totalSize / 1024 / 1024).toFixed(2);
 
     console.group('📊 存储统计信息');
-    console.log(`总大小: ${sizeMB} MB`);
-    console.log(`文件: ${stats.files.count} 个 (${(stats.files.size / 1024).toFixed(2)} KB)`);
-    console.log(`AI缓存: ${stats.aiCache.count} 条 (${stats.aiCache.tokens} tokens)`);
-    console.log(`设置: ${stats.settings.count} 个`);
-    console.log(`会话: ${stats.sessions.count} 个`);
+    logger.debug(`总大小: ${sizeMB} MB`);
+    logger.debug(`文件: ${stats.files.count} 个 (${(stats.files.size / 1024).toFixed(2)} KB)`);
+    logger.debug(`AI缓存: ${stats.aiCache.count} 条 (${stats.aiCache.tokens} tokens)`);
+    logger.debug(`设置: ${stats.settings.count} 个`);
+    logger.debug(`会话: ${stats.sessions.count} 个`);
     console.groupEnd();
   }
 }

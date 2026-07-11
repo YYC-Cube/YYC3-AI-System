@@ -105,7 +105,25 @@ export default [
           },
         },
       ],
+
+      // Enforce named imports for lucide-react (prevents bundling entire icon library)
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'ImportDeclaration[source.value="lucide-react"] ImportNamespaceSpecifier',
+          message: 'Use named imports from lucide-react. Wildcard imports bundle the entire library.',
+        },
+      ],
+
+      // Ban alert()/confirm()/prompt() — use sonner toast or Overlay instead
+      'no-restricted-globals': [
+        'warn',
+        { name: 'alert', message: 'Use toast.error/toast.warning from sonner instead of alert().' },
+        { name: 'confirm', message: 'Use ui/alert-dialog or Overlay instead of confirm().' },
+        { name: 'prompt', message: 'Use a proper input dialog instead of prompt().' },
+      ],
     },
+
     settings: {
       react: {
         version: 'detect',

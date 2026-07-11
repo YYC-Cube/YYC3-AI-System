@@ -1,21 +1,15 @@
 /**
  * @file utils.ts
- * @description YYC³便携式智能AI系统 - UI工具函数
- * UI Utility Functions
- * 提供CSS类名合并工具函数，基于clsx和tailwind-merge
+ * @description YYC³ UI 工具函数 — cn() 的 re-export 入口（shadcn/ui 组件专用）
+ * Re-exports the canonical cn() from '@/app/utils/cn'.
  * @author YanYuCloudCube Team <admin@0379.email>
  * @version v1.0.0
  * @created 2026-03-20
- * @updated 2026-03-20
+ * @updated 2026-07-11
  * @status stable
  * @license MIT
  * @copyright Copyright (c) 2026 YanYuCloudCube Team
- * @tags ui-utils,clsx,tailwind-merge,helper
+ * @tags ui-utils,clsx,tailwind-merge,re-export
  */
 
-import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
-
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
+export { cn } from '../../utils/cn';

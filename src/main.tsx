@@ -7,7 +7,7 @@
  * @updated 2025-03-19
  * @status stable
  * @license MIT
- * @copyright Copyright (c) 2025 YanYuCloudCube Team. All rights reserved.
+ * @copyright Copyright (c) 2026 YanYuCloudCube Team
  * @tags entry-point, react, app-bootstrap
  */
 

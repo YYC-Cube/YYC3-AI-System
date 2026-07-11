@@ -11,8 +11,8 @@
  * @tags component,sync,ui,offline
  */
 
-import * as LucideIcons from 'lucide-react';
-import React, { useState, useEffect, useCallback } from 'react';
+import { AlertTriangle, CheckCircle, CheckCircle2, ChevronDown, ChevronUp, Clock, Database, Loader2, RefreshCw, Wifi, XCircle } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
 
 import { SyncManagerService } from '../../services/sync-manager-service';
 import { SyncEventType } from '../../types/sync';
@@ -45,10 +45,6 @@ export function SyncStatusPanel({
   const [lastUpdated, setLastUpdated] = useState<number>(Date.now());
 
   const syncManager = SyncManagerService.getInstance();
-  const Icons = LucideIcons as unknown as Record<
-    string,
-    React.ComponentType<{ className?: string }>
-  >;
 
   /**
    * 更新同步状态
@@ -123,7 +119,7 @@ export function SyncStatusPanel({
                 : 'bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300'
             }`}
           >
-            <Icons.Wifi className="w-4 h-4" />
+            <Wifi className="w-4 h-4" />
             <span className="text-sm font-medium">{isOnline ? '在线' : '离线'}</span>
           </div>
 
@@ -139,17 +135,17 @@ export function SyncStatusPanel({
           >
             {isSyncing ? (
               <>
-                <Icons.Loader2 className="w-4 h-4 animate-spin" />
+                <Loader2 className="w-4 h-4 animate-spin" />
                 <span className="text-sm font-medium">同步中...</span>
               </>
             ) : pendingCount === 0 ? (
               <>
-                <Icons.CheckCircle2 className="w-4 h-4" />
+                <CheckCircle2 className="w-4 h-4" />
                 <span className="text-sm font-medium">已同步</span>
               </>
             ) : (
               <>
-                <Icons.Clock className="w-4 h-4" />
+                <Clock className="w-4 h-4" />
                 <span className="text-sm font-medium">{pendingCount} 待同步</span>
               </>
             )}
@@ -160,13 +156,13 @@ export function SyncStatusPanel({
             <div className="flex items-center gap-2">
               {conflictCount > 0 && (
                 <div className="flex items-center gap-1 text-red-600 dark:text-red-400">
-                  <Icons.AlertTriangle className="w-4 h-4" />
+                  <AlertTriangle className="w-4 h-4" />
                   <span className="text-sm font-medium">{conflictCount} 冲突</span>
                 </div>
               )}
               {failedCount > 0 && (
                 <div className="flex items-center gap-1 text-orange-600 dark:text-orange-400">
-                  <Icons.XCircle className="w-4 h-4" />
+                  <XCircle className="w-4 h-4" />
                   <span className="text-sm font-medium">{failedCount} 失败</span>
                 </div>
               )}
@@ -181,7 +177,7 @@ export function SyncStatusPanel({
               onClick={handleSyncNow}
               className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
             >
-              <Icons.RefreshCw className="w-4 h-4" />
+              <RefreshCw className="w-4 h-4" />
               立即同步
             </button>
           )}
@@ -192,9 +188,9 @@ export function SyncStatusPanel({
               className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
             >
               {isCollapsed ? (
-                <Icons.ChevronDown className="w-5 h-5 text-gray-500" />
+                <ChevronDown className="w-5 h-5 text-gray-500" />
               ) : (
-                <Icons.ChevronUp className="w-5 h-5 text-gray-500" />
+                <ChevronUp className="w-5 h-5 text-gray-500" />
               )}
             </button>
           )}
@@ -208,7 +204,7 @@ export function SyncStatusPanel({
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3">
               <div className="flex items-center gap-2 mb-1">
-                <Icons.Database className="w-4 h-4 text-blue-600" />
+                <Database className="w-4 h-4 text-blue-600" />
                 <span className="text-xs text-blue-600 dark:text-blue-400 font-medium">总同步</span>
               </div>
               <div className="text-2xl font-bold text-blue-900 dark:text-blue-100">
@@ -219,7 +215,7 @@ export function SyncStatusPanel({
 
             <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-3">
               <div className="flex items-center gap-2 mb-1">
-                <Icons.CheckCircle className="w-4 h-4 text-green-600" />
+                <CheckCircle className="w-4 h-4 text-green-600" />
                 <span className="text-xs text-green-600 dark:text-green-400 font-medium">成功</span>
               </div>
               <div className="text-2xl font-bold text-green-900 dark:text-green-100">
@@ -230,7 +226,7 @@ export function SyncStatusPanel({
 
             <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-3">
               <div className="flex items-center gap-2 mb-1">
-                <Icons.XCircle className="w-4 h-4 text-red-600" />
+                <XCircle className="w-4 h-4 text-red-600" />
                 <span className="text-xs text-red-600 dark:text-red-400 font-medium">失败</span>
               </div>
               <div className="text-2xl font-bold text-red-900 dark:text-red-100">
@@ -241,7 +237,7 @@ export function SyncStatusPanel({
 
             <div className="bg-amber-50 dark:bg-amber-900/20 rounded-lg p-3">
               <div className="flex items-center gap-2 mb-1">
-                <Icons.Clock className="w-4 h-4 text-amber-600" />
+                <Clock className="w-4 h-4 text-amber-600" />
                 <span className="text-xs text-amber-600 dark:text-amber-400 font-medium">
                   平均耗时
                 </span>

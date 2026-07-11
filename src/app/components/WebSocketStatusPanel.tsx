@@ -11,8 +11,8 @@
  * @tags component,websocket,ui,realtime
  */
 
-import * as LucideIcons from 'lucide-react';
-import React, { useState, useEffect, useCallback } from 'react';
+import { Activity, AlertCircle, AlertTriangle, ChevronDown, ChevronUp, Clock, Database, Loader2, MessageSquare, Plug, RefreshCw, Wifi, WifiOff } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
 
 import { WebSocketService } from '../../services/websocket-service';
 import type {
@@ -53,10 +53,6 @@ export function WebSocketStatusPanel({
   const [lastUpdated, setLastUpdated] = useState<number>(Date.now());
 
   const wsService = WebSocketService.getInstance();
-  const Icons = LucideIcons as unknown as Record<
-    string,
-    React.ComponentType<{ className?: string }>
-  >;
 
   /**
    * 更新状态和统计
@@ -158,17 +154,17 @@ export function WebSocketStatusPanel({
   const getStateIcon = () => {
     switch (state) {
       case WSState.CONNECTED:
-        return Icons.Wifi;
+        return Wifi;
       case WSState.CONNECTING:
       case WSState.RECONNECTING:
-        return Icons.Loader2;
+        return Loader2;
       case WSState.DISCONNECTED:
       case WSState.CLOSED:
-        return Icons.WifiOff;
+        return WifiOff;
       case WSState.ERROR:
-        return Icons.AlertCircle;
+        return AlertCircle;
       default:
-        return Icons.Wifi;
+        return Wifi;
     }
   };
 
@@ -196,7 +192,7 @@ export function WebSocketStatusPanel({
           {/* 重连信息 */}
           {isConnecting && retryStrategy && (
             <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-              <Icons.RefreshCw className="w-4 h-4 animate-spin" />
+              <RefreshCw className="w-4 h-4 animate-spin" />
               <span>
                 重连 {retryStrategy.currentAttempt}/
                 {retryStrategy.nextRetryTime
@@ -211,11 +207,11 @@ export function WebSocketStatusPanel({
           {isConnected && (
             <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
               <div className="flex items-center gap-1">
-                <Icons.MessageSquare className="w-4 h-4" />
+                <MessageSquare className="w-4 h-4" />
                 <span>{statistics.messagesReceived} 消息</span>
               </div>
               <div className="flex items-center gap-1">
-                <Icons.Activity className="w-4 h-4" />
+                <Activity className="w-4 h-4" />
                 <span>{Math.round(statistics.averageMessageSize / 1024)} KB</span>
               </div>
             </div>
@@ -224,7 +220,7 @@ export function WebSocketStatusPanel({
           {/* 错误信息 */}
           {hasError && (
             <div className="flex items-center gap-1 text-red-600 dark:text-red-400">
-              <Icons.AlertTriangle className="w-4 h-4" />
+              <AlertTriangle className="w-4 h-4" />
               <span className="text-sm font-medium">{statistics.errorCount} 错误</span>
             </div>
           )}
@@ -237,7 +233,7 @@ export function WebSocketStatusPanel({
               onClick={handleConnect}
               className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
             >
-              <Icons.Plug className="w-4 h-4" />
+              <Plug className="w-4 h-4" />
               连接
             </button>
           )}
@@ -247,7 +243,7 @@ export function WebSocketStatusPanel({
               onClick={handleDisconnect}
               className="px-4 py-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
             >
-              <Icons.Plug className="w-4 h-4" />
+              <Plug className="w-4 h-4" />
               断开
             </button>
           )}
@@ -258,9 +254,9 @@ export function WebSocketStatusPanel({
               className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
             >
               {isCollapsed ? (
-                <Icons.ChevronDown className="w-5 h-5 text-gray-500" />
+                <ChevronDown className="w-5 h-5 text-gray-500" />
               ) : (
-                <Icons.ChevronUp className="w-5 h-5 text-gray-500" />
+                <ChevronUp className="w-5 h-5 text-gray-500" />
               )}
             </button>
           )}
@@ -274,7 +270,7 @@ export function WebSocketStatusPanel({
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-3">
               <div className="flex items-center gap-2 mb-1">
-                <Icons.Clock className="w-4 h-4 text-green-600" />
+                <Clock className="w-4 h-4 text-green-600" />
                 <span className="text-xs text-green-600 dark:text-green-400 font-medium">
                   连接时长
                 </span>
@@ -289,7 +285,7 @@ export function WebSocketStatusPanel({
 
             <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3">
               <div className="flex items-center gap-2 mb-1">
-                <Icons.RefreshCw className="w-4 h-4 text-blue-600" />
+                <RefreshCw className="w-4 h-4 text-blue-600" />
                 <span className="text-xs text-blue-600 dark:text-blue-400 font-medium">
                   重连次数
                 </span>
@@ -302,7 +298,7 @@ export function WebSocketStatusPanel({
 
             <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-3">
               <div className="flex items-center gap-2 mb-1">
-                <Icons.MessageSquare className="w-4 h-4 text-purple-600" />
+                <MessageSquare className="w-4 h-4 text-purple-600" />
                 <span className="text-xs text-purple-600 dark:text-purple-400 font-medium">
                   消息收发
                 </span>
@@ -315,7 +311,7 @@ export function WebSocketStatusPanel({
 
             <div className="bg-amber-50 dark:bg-amber-900/20 rounded-lg p-3">
               <div className="flex items-center gap-2 mb-1">
-                <Icons.Database className="w-4 h-4 text-amber-600" />
+                <Database className="w-4 h-4 text-amber-600" />
                 <span className="text-xs text-amber-600 dark:text-amber-400 font-medium">
                   数据传输
                 </span>

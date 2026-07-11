@@ -14,6 +14,10 @@
 /**
  * API缓存配置
  */
+
+import { createLogger } from '@/app/utils/logger';
+
+const logger = createLogger('Apicacheservice');
 export interface ApiCacheConfig {
   /** 缓存名称 */
   cacheName: string;
@@ -113,7 +117,7 @@ export class ApiCacheService {
    */
   registerConfig(urlPattern: string, config: ApiCacheConfig): void {
     this.config.set(urlPattern, config);
-    console.log(`[ApiCache] Registered config for: ${urlPattern}`);
+    logger.debug(`[ApiCache] Registered config for: ${urlPattern}`);
   }
 
   /**
@@ -152,12 +156,12 @@ export class ApiCacheService {
 
     // 检查是否过期
     if (Date.now() > entry.expiresAt) {
-      console.log(`[ApiCache] Cache expired: ${url}`);
+      logger.debug(`[ApiCache] Cache expired: ${url}`);
       this.cache.delete(key);
       return null;
     }
 
-    console.log(`[ApiCache] Cache hit: ${url}`);
+    logger.debug(`[ApiCache] Cache hit: ${url}`);
     return entry.data as T;
   }
 
@@ -178,7 +182,7 @@ export class ApiCacheService {
     };
 
     this.cache.set(key, entry);
-    console.log(`[ApiCache] Cached: ${url} (TTL: ${config.ttl}ms)`);
+    logger.debug(`[ApiCache] Cached: ${url} (TTL: ${config.ttl}ms)`);
   }
 
   /**
@@ -187,7 +191,7 @@ export class ApiCacheService {
   async delete(url: string, method: string = 'GET'): Promise<void> {
     const key = this.generateKey(url, method);
     this.cache.delete(key);
-    console.log(`[ApiCache] Deleted: ${url}`);
+    logger.debug(`[ApiCache] Deleted: ${url}`);
   }
 
   /**
@@ -195,7 +199,7 @@ export class ApiCacheService {
    */
   async clear(): Promise<void> {
     this.cache.clear();
-    console.log('[ApiCache] All cache cleared');
+    logger.debug('[ApiCache] All cache cleared');
   }
 
   /**
@@ -216,7 +220,7 @@ export class ApiCacheService {
     }
 
     if (keysToDelete.length > 0) {
-      console.log(`[ApiCache] Cleared ${keysToDelete.length} expired entries`);
+      logger.debug(`[ApiCache] Cleared ${keysToDelete.length} expired entries`);
     }
   }
 
@@ -292,7 +296,7 @@ export class ApiCacheService {
     if (!isOnline) {
       const cachedData = await this.get<T>(url, method);
       if (cachedData) {
-        console.log(`[ApiCache] Offline, serving from cache: ${url}`);
+        logger.debug(`[ApiCache] Offline, serving from cache: ${url}`);
         return cachedData;
       }
 
@@ -317,13 +321,13 @@ export class ApiCacheService {
 
       return data;
     } catch (error) {
-      console.error(`[ApiCache] Network request failed: ${url}`, error);
+      logger.error(`[ApiCache] Network request failed: ${url}`, error);
 
       // 网络失败，尝试使用缓存
       const cachedData = await this.get<T>(url, method);
 
       if (cachedData) {
-        console.log(`[ApiCache] Fallback to cache: ${url}`);
+        logger.debug(`[ApiCache] Fallback to cache: ${url}`);
         return cachedData;
       }
 
@@ -349,16 +353,16 @@ export class ApiCacheService {
    * 预热缓存（批量加载）
    */
   async warmUp<T = unknown>(urls: string[]): Promise<void> {
-    console.log(`[ApiCache] Warming up cache for ${urls.length} URLs...`);
+    logger.debug(`[ApiCache] Warming up cache for ${urls.length} URLs...`);
 
     const promises = urls.map((url) =>
       this.fetchWithCache<T>(url).catch((error) => {
-        console.warn(`[ApiCache] Warm-up failed for ${url}:`, error);
+        logger.warn(`[ApiCache] Warm-up failed for ${url}:`, error);
       })
     );
 
     await Promise.all(promises);
-    console.log('[ApiCache] Cache warm-up complete');
+    logger.debug('[ApiCache] Cache warm-up complete');
   }
 
   /**
@@ -376,10 +380,10 @@ export class ApiCacheService {
     const sizeKB = (stats.size / 1024).toFixed(2);
 
     console.group('📊 API缓存统计');
-    console.log(`总条目数: ${stats.totalEntries}`);
-    console.log(`有效条目: ${stats.validEntries}`);
-    console.log(`过期条目: ${stats.expiredEntries}`);
-    console.log(`总大小: ${sizeKB} KB`);
+    logger.debug(`总条目数: ${stats.totalEntries}`);
+    logger.debug(`有效条目: ${stats.validEntries}`);
+    logger.debug(`过期条目: ${stats.expiredEntries}`);
+    logger.debug(`总大小: ${sizeKB} KB`);
     console.groupEnd();
   }
 }

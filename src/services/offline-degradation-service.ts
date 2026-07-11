@@ -36,6 +36,10 @@ import { StorageService } from './storage-service';
 import { SyncQueueService } from './sync-queue-service';
 import { WebSocketService } from './websocket-service';
 
+import { createLogger } from '@/app/utils/logger';
+
+const logger = createLogger('Offlinedegradationservice');
+
 /**
  * 离线降级服务类
  * 整合WebSocket和同步队列，实现在线/离线切换时的自动队列管理
@@ -144,10 +148,10 @@ export class OfflineDegradationService {
       }
 
       this.isInitialized = true;
-      console.log('[OfflineDegradationService] 初始化成功');
+      logger.debug('[OfflineDegradationService] 初始化成功');
       this.log('服务初始化完成');
     } catch (error) {
-      console.error('[OfflineDegradationService] 初始化失败:', error);
+      logger.error('[OfflineDegradationService] 初始化失败:', error);
       throw error;
     }
   }
@@ -163,7 +167,7 @@ export class OfflineDegradationService {
         this.log('配置已加载');
       }
     } catch (error) {
-      console.error('[OfflineDegradationService] 加载配置失败:', error);
+      logger.error('[OfflineDegradationService] 加载配置失败:', error);
     }
   }
 
@@ -178,7 +182,7 @@ export class OfflineDegradationService {
         this.log('统计信息已加载');
       }
     } catch (error) {
-      console.error('[OfflineDegradationService] 加载统计信息失败:', error);
+      logger.error('[OfflineDegradationService] 加载统计信息失败:', error);
     }
   }
 
@@ -193,7 +197,7 @@ export class OfflineDegradationService {
         data: { statistics: this.statistics },
       });
     } catch (error) {
-      console.error('[OfflineDegradationService] 保存统计信息失败:', error);
+      logger.error('[OfflineDegradationService] 保存统计信息失败:', error);
     }
   }
 
@@ -459,7 +463,7 @@ export class OfflineDegradationService {
 
       this.log('同步完成');
     } catch (error) {
-      console.error('[OfflineDegradationService] 同步失败:', error);
+      logger.error('[OfflineDegradationService] 同步失败:', error);
 
       this.currentState = OfflineState.ONLINE;
 
@@ -677,7 +681,7 @@ export class OfflineDegradationService {
    */
   private showOfflineNotification(): void {
     // TODO: 实现离线通知UI
-    console.log('[OfflineDegradationService] 显示离线通知');
+    logger.debug('[OfflineDegradationService] 显示离线通知');
   }
 
   /**
@@ -685,7 +689,7 @@ export class OfflineDegradationService {
    */
   private showWarningNotification(message: string): void {
     // TODO: 实现警告通知UI
-    console.log(`[OfflineDegradationService] 警告: ${message}`);
+    logger.debug(`[OfflineDegradationService] 警告: ${message}`);
   }
 
   /**
@@ -693,7 +697,7 @@ export class OfflineDegradationService {
    */
   private showErrorNotification(message: string): void {
     // TODO: 实现错误通知UI
-    console.error(`[OfflineDegradationService] 错误: ${message}`);
+    logger.error(`[OfflineDegradationService] 错误: ${message}`);
   }
 
   /**
@@ -706,7 +710,7 @@ export class OfflineDegradationService {
         try {
           listener(data);
         } catch (error) {
-          console.error(`[OfflineDegradationService] 事件监听器错误:`, error);
+          logger.error(`[OfflineDegradationService] 事件监听器错误:`, error);
         }
       });
     }
@@ -848,7 +852,7 @@ export class OfflineDegradationService {
    */
   private log(message: string): void {
     if (this.config.enableLogging) {
-      console.log(`[OfflineDegradationService] ${message}`);
+      logger.debug(`[OfflineDegradationService] ${message}`);
     }
   }
 }

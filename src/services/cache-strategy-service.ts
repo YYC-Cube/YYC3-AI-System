@@ -14,6 +14,10 @@
 /**
  * 缓存策略类型
  */
+
+import { createLogger } from '@/app/utils/logger';
+
+const logger = createLogger('Cachestrategyservice');
 export type CacheStrategy =
   | 'CacheFirst' // 优先从缓存读取，缓存无数据时才请求网络
   | 'CacheOnly' // 仅从缓存读取
@@ -167,7 +171,7 @@ export class CacheStrategyService {
    */
   registerCache(config: CacheConfig): void {
     this.cacheConfigs.set(config.cacheName, config);
-    console.log(`[Cache] Registered cache: ${config.cacheName} (${config.strategy})`);
+    logger.debug(`[Cache] Registered cache: ${config.cacheName} (${config.strategy})`);
   }
 
   /**
@@ -253,12 +257,12 @@ export class CacheStrategyService {
       // 先尝试从缓存获取
       const cachedResponse = await cache.match(request);
       if (cachedResponse) {
-        console.log(`[Cache] Hit: ${request.url}`);
+        logger.debug(`[Cache] Hit: ${request.url}`);
         return cachedResponse;
       }
 
       // 缓存未命中，从网络获取
-      console.log(`[Cache] Miss: ${request.url}`);
+      logger.debug(`[Cache] Miss: ${request.url}`);
       const networkResponse = await fetch(request);
 
       // 验证响应状态
@@ -277,7 +281,7 @@ export class CacheStrategyService {
 
       return networkResponse;
     } catch (error) {
-      console.error(`[Cache] Error: ${request.url}`, error);
+      logger.error(`[Cache] Error: ${request.url}`, error);
       throw error;
     }
   }
@@ -309,11 +313,11 @@ export class CacheStrategyService {
       return networkResponse;
     } catch (_error) {
       // 网络失败，尝试从缓存获取
-      console.log(`[Cache] Network failed, trying cache: ${request.url}`);
+      logger.debug(`[Cache] Network failed, trying cache: ${request.url}`);
       const cachedResponse = await cache.match(request);
 
       if (cachedResponse) {
-        console.log(`[Cache] Serving from cache: ${request.url}`);
+        logger.debug(`[Cache] Serving from cache: ${request.url}`);
         return cachedResponse;
       }
 
@@ -343,13 +347,13 @@ export class CacheStrategyService {
     if (cachedResponse) {
       // 返回缓存响应，同时启动后台更新
       fetchPromise.catch((error) => {
-        console.warn(`[Cache] Background update failed: ${request.url}`, error);
+        logger.warn(`[Cache] Background update failed: ${request.url}`, error);
       });
       return cachedResponse;
     }
 
     // 缓存未命中，等待网络响应
-    console.log(`[Cache] Miss, waiting for network: ${request.url}`);
+    logger.debug(`[Cache] Miss, waiting for network: ${request.url}`);
     return fetchPromise;
   }
 
@@ -394,7 +398,7 @@ export class CacheStrategyService {
     // 删除条目
     for (const request of entriesToRemove) {
       await cache.delete(request);
-      console.log(`[Cache] Removed: ${request.url}`);
+      logger.debug(`[Cache] Removed: ${request.url}`);
     }
 
     // 更新统计数据
@@ -481,7 +485,7 @@ export class CacheStrategyService {
     if (await caches.delete(cacheName)) {
       this.caches.delete(cacheName);
       this.stats.delete(cacheName);
-      console.log(`[Cache] Cleared cache: ${cacheName}`);
+      logger.debug(`[Cache] Cleared cache: ${cacheName}`);
     }
   }
 
@@ -504,12 +508,12 @@ export class CacheStrategyService {
     console.group('📊 缓存统计信息');
     for (const stat of stats) {
       const sizeMB = (stat.totalSize / 1024 / 1024).toFixed(2);
-      console.log(`${stat.cacheName}:`);
-      console.log(`  条目数: ${stat.entryCount}`);
-      console.log(`  总大小: ${sizeMB} MB`);
-      console.log(`  策略: ${stat.strategy}`);
-      console.log(`  最后更新: ${new Date(stat.lastUpdated).toLocaleString()}`);
-      console.log('');
+      logger.debug(`${stat.cacheName}:`);
+      logger.debug(`  条目数: ${stat.entryCount}`);
+      logger.debug(`  总大小: ${sizeMB} MB`);
+      logger.debug(`  策略: ${stat.strategy}`);
+      logger.debug(`  最后更新: ${new Date(stat.lastUpdated).toLocaleString()}`);
+      logger.debug('');
     }
     console.groupEnd();
   }

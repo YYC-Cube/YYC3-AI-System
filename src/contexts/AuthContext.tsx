@@ -6,7 +6,7 @@
  * @created 2024-03-24
  * @status stable
  * @license MIT
- * @copyright Copyright (c) 2024 YYC³ Team
+ * @copyright Copyright (c) 2026 YanYuCloudCube Team
  */
 
 import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';

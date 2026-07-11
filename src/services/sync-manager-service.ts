@@ -22,6 +22,10 @@ import type {
 
 import { SyncQueueService } from './sync-queue-service';
 
+import { createLogger } from '@/app/utils/logger';
+
+const logger = createLogger('Syncmanagerservice');
+
 /**
  * 同步管理器服务类
  * 管理在线检测、自动同步和冲突解决
@@ -95,9 +99,9 @@ export class SyncManagerService {
         this.startAutoSync();
       }
 
-      console.log('[SyncManagerService] 初始化成功');
+      logger.debug('[SyncManagerService] 初始化成功');
     } catch (error) {
-      console.error('[SyncManagerService] 初始化失败:', error);
+      logger.error('[SyncManagerService] 初始化失败:', error);
       throw error;
     }
   }
@@ -117,7 +121,7 @@ export class SyncManagerService {
       }
     }
 
-    console.log('[SyncManagerService] 配置已更新:', this.config);
+    logger.debug('[SyncManagerService] 配置已更新:', this.config);
   }
 
   /**
@@ -131,7 +135,7 @@ export class SyncManagerService {
    * 处理上线事件
    */
   private handleOnline(): void {
-    console.log('[SyncManagerService] 设备已上线');
+    logger.debug('[SyncManagerService] 设备已上线');
     this.isOnline = true;
     this.emitEvent(SyncEventType.ONLINE_STATUS_CHANGED, { isOnline: true });
 
@@ -146,7 +150,7 @@ export class SyncManagerService {
    * 处理离线事件
    */
   private handleOffline(): void {
-    console.log('[SyncManagerService] 设备已离线');
+    logger.debug('[SyncManagerService] 设备已离线');
     this.isOnline = false;
     this.emitEvent(SyncEventType.ONLINE_STATUS_CHANGED, { isOnline: false });
 
@@ -168,7 +172,7 @@ export class SyncManagerService {
       }
     }, this.config.syncInterval);
 
-    console.log(`[SyncManagerService] 自动同步已启动，间隔 ${this.config.syncInterval / 1000} 秒`);
+    logger.debug(`[SyncManagerService] 自动同步已启动，间隔 ${this.config.syncInterval / 1000} 秒`);
   }
 
   /**
@@ -179,7 +183,7 @@ export class SyncManagerService {
       clearInterval(this.syncTimer);
       this.syncTimer = null;
     }
-    console.log('[SyncManagerService] 自动同步已停止');
+    logger.debug('[SyncManagerService] 自动同步已停止');
   }
 
   /**
@@ -187,12 +191,12 @@ export class SyncManagerService {
    */
   async syncNow(): Promise<void> {
     if (this.isSyncing) {
-      console.warn('[SyncManagerService] 同步正在进行中');
+      logger.warn('[SyncManagerService] 同步正在进行中');
       return;
     }
 
     if (!this.isOnline) {
-      console.warn('[SyncManagerService] 设备离线，无法同步');
+      logger.warn('[SyncManagerService] 设备离线，无法同步');
       return;
     }
 
@@ -205,11 +209,11 @@ export class SyncManagerService {
       const operations = this.queueService.getConcurrentOperations(this.config.maxConcurrentSyncs);
 
       if (operations.length === 0) {
-        console.log('[SyncManagerService] 没有待同步的操作');
+        logger.debug('[SyncManagerService] 没有待同步的操作');
         return;
       }
 
-      console.log(`[SyncManagerService] 开始同步 ${operations.length} 个操作`);
+      logger.debug(`[SyncManagerService] 开始同步 ${operations.length} 个操作`);
 
       // 并发执行同步操作
       const syncPromises = operations.map((op) => this.syncOperation(op));
@@ -231,9 +235,9 @@ export class SyncManagerService {
         syncTime,
       });
 
-      console.log(`[SyncManagerService] 同步完成，耗时 ${syncTime}ms`);
+      logger.debug(`[SyncManagerService] 同步完成，耗时 ${syncTime}ms`);
     } catch (error) {
-      console.error('[SyncManagerService] 同步失败:', error);
+      logger.error('[SyncManagerService] 同步失败:', error);
       this.statistics.failureCount++;
       this.emitEvent(SyncEventType.SYNC_ERROR, {
         timestamp: Date.now(),
@@ -294,7 +298,7 @@ export class SyncManagerService {
         operationId: operation.id,
         error: errorMessage,
       });
-      console.error(`[SyncManagerService] 同步操作失败 ${operation.id}:`, error);
+      logger.error(`[SyncManagerService] 同步操作失败 ${operation.id}:`, error);
     }
   }
 
@@ -398,7 +402,7 @@ export class SyncManagerService {
         try {
           callback(eventData);
         } catch (error) {
-          console.error(`[SyncManagerService] 事件回调执行失败:`, error);
+          logger.error(`[SyncManagerService] 事件回调执行失败:`, error);
         }
       });
     }
@@ -412,7 +416,7 @@ export class SyncManagerService {
     window.removeEventListener('online', this.handleOnline);
     window.removeEventListener('offline', this.handleOffline);
     this.eventListeners.clear();
-    console.log('[SyncManagerService] 服务已销毁');
+    logger.debug('[SyncManagerService] 服务已销毁');
   }
 }
 

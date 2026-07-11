@@ -41,6 +41,16 @@
   --sidebar-ring: oklch(0.708 0 0);
 }
 
+/* YYC³ brand aliases — bridge App.tsx customThemeConfig to shadcn/ui CSS variables */
+:root {
+  --yyc3-primary: var(--primary);
+  --yyc3-secondary: var(--secondary);
+  --yyc3-accent: var(--accent);
+  --yyc3-background: var(--background);
+  --yyc3-card: var(--card);
+  --yyc3-border: var(--border);
+}
+
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
@@ -60,6 +70,8 @@
   --destructive-foreground: oklch(0.637 0.237 25.331);
   --border: oklch(0.269 0 0);
   --input: oklch(0.269 0 0);
+  --input-background: oklch(0.205 0 0);
+  --switch-background: oklch(0.439 0 0);
   --ring: oklch(0.439 0 0);
   --font-weight-medium: 500;
   --font-weight-normal: 400;

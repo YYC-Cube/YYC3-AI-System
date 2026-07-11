@@ -29,6 +29,10 @@ import {
   WebSocketConnectionState as WSState,
 } from '../types/websocket';
 
+import { createLogger } from '@/app/utils/logger';
+
+const logger = createLogger('WebSocketService');
+
 /**
  * WebSocket连接管理服务类
  * 提供连接管理、重试机制、心跳检测等功能
@@ -142,7 +146,7 @@ export class WebSocketService {
    */
   connect(): void {
     if (this.state === WSState.CONNECTING || this.state === WSState.CONNECTED) {
-      console.warn('[WebSocketService] Already connected or connecting');
+      logger.warn('Already connected or connecting');
       return;
     }
 
@@ -155,7 +159,7 @@ export class WebSocketService {
       // 设置连接超时
       const connectionTimeoutTimer = setTimeout(() => {
         if (this.state === WSState.CONNECTING) {
-          console.error('[WebSocketService] Connection timeout');
+          logger.error('Connection timeout');
           this.handleError(new Error('Connection timeout'));
         }
       }, this.config.connectionTimeout);
@@ -179,9 +183,9 @@ export class WebSocketService {
         this.handleMessage(event);
       };
 
-      console.log('[WebSocketService] Connecting to', this.config.url);
+      logger.debug('Connecting to', this.config.url);
     } catch (error) {
-      console.error('[WebSocketService] Connection failed:', error);
+      logger.error('Connection failed:', error);
       this.handleError(error as Error | Event);
     }
   }
@@ -199,7 +203,7 @@ export class WebSocketService {
 
     // 清理定时器
     this.cleanupTimers();
-    console.log('[WebSocketService] Disconnected');
+    logger.debug('Disconnected');
   }
 
   /**
@@ -227,7 +231,7 @@ export class WebSocketService {
         this.emitEvent(WSEventType.SEND, { data: { message: fullMessage } });
         return true;
       } catch (error) {
-        console.error('[WebSocketService] Send failed:', error);
+        logger.error('Send failed:', error);
         this.handleError(error as Error | Event);
         return false;
       }
@@ -239,7 +243,7 @@ export class WebSocketService {
       return true;
     }
 
-    console.warn('[WebSocketService] Cannot send message, not connected');
+    logger.warn('Cannot send message, not connected');
     return false;
   }
 
@@ -267,7 +271,7 @@ export class WebSocketService {
    * 处理连接打开
    */
   private handleOpen(): void {
-    console.log('[WebSocketService] Connected');
+    logger.debug('Connected');
 
     this.setState(WSState.CONNECTED);
     this.statistics.connectionTime = Date.now();
@@ -291,7 +295,7 @@ export class WebSocketService {
    * 处理连接关闭
    */
   private handleClose(event: CloseEvent): void {
-    console.log('[WebSocketService] Connection closed:', event.code, event.reason);
+    logger.debug('Connection closed:', event.code, event.reason);
 
     // 如果是主动断开，不进行重连，状态已由disconnect()设置
     if (this.isManualDisconnect) {
@@ -320,7 +324,7 @@ export class WebSocketService {
    * 处理错误
    */
   private handleError(error: Event | Error): void {
-    console.error('[WebSocketService] Error:', error);
+    logger.error('Error:', error);
 
     this.statistics.errorCount++;
     this.statistics.lastErrorTime = Date.now();
@@ -350,7 +354,7 @@ export class WebSocketService {
       // 触发消息事件
       this.emitEvent(WSEventType.MESSAGE, { data: { message } });
     } catch (error) {
-      console.error('[WebSocketService] Failed to parse message:', error);
+      logger.error('Failed to parse message:', error);
     }
   }
 
@@ -366,8 +370,8 @@ export class WebSocketService {
       this.sendHeartbeat();
     }, this.config.heartbeatInterval);
 
-    console.log(
-      `[WebSocketService] Heartbeat started (interval: ${this.config.heartbeatInterval}ms)`
+    logger.debug(
+      `Heartbeat started (interval: ${this.config.heartbeatInterval}ms)`
     );
   }
 
@@ -401,7 +405,7 @@ export class WebSocketService {
       clearTimeout(this.heartbeatTimeoutTimer);
     }
     this.heartbeatTimeoutTimer = setTimeout(() => {
-      console.warn('[WebSocketService] Heartbeat timeout');
+      logger.warn('Heartbeat timeout');
       this.handleHeartbeatTimeout();
     }, this.config.heartbeatTimeout);
 
@@ -446,8 +450,8 @@ export class WebSocketService {
       data: { retryCount: this.retryCount, retryInterval: this.currentRetryInterval },
     });
 
-    console.log(
-      `[WebSocketService] Reconnecting in ${this.currentRetryInterval}ms (attempt ${this.retryCount + 1}/${this.config.maxRetries})`
+    logger.debug(
+      `Reconnecting in ${this.currentRetryInterval}ms (attempt ${this.retryCount + 1}/${this.config.maxRetries})`
     );
 
     this.retryTimer = setTimeout(() => {
@@ -463,7 +467,7 @@ export class WebSocketService {
     this.statistics.reconnectCount++;
 
     if (this.retryCount >= this.config.maxRetries) {
-      console.error('[WebSocketService] Max retries reached');
+      logger.error('Max retries reached');
       this.emitEvent(WSEventType.RECONNECT_FAILED, {
         data: { retryCount: this.retryCount },
       });
@@ -510,7 +514,7 @@ export class WebSocketService {
     };
 
     this.messageQueue.push(queueItem);
-    console.log(`[WebSocketService] Message queued (${this.messageQueue.length} in queue)`);
+    logger.debug(`Message queued (${this.messageQueue.length} in queue)`);
   }
 
   /**
@@ -533,7 +537,7 @@ export class WebSocketService {
           queueItem.retryCount++;
           this.messageQueue.unshift(queueItem);
         } else {
-          console.warn('[WebSocketService] Message dropped after 3 retries');
+          logger.warn('Message dropped after 3 retries');
         }
       }
 
@@ -586,7 +590,7 @@ export class WebSocketService {
         try {
           callback(eventData);
         } catch (error) {
-          console.error(`[WebSocketService] Event callback error:`, error);
+          logger.error(`Event callback error:`, error);
         }
       });
     }
@@ -608,6 +612,6 @@ export class WebSocketService {
     this.disconnect();
     this.eventListeners.clear();
     this.messageQueue = [];
-    console.log('[WebSocketService] Service destroyed');
+    logger.debug('Service destroyed');
   }
 }

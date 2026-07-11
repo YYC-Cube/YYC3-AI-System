@@ -25,6 +25,7 @@ import {
   Archive,
 } from 'lucide-react';
 import React, { useState, useCallback, useEffect } from 'react';
+import { toast } from 'sonner';
 
 import {
   dataExportService,
@@ -196,7 +197,7 @@ export const DataExportPanel: React.FC<DataExportPanelProps> = ({ onClose }) => 
       dataExportService.downloadExport(blob, filename);
     } catch (error) {
       console.error('导出失败:', error);
-      alert(t.exportFailed);
+      toast.error(t.exportFailed);
     } finally {
       setIsExporting(false);
     }
@@ -264,7 +265,7 @@ export const DataExportPanel: React.FC<DataExportPanelProps> = ({ onClose }) => 
         maxVersions: 10,
         keepLatest: true,
       });
-      alert(
+      toast.success(
         `${t.cleanupComplete}: ${t.deletedVersions} ${result.deletedVersions}, ${t.freedSpace} ${(result.freedBytes / 1024).toFixed(2)} KB`
       );
       loadStorageStats();

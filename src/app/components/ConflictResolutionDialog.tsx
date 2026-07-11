@@ -11,8 +11,8 @@
  * @tags component,sync,conflict,ui
  */
 
-import * as LucideIcons from 'lucide-react';
-import React, { useState, useCallback, useEffect } from 'react';
+import { AlertTriangle, Check, Cloud, Diff, HardDrive, Loader2, Merge, X, Zap } from 'lucide-react';
+import { useState, useCallback, useEffect } from 'react';
 
 import { ConflictResolutionService } from '../../services/conflict-resolution-service';
 import { SyncQueueService } from '../../services/sync-queue-service';
@@ -158,10 +158,6 @@ export function ConflictResolutionDialog({
     return null;
   }
 
-  const Icons = LucideIcons as unknown as Record<
-    string,
-    React.ComponentType<{ className?: string }>
-  >;
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -170,7 +166,7 @@ export function ConflictResolutionDialog({
         <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-amber-100 dark:bg-amber-900 rounded-lg">
-              <Icons.AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+              <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400" />
             </div>
             <div>
               <h2 className="text-xl font-bold text-gray-900 dark:text-white">冲突检测</h2>
@@ -181,7 +177,7 @@ export function ConflictResolutionDialog({
             onClick={onCancelled}
             className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
           >
-            <Icons.X className="w-5 h-5 text-gray-500" />
+            <X className="w-5 h-5 text-gray-500" />
           </button>
         </div>
 
@@ -191,7 +187,7 @@ export function ConflictResolutionDialog({
             {/* 本地版本 */}
             <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 border border-blue-200 dark:border-blue-800">
               <div className="flex items-center gap-2 mb-3">
-                <Icons.HardDrive className="w-4 h-4 text-blue-600" />
+                <HardDrive className="w-4 h-4 text-blue-600" />
                 <span className="text-sm font-semibold text-blue-900 dark:text-blue-100">
                   本地版本
                 </span>
@@ -212,7 +208,7 @@ export function ConflictResolutionDialog({
             {/* 服务器版本 */}
             <div className="bg-green-50 dark:bg-green-900/20 rounded-xl p-4 border border-green-200 dark:border-green-800">
               <div className="flex items-center gap-2 mb-3">
-                <Icons.Cloud className="w-4 h-4 text-green-600" />
+                <Cloud className="w-4 h-4 text-green-600" />
                 <span className="text-sm font-semibold text-green-900 dark:text-green-100">
                   服务器版本
                 </span>
@@ -299,7 +295,7 @@ export function ConflictResolutionDialog({
                       : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
-                  <Icons.HardDrive className="w-4 h-4 inline mr-1" />
+                  <HardDrive className="w-4 h-4 inline mr-1" />
                   保留本地
                 </button>
                 <button
@@ -313,7 +309,7 @@ export function ConflictResolutionDialog({
                       : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
-                  <Icons.Cloud className="w-4 h-4 inline mr-1" />
+                  <Cloud className="w-4 h-4 inline mr-1" />
                   保留服务器
                 </button>
                 <button
@@ -327,7 +323,7 @@ export function ConflictResolutionDialog({
                       : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                   }`}
                 >
-                  <Icons.Merge className="w-4 h-4 inline mr-1" />
+                  <Merge className="w-4 h-4 inline mr-1" />
                   合并
                 </button>
               </div>
@@ -363,7 +359,7 @@ export function ConflictResolutionDialog({
                 onClick={() => setDiffView(!diffView)}
                 className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white flex items-center gap-1"
               >
-                <Icons.Diff className="w-4 h-4" />
+                <Diff className="w-4 h-4" />
                 {diffView ? '隐藏差异' : '查看差异'}
               </button>
 
@@ -374,7 +370,7 @@ export function ConflictResolutionDialog({
                     disabled={isResolving}
                     className="px-4 py-2 bg-amber-500 hover:bg-amber-600 disabled:bg-amber-400 text-white rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
                   >
-                    <Icons.Zap className="w-4 h-4" />
+                    <Zap className="w-4 h-4" />
                     自动解决
                   </button>
                 )}
@@ -391,12 +387,12 @@ export function ConflictResolutionDialog({
                 >
                   {isResolving ? (
                     <>
-                      <Icons.Loader2 className="w-4 h-4 animate-spin" />
+                      <Loader2 className="w-4 h-4 animate-spin" />
                       解决中...
                     </>
                   ) : (
                     <>
-                      <Icons.Check className="w-4 h-4" />
+                      <Check className="w-4 h-4" />
                       确认解决
                     </>
                   )}
