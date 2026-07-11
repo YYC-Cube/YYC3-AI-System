@@ -63,6 +63,12 @@ logs/
 # TypeScript
 *.tsbuildinfo
 
+# Editor temporary files / crash recovery
+.*.tmp
+*.crswap
+.crush/
+src/app/components/.!*
+
 # YYC3 specific
 .yyc3/
 .yyc3-cache/
