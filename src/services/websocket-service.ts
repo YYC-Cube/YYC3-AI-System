@@ -370,9 +370,7 @@ export class WebSocketService {
       this.sendHeartbeat();
     }, this.config.heartbeatInterval);
 
-    logger.debug(
-      `Heartbeat started (interval: ${this.config.heartbeatInterval}ms)`
-    );
+    logger.debug(`Heartbeat started (interval: ${this.config.heartbeatInterval}ms)`);
   }
 
   /**

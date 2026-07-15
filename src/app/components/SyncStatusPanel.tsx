@@ -11,7 +11,19 @@
  * @tags component,sync,ui,offline
  */
 
-import { AlertTriangle, CheckCircle, CheckCircle2, ChevronDown, ChevronUp, Clock, Database, Loader2, RefreshCw, Wifi, XCircle } from 'lucide-react';
+import {
+  AlertTriangle,
+  CheckCircle,
+  CheckCircle2,
+  ChevronDown,
+  ChevronUp,
+  Clock,
+  Database,
+  Loader2,
+  RefreshCw,
+  Wifi,
+  XCircle,
+} from 'lucide-react';
 import { useState, useEffect, useCallback } from 'react';
 
 import { SyncManagerService } from '../../services/sync-manager-service';

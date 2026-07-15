@@ -11,7 +11,21 @@
  * @tags component,websocket,ui,realtime
  */
 
-import { Activity, AlertCircle, AlertTriangle, ChevronDown, ChevronUp, Clock, Database, Loader2, MessageSquare, Plug, RefreshCw, Wifi, WifiOff } from 'lucide-react';
+import {
+  Activity,
+  AlertCircle,
+  AlertTriangle,
+  ChevronDown,
+  ChevronUp,
+  Clock,
+  Database,
+  Loader2,
+  MessageSquare,
+  Plug,
+  RefreshCw,
+  Wifi,
+  WifiOff,
+} from 'lucide-react';
 import { useState, useEffect, useCallback } from 'react';
 
 import { WebSocketService } from '../../services/websocket-service';

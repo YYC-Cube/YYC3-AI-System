@@ -334,7 +334,9 @@ export function initializeDefaultShortcuts(): void {
       category: 'navigation',
       defaultKey: 'ctrl+shift+p',
       action: () => {
-        import('../store').then(({ useAppStore }) => useAppStore.getState().setCommandPaletteOpen(true));
+        import('../store').then(({ useAppStore }) =>
+          useAppStore.getState().setCommandPaletteOpen(true)
+        );
       },
     },
     {
@@ -344,7 +346,9 @@ export function initializeDefaultShortcuts(): void {
       category: 'navigation',
       defaultKey: 'ctrl+p',
       action: () => {
-        import('../store').then(({ useAppStore }) => useAppStore.getState().setSearchPanelOpen(true));
+        import('../store').then(({ useAppStore }) =>
+          useAppStore.getState().setSearchPanelOpen(true)
+        );
       },
     },
     {
@@ -484,7 +488,9 @@ export function initializeDefaultShortcuts(): void {
       category: 'editor',
       defaultKey: 'ctrl+shift+f',
       action: () => {
-        import('../store').then(({ useAppStore }) => useAppStore.getState().setSearchPanelOpen(true));
+        import('../store').then(({ useAppStore }) =>
+          useAppStore.getState().setSearchPanelOpen(true)
+        );
       },
     },
     {
@@ -514,7 +520,9 @@ export function initializeDefaultShortcuts(): void {
       category: 'system',
       defaultKey: 'f1',
       action: () => {
-        import('../store').then(({ useAppStore }) => useAppStore.getState().setShortcutsDialogOpen(true));
+        import('../store').then(({ useAppStore }) =>
+          useAppStore.getState().setShortcutsDialogOpen(true)
+        );
       },
     },
   ];

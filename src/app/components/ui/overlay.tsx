@@ -118,10 +118,7 @@ export function Overlay({
           <X className="size-5" />
         </button>
       )}
-      <div
-        className={cn('relative', contentClassName)}
-        onClick={(e) => e.stopPropagation()}
-      >
+      <div className={cn('relative', contentClassName)} onClick={(e) => e.stopPropagation()}>
         {children}
       </div>
     </div>
