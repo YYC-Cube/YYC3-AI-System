@@ -337,7 +337,7 @@ graph TD
 
 | 工具 | 版本要求 | 说明 |
 |------|----------|------|
-| [Node.js](https://nodejs.org/) | >= 20.0.0 | JavaScript运行时 |
+| [Node.js](https://nodejs.org/) | >= 22.0.0 | JavaScript运行时 |
 | [pnpm](https://pnpm.io/) | >= 10.0.0 | 包管理器（推荐） |
 | [Git](https://git-scm.com/) | >= 2.30.0 | 版本控制 |
 

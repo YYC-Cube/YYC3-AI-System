@@ -21,7 +21,7 @@ localStorage).
 
 ## Essential Commands
 
-Package manager is **pnpm** (see `.npmrc`, CI pins pnpm `10.32.1`, Node `20`). `npm`/`yarn`
+Package manager is **pnpm** (see `.npmrc`, CI pins pnpm `10.32.1`, Node `22`). `npm`/`yarn`
 also work but pnpm is canonical.
 
 ```bash

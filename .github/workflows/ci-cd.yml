@@ -9,7 +9,7 @@ on:
 
 env:
   PNPM_VERSION: "10.32.1"
-  NODE_VERSION: "20"
+  NODE_VERSION: "22"
 
 permissions:
   contents: read

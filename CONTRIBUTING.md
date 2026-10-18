@@ -58,7 +58,7 @@ graph LR
 
 | 工具 | 版本 | 说明 |
 |------|------|------|
-| Node.js | >= 20.0.0 | JavaScript 运行时 |
+| Node.js | >= 22.0.0 | JavaScript 运行时 |
 | pnpm | >= 10.0.0 | 包管理器（推荐） |
 | Git | >= 2.30.0 | 版本控制 |
 | VS Code | Latest | 推荐编辑器 |
