@@ -139,7 +139,9 @@ export class StorageService {
   private readonly DB_VERSION = 1;
 
   private constructor() {
-    this.initializeDB();
+    // 惰性初始化：数据库连接改由 ensureDB() 在首次使用时按需建立，
+    // 避免在构造阶段发起未被 await 的 openDB 请求（会产生悬空 Promise / 未处理错误）
+    this.db = null;
   }
 
   /**
