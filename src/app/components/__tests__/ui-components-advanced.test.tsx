@@ -12,10 +12,9 @@
  * @tags test,ui,components,shadcn,coverage
  */
 
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import React from 'react';
-import { describe, it, expect, vi } from 'vitest';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
 
 // ═════════════════════════════════════════════════════
 // 21. Menubar Component Tests
@@ -56,7 +55,8 @@ describe('Menubar Component', () => {
       </Menubar>
     );
 
-    fireEvent.click(screen.getByText('File'));
+    // Radix Menubar opens on pointerdown (not click) on the trigger.
+    fireEvent.pointerDown(screen.getByText('File'));
 
     await waitFor(() => {
       expect(screen.getByText('Open')).toBeDefined();
@@ -118,7 +118,8 @@ describe('Navigation Menu Component', () => {
       </NavigationMenu>
     );
 
-    fireEvent.mouseEnter(screen.getByText('Menu'));
+    // Radix NavigationMenu opens on a mouse pointermove over the trigger.
+    fireEvent.pointerMove(screen.getByText('Menu'), { pointerType: 'mouse' });
 
     await waitFor(() => {
       expect(screen.getByText('Link')).toBeDefined();
@@ -669,10 +670,15 @@ describe('Tooltip Component (Complete)', () => {
       </Tooltip>
     );
 
-    fireEvent.mouseEnter(screen.getByText('Hover'));
+    // Radix Tooltip opens on pointermove (or focus) over the trigger.
+    fireEvent.pointerMove(screen.getByText('Hover'));
 
     await waitFor(() => {
-      expect(screen.getByText('Content')).toBeDefined();
+      // Radix renders the content text both in the visible tooltip and in a
+      // hidden a11y node, so scope the query to the tooltip content element.
+      expect(
+        screen.getByText('Content', { selector: '[data-slot="tooltip-content"]' })
+      ).toBeDefined();
     });
   });
 

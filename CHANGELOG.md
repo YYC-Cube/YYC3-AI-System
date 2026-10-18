@@ -31,6 +31,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 修正 README/CONTRIBUTING 技术栈与版本描述（shadcn/ui + Radix 替代 Material UI；Recharts 替代 D3.js/ECharts；Node ≥ 20、pnpm ≥ 10）
 - 修复 README 中乱码表情字符
 
+### Fixed
+
+- 🧪 **测试套件全绿**：`pnpm test:run` → 2037 passed / 0 failed（此前 146 个用例被 CI 豁免）
+  - `agent-core`：移除构造时非法的 `idle -> idle` 自转换；补充 `running -> terminated` 转换并让 `terminate()` 幂等；`pause()` 不再返回永不 resolve 的 Promise
+  - `CollabIndicator`：修正 `vi.mock` 相对路径（`../` → `../../`），将嵌套 mock 改为 `vi.hoisted` 可变状态
+  - 批量修正测试中的 store mock 路径使 `require()`/静态导入可解析，统一改用 `vi.hoisted`
+  - `src/test/setup.ts` 补充 Pointer Capture API mock，消除 Radix Slider 未捕获异常
+  - `services-coverage`：固定 `Math.random`，消除 WebSocket 连接用例的随机失败
+- 🔧 CI：`Test Suite` 移除 `continue-on-error` 与路径排除，`src/app/**` 测试全部纳入门禁
+
 ## [1.0.0] - 2026-03-24
 
 ### Added

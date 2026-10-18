@@ -12,10 +12,9 @@
  * @tags test,ui,components,shadcn,coverage
  */
 
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import React from 'react';
-import { describe, it, expect, vi } from 'vitest';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
 
 // ═════════════════════════════════════════════════════
 // 1. Accordion Component Tests
@@ -244,6 +243,20 @@ describe('Avatar Component (Complete)', () => {
   it('should render avatar with image', async () => {
     const { Avatar, AvatarImage, AvatarFallback } = await import('../../components/ui/avatar');
 
+    // jsdom does not fetch image resources, so Radix's AvatarImage never leaves
+    // its "idle" loading status and renders the fallback instead. Simulate a
+    // successful image load so the <img> element is actually rendered.
+    vi.stubGlobal(
+      'Image',
+      class {
+        onload: (() => void) | null = null;
+        onerror: (() => void) | null = null;
+        set src(_value: string) {
+          void Promise.resolve().then(() => this.onload?.());
+        }
+      }
+    );
+
     render(
       <Avatar>
         <AvatarImage src="https://via.placeholder.com/150" alt="User" />
@@ -251,8 +264,10 @@ describe('Avatar Component (Complete)', () => {
       </Avatar>
     );
 
-    const avatar = screen.getByAltText('User');
+    const avatar = await screen.findByAltText('User');
     expect(avatar).toBeDefined();
+
+    vi.unstubAllGlobals();
   });
 
   it('should show fallback when image fails', async () => {
@@ -315,7 +330,7 @@ describe('Calendar Component', () => {
     const { Calendar } = await import('../../components/ui/calendar');
 
     const date = new Date(2024, 0, 15);
-    render(<Calendar selected={date} onSelect={() => {}} />);
+    render(<Calendar mode="single" defaultMonth={date} selected={date} onSelect={() => {}} />);
 
     expect(screen.getByText('January 2024')).toBeDefined();
   });
@@ -325,7 +340,7 @@ describe('Calendar Component', () => {
     const handleSelect = vi.fn();
 
     const date = new Date(2024, 0, 15);
-    render(<Calendar selected={date} onSelect={handleSelect} />);
+    render(<Calendar mode="single" defaultMonth={date} selected={date} onSelect={handleSelect} />);
 
     // Click on a date
     const dayButton = screen.getByText('15');
@@ -340,6 +355,7 @@ describe('Calendar Component', () => {
     render(
       <Calendar
         mode="range"
+        defaultMonth={new Date(2024, 0, 1)}
         selected={{ from: new Date(2024, 0, 1), to: new Date(2024, 0, 15) }}
         onSelect={() => {}}
       />
@@ -664,7 +680,8 @@ describe('Dropdown Menu Component', () => {
       </DropdownMenu>
     );
 
-    fireEvent.click(screen.getByText('Open'));
+    // Radix DropdownMenu opens on pointerdown (not click) on the trigger.
+    fireEvent.pointerDown(screen.getByText('Open'));
 
     await waitFor(() => {
       expect(screen.getByText('Menu Item')).toBeDefined();
@@ -685,7 +702,8 @@ describe('Dropdown Menu Component', () => {
       </DropdownMenu>
     );
 
-    fireEvent.click(screen.getByText('Open'));
+    // Radix DropdownMenu opens on pointerdown (not click) on the trigger.
+    fireEvent.pointerDown(screen.getByText('Open'));
 
     await waitFor(() => {
       expect(screen.getByText('Click Me')).toBeDefined();
@@ -770,7 +788,9 @@ describe('Hover Card Component', () => {
       </HoverCard>
     );
 
-    fireEvent.mouseEnter(screen.getByText('Hover'));
+    // Radix HoverCard opens on pointerenter, which React synthesizes from the
+    // native pointerover event (mouseEnter alone does not trigger it).
+    fireEvent.pointerOver(screen.getByText('Hover'));
 
     await waitFor(() => {
       expect(screen.getByText('Content')).toBeDefined();

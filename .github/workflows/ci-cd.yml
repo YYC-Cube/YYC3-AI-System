@@ -109,14 +109,12 @@ jobs:
       - name: Run tests (pages) — must pass
         run: npx vitest run src/pages/
 
-      - name: Run tests (app modules) — known pre-existing failures
-        run: npx vitest run src/app/utils/ src/app/services/ --exclude '**/__tests__/agent-framework*' --exclude '**/__tests__/data-layer*' --exclude '**/__tests__/function-layer*'
-        continue-on-error: true
+      - name: Run tests (app modules) — must pass
+        run: npx vitest run src/app/utils/ src/app/services/
 
-      - name: Run tests (app components) — known pre-existing failures
-        run: npx vitest run src/app/components/ --exclude '**/__tests__/complete-dev-workflow*' --exclude '**/__tests__/services-coverage*' --exclude '**/__tests__/components-coverage*' --exclude '**/__tests__/CollabIndicator*' --exclude '**/__tests__/ai-provider*' --exclude '**/__tests__/business-components*' --exclude '**/__tests__/ui-components*'
-        timeout-minutes: 8
-        continue-on-error: true
+      - name: Run tests (app components) — must pass
+        run: npx vitest run src/app/components/
+        timeout-minutes: 10
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4

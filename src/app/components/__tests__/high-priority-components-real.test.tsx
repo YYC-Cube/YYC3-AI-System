@@ -26,7 +26,7 @@ import { PreviewPanel } from '../PreviewPanel';
 // Mock Store & Dependencies
 // ============================================
 
-vi.mock('../store', () => ({
+vi.mock('../../store', () => ({
   useAppStore: vi.fn(),
 }));
 

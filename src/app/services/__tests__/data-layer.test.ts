@@ -11,7 +11,12 @@
  * @tags [test],[data-layer],[export],[integrity],[storage]
  */
 
+import { webcrypto } from 'node:crypto';
+
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
+// jsdom 未提供 WebCrypto 的 subtle 接口，注入 Node 实现以支持 SHA-256 计算
+vi.stubGlobal('crypto', webcrypto);
 
 describe('数据层服务测试', () => {
   describe('数据导出服务', () => {

@@ -9,8 +9,8 @@
  * @tags integration,test,editor,filemanager
  */
 
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import '@testing-library/jest-dom';
 import { CodeEditor } from '../CodeEditor';
@@ -28,21 +28,57 @@ vi.mock('@monaco-editor/react', () => ({
   ),
 }));
 
-// Mock store
-vi.mock('../store', () => ({
-  useAppStore: vi.fn(() => ({
+// FileTabs 使用 react-dnd,渲染需要 DndProvider;这里对 hooks 做无侧写存根
+vi.mock('react-dnd', () => ({
+  useDrag: () => [{ isDragging: false }, (node: unknown) => node, (node: unknown) => node],
+  useDrop: () => [{ isOver: false }, (node: unknown) => node],
+  DndProvider: ({ children }: { children?: unknown }) => children,
+}));
+
+// Mock store（使用 vi.hoisted 避免 require/静态导入无法解析 store 模块）
+const { mockUseAppStore } = vi.hoisted(() => ({ mockUseAppStore: vi.fn() }));
+vi.mock('../../store', () => ({ useAppStore: mockUseAppStore }));
+
+// 组件实际消费的 store 字段全集,测试仅需渲染不崩溃
+function store(overrides: Record<string, unknown> = {}) {
+  return {
     theme: 'dark',
-    files: [],
+    setTheme: vi.fn(),
+    language: 'zh',
+    messages: [] as unknown[],
+    addMessage: vi.fn(),
+    updateMessage: vi.fn(),
+    aiModels: [] as unknown[],
+    activeModelId: null,
+    openModelSettings: vi.fn(),
+    selectedFile: null,
+    setSelectedFile: vi.fn(),
+    collaborators: [] as unknown[],
+    pendingCodeInjection: null,
+    clearCodeInjection: vi.fn(),
+    openTabs: [] as string[],
+    pinnedTabs: [] as string[],
+    addOpenTab: vi.fn(),
+    removeOpenTab: vi.fn(),
+    reorderTabs: vi.fn(),
+    closeOtherTabs: vi.fn(),
+    closeRightTabs: vi.fn(),
+    closeAllTabs: vi.fn(),
+    togglePinTab: vi.fn(),
+    modifiedFiles: [] as string[],
+    files: [] as unknown[],
     currentFile: null,
     setCurrentFile: vi.fn(),
     updateFileContent: vi.fn(),
     addFile: vi.fn(),
     deleteFile: vi.fn(),
-  })),
-}));
+    ...overrides,
+  };
+}
 
 describe('Editor and File Manager Integration', () => {
   beforeEach(() => {
+    mockUseAppStore.mockReturnValue(store());
     vi.clearAllMocks();
   });
 
@@ -58,15 +94,17 @@ describe('Editor and File Manager Integration', () => {
         { name: 'app.tsx', path: '/app.tsx', content: 'export default App' },
       ];
 
-      vi.mocked(require('../store').useAppStore).mockReturnValue({
-        theme: 'dark',
-        files: mockFiles,
-        currentFile: null,
-        setCurrentFile: mockSetCurrentFile,
-        updateFileContent: vi.fn(),
-        addFile: vi.fn(),
-        deleteFile: vi.fn(),
-      });
+      mockUseAppStore.mockReturnValue(
+        store({
+          theme: 'dark',
+          files: mockFiles,
+          currentFile: null,
+          setCurrentFile: mockSetCurrentFile,
+          updateFileContent: vi.fn(),
+          addFile: vi.fn(),
+          deleteFile: vi.fn(),
+        })
+      );
 
       render(
         <div>
@@ -80,15 +118,17 @@ describe('Editor and File Manager Integration', () => {
 
     it('should handle file content updates from editor', () => {
       const mockUpdateFileContent = vi.fn();
-      vi.mocked(require('../store').useAppStore).mockReturnValue({
-        theme: 'dark',
-        files: [{ name: 'test.ts', path: '/test.ts', content: 'const x = 1' }],
-        currentFile: { name: 'test.ts', path: '/test.ts', content: 'const x = 1' },
-        setCurrentFile: vi.fn(),
-        updateFileContent: mockUpdateFileContent,
-        addFile: vi.fn(),
-        deleteFile: vi.fn(),
-      });
+      mockUseAppStore.mockReturnValue(
+        store({
+          theme: 'dark',
+          files: [{ name: 'test.ts', path: '/test.ts', content: 'const x = 1' }],
+          currentFile: { name: 'test.ts', path: '/test.ts', content: 'const x = 1' },
+          setCurrentFile: vi.fn(),
+          updateFileContent: mockUpdateFileContent,
+          addFile: vi.fn(),
+          deleteFile: vi.fn(),
+        })
+      );
 
       render(
         <div>
@@ -110,15 +150,17 @@ describe('Editor and File Manager Integration', () => {
         { name: 'file2.ts', path: '/file2.ts', content: 'content2' },
       ];
 
-      vi.mocked(require('../store').useAppStore).mockReturnValue({
-        theme: 'dark',
-        files: mockFiles,
-        currentFile: null,
-        setCurrentFile: mockSetCurrentFile,
-        updateFileContent: vi.fn(),
-        addFile: vi.fn(),
-        deleteFile: vi.fn(),
-      });
+      mockUseAppStore.mockReturnValue(
+        store({
+          theme: 'dark',
+          files: mockFiles,
+          currentFile: null,
+          setCurrentFile: mockSetCurrentFile,
+          updateFileContent: vi.fn(),
+          addFile: vi.fn(),
+          deleteFile: vi.fn(),
+        })
+      );
 
       render(
         <div>
@@ -136,15 +178,17 @@ describe('Editor and File Manager Integration', () => {
       const mockAddFile = vi.fn();
       const mockSetCurrentFile = vi.fn();
 
-      vi.mocked(require('../store').useAppStore).mockReturnValue({
-        theme: 'dark',
-        files: [],
-        currentFile: null,
-        setCurrentFile: mockSetCurrentFile,
-        updateFileContent: vi.fn(),
-        addFile: mockAddFile,
-        deleteFile: vi.fn(),
-      });
+      mockUseAppStore.mockReturnValue(
+        store({
+          theme: 'dark',
+          files: [],
+          currentFile: null,
+          setCurrentFile: mockSetCurrentFile,
+          updateFileContent: vi.fn(),
+          addFile: mockAddFile,
+          deleteFile: vi.fn(),
+        })
+      );
 
       render(
         <div>
@@ -160,15 +204,17 @@ describe('Editor and File Manager Integration', () => {
       const mockDeleteFile = vi.fn();
       const mockSetCurrentFile = vi.fn();
 
-      vi.mocked(require('../store').useAppStore).mockReturnValue({
-        theme: 'dark',
-        files: [{ name: 'test.ts', path: '/test.ts', content: 'content' }],
-        currentFile: { name: 'test.ts', path: '/test.ts', content: 'content' },
-        setCurrentFile: mockSetCurrentFile,
-        updateFileContent: vi.fn(),
-        addFile: vi.fn(),
-        deleteFile: mockDeleteFile,
-      });
+      mockUseAppStore.mockReturnValue(
+        store({
+          theme: 'dark',
+          files: [{ name: 'test.ts', path: '/test.ts', content: 'content' }],
+          currentFile: { name: 'test.ts', path: '/test.ts', content: 'content' },
+          setCurrentFile: mockSetCurrentFile,
+          updateFileContent: vi.fn(),
+          addFile: vi.fn(),
+          deleteFile: mockDeleteFile,
+        })
+      );
 
       render(
         <div>
@@ -183,15 +229,17 @@ describe('Editor and File Manager Integration', () => {
     it('should handle file renaming with editor update', () => {
       const mockUpdateFileContent = vi.fn();
 
-      vi.mocked(require('../store').useAppStore).mockReturnValue({
-        theme: 'dark',
-        files: [{ name: 'old.ts', path: '/old.ts', content: 'content' }],
-        currentFile: { name: 'old.ts', path: '/old.ts', content: 'content' },
-        setCurrentFile: vi.fn(),
-        updateFileContent: mockUpdateFileContent,
-        addFile: vi.fn(),
-        deleteFile: vi.fn(),
-      });
+      mockUseAppStore.mockReturnValue(
+        store({
+          theme: 'dark',
+          files: [{ name: 'old.ts', path: '/old.ts', content: 'content' }],
+          currentFile: { name: 'old.ts', path: '/old.ts', content: 'content' },
+          setCurrentFile: vi.fn(),
+          updateFileContent: mockUpdateFileContent,
+          addFile: vi.fn(),
+          deleteFile: vi.fn(),
+        })
+      );
 
       render(
         <div>
@@ -208,15 +256,17 @@ describe('Editor and File Manager Integration', () => {
     it('should update file tree when editor saves content', () => {
       const mockUpdateFileContent = vi.fn();
 
-      vi.mocked(require('../store').useAppStore).mockReturnValue({
-        theme: 'dark',
-        files: [{ name: 'test.ts', path: '/test.ts', content: 'content' }],
-        currentFile: { name: 'test.ts', path: '/test.ts', content: 'content' },
-        setCurrentFile: vi.fn(),
-        updateFileContent: mockUpdateFileContent,
-        addFile: vi.fn(),
-        deleteFile: vi.fn(),
-      });
+      mockUseAppStore.mockReturnValue(
+        store({
+          theme: 'dark',
+          files: [{ name: 'test.ts', path: '/test.ts', content: 'content' }],
+          currentFile: { name: 'test.ts', path: '/test.ts', content: 'content' },
+          setCurrentFile: vi.fn(),
+          updateFileContent: mockUpdateFileContent,
+          addFile: vi.fn(),
+          deleteFile: vi.fn(),
+        })
+      );
 
       render(
         <div>
@@ -229,15 +279,17 @@ describe('Editor and File Manager Integration', () => {
     });
 
     it('should display file modification indicators', () => {
-      vi.mocked(require('../store').useAppStore).mockReturnValue({
-        theme: 'dark',
-        files: [{ name: 'test.ts', path: '/test.ts', content: 'content', modified: true }],
-        currentFile: { name: 'test.ts', path: '/test.ts', content: 'content' },
-        setCurrentFile: vi.fn(),
-        updateFileContent: vi.fn(),
-        addFile: vi.fn(),
-        deleteFile: vi.fn(),
-      });
+      mockUseAppStore.mockReturnValue(
+        store({
+          theme: 'dark',
+          files: [{ name: 'test.ts', path: '/test.ts', content: 'content', modified: true }],
+          currentFile: { name: 'test.ts', path: '/test.ts', content: 'content' },
+          setCurrentFile: vi.fn(),
+          updateFileContent: vi.fn(),
+          addFile: vi.fn(),
+          deleteFile: vi.fn(),
+        })
+      );
 
       render(
         <div>
@@ -257,15 +309,17 @@ describe('Editor and File Manager Integration', () => {
         { name: 'file3.ts', path: '/file3.ts', content: 'content3' },
       ];
 
-      vi.mocked(require('../store').useAppStore).mockReturnValue({
-        theme: 'dark',
-        files: mockFiles,
-        currentFile: null,
-        setCurrentFile: vi.fn(),
-        updateFileContent: vi.fn(),
-        addFile: vi.fn(),
-        deleteFile: vi.fn(),
-      });
+      mockUseAppStore.mockReturnValue(
+        store({
+          theme: 'dark',
+          files: mockFiles,
+          currentFile: null,
+          setCurrentFile: vi.fn(),
+          updateFileContent: vi.fn(),
+          addFile: vi.fn(),
+          deleteFile: vi.fn(),
+        })
+      );
 
       render(
         <div>

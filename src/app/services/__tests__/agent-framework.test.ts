@@ -11,7 +11,9 @@
  * @tags [test],[agent],[core],[protocol],[skills]
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
+import AgentProtocol from '../agent-protocol';
 
 describe('Agent框架测试', () => {
   describe('Agent核心框架', () => {
@@ -196,10 +198,9 @@ describe('Agent框架测试', () => {
   });
 
   describe('Agent通信协议', () => {
-    let protocol: import('../agent-protocol').AgentProtocol;
+    let protocol: AgentProtocol;
 
-    beforeEach(async () => {
-      const { AgentProtocol } = await import('../agent-protocol');
+    beforeEach(() => {
       protocol = new AgentProtocol();
     });
 
@@ -248,7 +249,7 @@ describe('Agent框架测试', () => {
       expect(response.payload).toEqual({ response: 'ok' });
     });
 
-    it('应该正确广播消息', () => {
+    it('应该正确广播消息', async () => {
       const handler1 = vi.fn();
       const handler2 = vi.fn();
 
@@ -256,6 +257,8 @@ describe('Agent框架测试', () => {
       protocol.subscribe('broadcast-topic', 'agent-2', handler2);
 
       protocol.broadcast('broadcast-topic', { message: 'broadcast' });
+      // 消息投递为异步队列处理，等待事件循环清空后再断言
+      await new Promise((resolve) => setTimeout(resolve, 0));
 
       expect(handler1).toHaveBeenCalled();
       expect(handler2).toHaveBeenCalled();
@@ -273,9 +276,11 @@ describe('Agent框架测试', () => {
       expect(handler).toHaveBeenCalledTimes(1);
     });
 
-    it('应该正确获取消息历史', () => {
+    it('应该正确获取消息历史', async () => {
       protocol.publish('history-topic', { message: 'msg1' });
       protocol.publish('history-topic', { message: 'msg2' });
+      // 消息入历史为异步队列处理，等待事件循环清空后再断言
+      await new Promise((resolve) => setTimeout(resolve, 0));
 
       const history = protocol.getMessageHistory({ topic: 'history-topic' });
 
@@ -575,7 +580,6 @@ describe('Agent框架测试', () => {
 describe('Agent系统集成测试', () => {
   it('Agent核心与通信协议集成', async () => {
     const { AgentManager } = await import('../agent-core');
-    const { AgentProtocol } = await import('../agent-protocol');
 
     const manager = new AgentManager();
     const protocol = new AgentProtocol();

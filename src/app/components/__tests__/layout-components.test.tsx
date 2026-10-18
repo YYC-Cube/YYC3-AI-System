@@ -59,7 +59,7 @@ const mockStore = {
   removeProject: vi.fn(),
 };
 
-vi.mock('../store', () => ({
+vi.mock('../../store', () => ({
   useAppStore: () => mockStore,
 }));
 

@@ -11,14 +11,14 @@
  * @tags [test],[function-layer],[ai],[editor],[terminal]
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('功能层服务测试', () => {
   describe('AI对话增强服务', () => {
-    let aiService: import('../ai-conversation-service').AIConversationService;
+    let aiService: import('../ai-conversation-service').default;
 
     beforeEach(async () => {
-      const { AIConversationService } = await import('../ai-conversation-service');
+      const { default: AIConversationService } = await import('../ai-conversation-service');
       aiService = new AIConversationService();
     });
 
@@ -122,10 +122,10 @@ describe('功能层服务测试', () => {
   });
 
   describe('代码编辑器增强服务', () => {
-    let editorService: import('../code-editor-service').CodeEditorService;
+    let editorService: import('../code-editor-service').default;
 
     beforeEach(async () => {
-      const { CodeEditorService } = await import('../code-editor-service');
+      const { default: CodeEditorService } = await import('../code-editor-service');
       editorService = new CodeEditorService();
     });
 
@@ -197,13 +197,13 @@ describe('功能层服务测试', () => {
     });
 
     it('应该正确格式化代码', () => {
-      const code = 'function test(){return 1;}';
+      const code = 'function test() {\nreturn 1;\n}';
       const formatted = editorService.format(code, 'typescript', {
         tabSize: 2,
         insertSpaces: true,
       });
 
-      expect(formatted).toContain('\n');
+      expect(formatted).toBe('function test() {\n  return 1;\n}');
     });
 
     it('应该正确提取导航符号', () => {
@@ -219,10 +219,10 @@ describe('功能层服务测试', () => {
   });
 
   describe('终端功能增强服务', () => {
-    let terminalService: import('../terminal-service').TerminalService;
+    let terminalService: import('../terminal-service').default;
 
     beforeEach(async () => {
-      const { TerminalService } = await import('../terminal-service');
+      const { default: TerminalService } = await import('../terminal-service');
       terminalService = new TerminalService();
     });
 
@@ -239,8 +239,8 @@ describe('功能层服务测试', () => {
     });
 
     it('应该正确获取所有会话', () => {
-      terminalService.createSession('终端1');
-      terminalService.createSession('终端2');
+      terminalService.createSession({ name: '终端1' });
+      terminalService.createSession({ name: '终端2' });
 
       const sessions = terminalService.getAllSessions();
 
@@ -340,7 +340,7 @@ describe('功能层服务测试', () => {
 
 describe('跨服务集成测试', () => {
   it('AI服务与事件总线集成', async () => {
-    const { AIConversationService } = await import('../ai-conversation-service');
+    const { default: AIConversationService } = await import('../ai-conversation-service');
     const { createEventBus } = await import('../event-bus');
 
     const eventBus = createEventBus();
@@ -358,7 +358,7 @@ describe('跨服务集成测试', () => {
   });
 
   it('编辑器服务与错误处理集成', async () => {
-    const { CodeEditorService } = await import('../code-editor-service');
+    const { default: CodeEditorService } = await import('../code-editor-service');
     const { ErrorHandler } = await import('../error-handler');
 
     const editorService = new CodeEditorService();
@@ -378,7 +378,7 @@ describe('跨服务集成测试', () => {
   });
 
   it('终端服务与状态管理集成', async () => {
-    const { TerminalService } = await import('../terminal-service');
+    const { default: TerminalService } = await import('../terminal-service');
     const { createUndoRedoService } = await import('../undo-redo-service');
 
     const terminalService = new TerminalService();

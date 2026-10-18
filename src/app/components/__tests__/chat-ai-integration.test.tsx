@@ -9,8 +9,8 @@
  * @tags integration,test,chat,ai
  */
 
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
+import { render, waitFor } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import '@testing-library/jest-dom';
 import { aiProviderService } from '../../services/ai-provider';
@@ -28,15 +28,11 @@ vi.mock('../../services/ai-provider', () => ({
 
 const mockAI = aiProviderService as any;
 
-// Mock store
-vi.mock('../store', () => ({
-  useAppStore: vi.fn(() => ({
-    theme: 'dark',
-    messages: [],
-    addMessage: vi.fn(),
-    updateMessage: vi.fn(),
-  })),
+// Mock store（使用 vi.hoisted 提升 mock，避免 require/静态导入无法解析 store 模块）
+const { mockUseAppStore } = vi.hoisted(() => ({
+  mockUseAppStore: vi.fn(),
 }));
+vi.mock('../../store', () => ({ useAppStore: mockUseAppStore }));
 
 describe('Chat and AI Service Integration', () => {
   beforeEach(() => {
@@ -56,8 +52,11 @@ describe('Chat and AI Service Integration', () => {
       });
 
       const mockAddMessage = vi.fn();
-      vi.mocked(require('../store').useAppStore).mockReturnValue({
+      mockUseAppStore.mockReturnValue({
         theme: 'dark',
+        aiModels: [],
+        chatSessions: [],
+        searchResults: [],
         messages: [],
         addMessage: mockAddMessage,
         updateMessage: vi.fn(),
@@ -78,8 +77,11 @@ describe('Chat and AI Service Integration', () => {
       });
 
       const mockAddMessage = vi.fn();
-      vi.mocked(require('../store').useAppStore).mockReturnValue({
+      mockUseAppStore.mockReturnValue({
         theme: 'dark',
+        aiModels: [],
+        chatSessions: [],
+        searchResults: [],
         messages: [],
         addMessage: mockAddMessage,
         updateMessage: vi.fn(),
@@ -100,8 +102,11 @@ describe('Chat and AI Service Integration', () => {
       });
 
       const mockAddMessage = vi.fn();
-      vi.mocked(require('../store').useAppStore).mockReturnValue({
+      mockUseAppStore.mockReturnValue({
         theme: 'dark',
+        aiModels: [],
+        chatSessions: [],
+        searchResults: [],
         messages: [],
         addMessage: mockAddMessage,
         updateMessage: vi.fn(),
@@ -119,8 +124,11 @@ describe('Chat and AI Service Integration', () => {
       mockGenerateChat.mockRejectedValue(new Error('AI service error'));
 
       const mockAddMessage = vi.fn();
-      vi.mocked(require('../store').useAppStore).mockReturnValue({
+      mockUseAppStore.mockReturnValue({
         theme: 'dark',
+        aiModels: [],
+        chatSessions: [],
+        searchResults: [],
         messages: [],
         addMessage: mockAddMessage,
         updateMessage: vi.fn(),
@@ -143,8 +151,11 @@ describe('Chat and AI Service Integration', () => {
       });
 
       const mockAddMessage = vi.fn();
-      vi.mocked(require('../store').useAppStore).mockReturnValue({
+      mockUseAppStore.mockReturnValue({
         theme: 'dark',
+        aiModels: [],
+        chatSessions: [],
+        searchResults: [],
         messages: [],
         addMessage: mockAddMessage,
         updateMessage: vi.fn(),
@@ -165,8 +176,11 @@ describe('Chat and AI Service Integration', () => {
       });
 
       const mockAddMessage = vi.fn();
-      vi.mocked(require('../store').useAppStore).mockReturnValue({
+      mockUseAppStore.mockReturnValue({
         theme: 'dark',
+        aiModels: [],
+        chatSessions: [],
+        searchResults: [],
         messages: [],
         addMessage: mockAddMessage,
         updateMessage: vi.fn(),
@@ -184,8 +198,11 @@ describe('Chat and AI Service Integration', () => {
       mockGenerateCode.mockRejectedValue(new Error('Code generation failed'));
 
       const mockAddMessage = vi.fn();
-      vi.mocked(require('../store').useAppStore).mockReturnValue({
+      mockUseAppStore.mockReturnValue({
         theme: 'dark',
+        aiModels: [],
+        chatSessions: [],
+        searchResults: [],
         messages: [],
         addMessage: mockAddMessage,
         updateMessage: vi.fn(),
@@ -212,8 +229,11 @@ describe('Chat and AI Service Integration', () => {
         { role: 'assistant', content: 'Hi there!' },
       ];
       const mockAddMessage = vi.fn();
-      vi.mocked(require('../store').useAppStore).mockReturnValue({
+      mockUseAppStore.mockReturnValue({
         theme: 'dark',
+        aiModels: [],
+        chatSessions: [],
+        searchResults: [],
         messages: mockMessages,
         addMessage: mockAddMessage,
         updateMessage: vi.fn(),
@@ -234,8 +254,11 @@ describe('Chat and AI Service Integration', () => {
       });
 
       const mockAddMessage = vi.fn();
-      vi.mocked(require('../store').useAppStore).mockReturnValue({
+      mockUseAppStore.mockReturnValue({
         theme: 'dark',
+        aiModels: [],
+        chatSessions: [],
+        searchResults: [],
         messages: [],
         addMessage: mockAddMessage,
         updateMessage: vi.fn(),
@@ -261,8 +284,11 @@ describe('Chat and AI Service Integration', () => {
         content: `Message ${i}`,
       }));
       const mockAddMessage = vi.fn();
-      vi.mocked(require('../store').useAppStore).mockReturnValue({
+      mockUseAppStore.mockReturnValue({
         theme: 'dark',
+        aiModels: [],
+        chatSessions: [],
+        searchResults: [],
         messages: mockMessages,
         addMessage: mockAddMessage,
         updateMessage: vi.fn(),
@@ -285,8 +311,11 @@ describe('Chat and AI Service Integration', () => {
       });
 
       const mockAddMessage = vi.fn();
-      vi.mocked(require('../store').useAppStore).mockReturnValue({
+      mockUseAppStore.mockReturnValue({
         theme: 'dark',
+        aiModels: [],
+        chatSessions: [],
+        searchResults: [],
         messages: [],
         addMessage: mockAddMessage,
         updateMessage: vi.fn(),
@@ -307,8 +336,11 @@ describe('Chat and AI Service Integration', () => {
       });
 
       const mockAddMessage = vi.fn();
-      vi.mocked(require('../store').useAppStore).mockReturnValue({
+      mockUseAppStore.mockReturnValue({
         theme: 'dark',
+        aiModels: [],
+        chatSessions: [],
+        searchResults: [],
         messages: [],
         addMessage: mockAddMessage,
         updateMessage: vi.fn(),

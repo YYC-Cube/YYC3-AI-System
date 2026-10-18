@@ -23,7 +23,7 @@
  * notes: 使用Vitest和Mock函数
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock sql.js
 vi.mock('sql.js', () => ({
@@ -513,11 +513,19 @@ describe('Type Helpers', () => {
 
 describe('WS Collab', () => {
   let wsCollab: any;
+  let randomSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(async () => {
     vi.clearAllMocks();
+    // connect() 内部按随机数决定握手成败（95% 成功），固定随机值以消除用例抖动。
+    randomSpy = vi.spyOn(Math, 'random').mockReturnValue(0.5);
     const module = await import('../../utils/ws-collab');
     wsCollab = module.wsCollab;
+  });
+
+  afterEach(() => {
+    wsCollab.disconnect();
+    randomSpy.mockRestore();
   });
 
   it('should have required methods', () => {

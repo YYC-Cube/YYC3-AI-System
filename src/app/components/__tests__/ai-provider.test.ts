@@ -458,6 +458,8 @@ describe('AIProviderService', () => {
       // Set max requests to 1 and try to make 2 requests
       service['maxRequestsPerMinute'] = 1;
       service['rateLimitEnabled'] = true;
+      // 关闭响应缓存，避免第二次相同请求命中缓存而绕过限流检查
+      service['cacheEnabled'] = false;
 
       const messages: AIChatMessage[] = [{ role: 'user', content: 'Hello' }];
 

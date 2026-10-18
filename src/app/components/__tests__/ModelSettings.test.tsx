@@ -15,7 +15,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // Mock useAppStore
-vi.mock('../store', () => ({
+vi.mock('../../store', () => ({
   useAppStore: {
     getState: vi.fn(() => ({
       aiModels: [],

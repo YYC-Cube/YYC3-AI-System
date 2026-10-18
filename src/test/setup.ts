@@ -71,6 +71,11 @@ Object.defineProperty(window, 'IntersectionObserver', {
 // Mock Element.scrollIntoView
 Element.prototype.scrollIntoView = vi.fn();
 
+// Mock Pointer Capture API（jsdom 未实现，Radix Slider 等指针组件会调用）
+Element.prototype.setPointerCapture = vi.fn();
+Element.prototype.releasePointerCapture = vi.fn();
+Element.prototype.hasPointerCapture = vi.fn(() => false);
+
 // Mock localStorage
 const localStorageStore: Record<string, string> = {};
 const localStorageMock = {

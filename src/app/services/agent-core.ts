@@ -99,7 +99,7 @@ interface TaskExecutor<T = unknown> {
 const STATE_TRANSITIONS: Record<AgentState, AgentState[]> = {
   idle: ['initializing', 'terminated'],
   initializing: ['idle', 'running', 'failed'],
-  running: ['paused', 'completed', 'failed', 'idle'],
+  running: ['paused', 'completed', 'failed', 'idle', 'terminated'],
   paused: ['running', 'terminated'],
   completed: ['idle', 'terminated'],
   failed: ['idle', 'terminated'],
@@ -116,11 +116,12 @@ class AgentCore {
   private executors: Map<string, TaskExecutor> = new Map();
   private eventHandlers: Map<string, Set<AgentEventHandler>> = new Map();
   private startTime: number = 0;
-  private pausePromise: { resolve: () => void } | null = null;
 
   constructor(config: AgentConfig) {
+    // 初始状态已由 state 字段声明为 'idle'，无需再执行一次状态转换。
+    // 且 STATE_TRANSITIONS.idle 未包含自转换 'idle'，此前的 transitionTo('idle')
+    // 会抛出「无效的状态转换: idle -> idle」，导致 AgentManager.createAgent 必然失败。
     this.config = config;
-    this.transitionTo('idle');
   }
 
   get id(): string {
@@ -207,10 +208,6 @@ class AgentCore {
 
     this.transitionTo('paused');
     await this.emit('paused', { agentId: this.id });
-
-    return new Promise((resolve) => {
-      this.pausePromise = { resolve };
-    });
   }
 
   async resume(): Promise<void> {
@@ -221,15 +218,14 @@ class AgentCore {
     this.transitionTo('running');
     await this.emit('resumed', { agentId: this.id });
 
-    if (this.pausePromise) {
-      this.pausePromise.resolve();
-      this.pausePromise = null;
-    }
-
     this.processQueue();
   }
 
   async terminate(): Promise<void> {
+    // 幂等：已处于 terminated 的 Agent 再次调用 terminate() 直接返回，
+    // 避免触发非法的自转换（terminated -> terminated）。
+    if (this.state === 'terminated') return;
+
     this.transitionTo('terminated');
     await this.emit('terminated', { agentId: this.id });
 

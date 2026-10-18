@@ -9,8 +9,8 @@
  * @tags integration,test,editor,preview
  */
 
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import '@testing-library/jest-dom';
 import { CodeEditor } from '../CodeEditor';
@@ -28,19 +28,57 @@ vi.mock('@monaco-editor/react', () => ({
   ),
 }));
 
-// Mock store
-vi.mock('../store', () => ({
-  useAppStore: vi.fn(() => ({
+// FileTabs 使用 react-dnd,渲染需要 DndProvider;这里对 hooks 做无侧写存根
+vi.mock('react-dnd', () => ({
+  useDrag: () => [{ isDragging: false }, (node: unknown) => node, (node: unknown) => node],
+  useDrop: () => [{ isOver: false }, (node: unknown) => node],
+  DndProvider: ({ children }: { children?: unknown }) => children,
+}));
+
+// Mock store（使用 vi.hoisted 避免 require/静态导入无法解析 store 模块）
+const { mockUseAppStore } = vi.hoisted(() => ({ mockUseAppStore: vi.fn() }));
+vi.mock('../../store', () => ({ useAppStore: mockUseAppStore }));
+
+// 组件实际消费的 store 字段全集,测试仅需渲染不崩溃
+function store(overrides: Record<string, unknown> = {}) {
+  return {
     theme: 'dark',
+    setTheme: vi.fn(),
+    language: 'zh',
+    messages: [] as unknown[],
+    addMessage: vi.fn(),
+    updateMessage: vi.fn(),
+    aiModels: [] as unknown[],
+    activeModelId: null,
+    openModelSettings: vi.fn(),
+    selectedFile: null,
+    setSelectedFile: vi.fn(),
+    collaborators: [] as unknown[],
+    pendingCodeInjection: null,
+    clearCodeInjection: vi.fn(),
+    openTabs: [] as string[],
+    pinnedTabs: [] as string[],
+    addOpenTab: vi.fn(),
+    removeOpenTab: vi.fn(),
+    reorderTabs: vi.fn(),
+    closeOtherTabs: vi.fn(),
+    closeRightTabs: vi.fn(),
+    closeAllTabs: vi.fn(),
+    togglePinTab: vi.fn(),
+    modifiedFiles: [] as string[],
     currentFile: { name: 'test.tsx', content: '' },
     previewContent: null,
     setPreviewContent: vi.fn(),
     updateFileContent: vi.fn(),
-  })),
-}));
+    sandboxPreviewCode: '',
+    sandboxPreviewLang: 'html',
+    ...overrides,
+  };
+}
 
 describe('Editor and Preview Integration', () => {
   beforeEach(() => {
+    mockUseAppStore.mockReturnValue(store());
     vi.clearAllMocks();
   });
 
@@ -51,13 +89,15 @@ describe('Editor and Preview Integration', () => {
   describe('1. Real-time Preview Updates', () => {
     it('should update preview when editor content changes', async () => {
       const mockSetPreviewContent = vi.fn();
-      vi.mocked(require('../store').useAppStore).mockReturnValue({
-        theme: 'dark',
-        currentFile: { name: 'test.tsx', content: 'export default App' },
-        previewContent: null,
-        setPreviewContent: mockSetPreviewContent,
-        updateFileContent: vi.fn(),
-      });
+      mockUseAppStore.mockReturnValue(
+        store({
+          theme: 'dark',
+          currentFile: { name: 'test.tsx', content: 'export default App' },
+          previewContent: null,
+          setPreviewContent: mockSetPreviewContent,
+          updateFileContent: vi.fn(),
+        })
+      );
 
       render(
         <div>
@@ -78,13 +118,15 @@ describe('Editor and Preview Integration', () => {
       const mockSetPreviewContent = vi.fn();
       vi.useFakeTimers();
 
-      vi.mocked(require('../store').useAppStore).mockReturnValue({
-        theme: 'dark',
-        currentFile: { name: 'test.tsx', content: 'const x = 1' },
-        previewContent: null,
-        setPreviewContent: mockSetPreviewContent,
-        updateFileContent: vi.fn(),
-      });
+      mockUseAppStore.mockReturnValue(
+        store({
+          theme: 'dark',
+          currentFile: { name: 'test.tsx', content: 'const x = 1' },
+          previewContent: null,
+          setPreviewContent: mockSetPreviewContent,
+          updateFileContent: vi.fn(),
+        })
+      );
 
       render(
         <div>
@@ -103,13 +145,15 @@ describe('Editor and Preview Integration', () => {
 
     it('should support manual preview refresh', () => {
       const mockSetPreviewContent = vi.fn();
-      vi.mocked(require('../store').useAppStore).mockReturnValue({
-        theme: 'dark',
-        currentFile: { name: 'test.tsx', content: 'const x = 1' },
-        previewContent: 'old preview',
-        setPreviewContent: mockSetPreviewContent,
-        updateFileContent: vi.fn(),
-      });
+      mockUseAppStore.mockReturnValue(
+        store({
+          theme: 'dark',
+          currentFile: { name: 'test.tsx', content: 'const x = 1' },
+          previewContent: 'old preview',
+          setPreviewContent: mockSetPreviewContent,
+          updateFileContent: vi.fn(),
+        })
+      );
 
       render(
         <div>
@@ -125,13 +169,15 @@ describe('Editor and Preview Integration', () => {
   describe('2. Preview Device Simulation', () => {
     it('should adapt preview to selected device', () => {
       const mockSetPreviewContent = vi.fn();
-      vi.mocked(require('../store').useAppStore).mockReturnValue({
-        theme: 'dark',
-        currentFile: { name: 'test.tsx', content: '<div>App</div>' },
-        previewContent: null,
-        setPreviewContent: mockSetPreviewContent,
-        updateFileContent: vi.fn(),
-      });
+      mockUseAppStore.mockReturnValue(
+        store({
+          theme: 'dark',
+          currentFile: { name: 'test.tsx', content: '<div>App</div>' },
+          previewContent: null,
+          setPreviewContent: mockSetPreviewContent,
+          updateFileContent: vi.fn(),
+        })
+      );
 
       render(
         <div>
@@ -145,13 +191,15 @@ describe('Editor and Preview Integration', () => {
 
     it('should handle responsive design testing', () => {
       const mockSetPreviewContent = vi.fn();
-      vi.mocked(require('../store').useAppStore).mockReturnValue({
-        theme: 'dark',
-        currentFile: { name: 'test.tsx', content: 'export default App' },
-        previewContent: null,
-        setPreviewContent: mockSetPreviewContent,
-        updateFileContent: vi.fn(),
-      });
+      mockUseAppStore.mockReturnValue(
+        store({
+          theme: 'dark',
+          currentFile: { name: 'test.tsx', content: 'export default App' },
+          previewContent: null,
+          setPreviewContent: mockSetPreviewContent,
+          updateFileContent: vi.fn(),
+        })
+      );
 
       render(
         <div>
@@ -165,13 +213,15 @@ describe('Editor and Preview Integration', () => {
 
     it('should support orientation changes', () => {
       const mockSetPreviewContent = vi.fn();
-      vi.mocked(require('../store').useAppStore).mockReturnValue({
-        theme: 'dark',
-        currentFile: { name: 'test.tsx', content: 'export default App' },
-        previewContent: null,
-        setPreviewContent: mockSetPreviewContent,
-        updateFileContent: vi.fn(),
-      });
+      mockUseAppStore.mockReturnValue(
+        store({
+          theme: 'dark',
+          currentFile: { name: 'test.tsx', content: 'export default App' },
+          previewContent: null,
+          setPreviewContent: mockSetPreviewContent,
+          updateFileContent: vi.fn(),
+        })
+      );
 
       render(
         <div>
@@ -187,13 +237,15 @@ describe('Editor and Preview Integration', () => {
   describe('3. Preview Error Handling', () => {
     it('should display preview errors gracefully', () => {
       const mockSetPreviewContent = vi.fn();
-      vi.mocked(require('../store').useAppStore).mockReturnValue({
-        theme: 'dark',
-        currentFile: { name: 'test.tsx', content: 'invalid jsx' },
-        previewContent: { error: 'Syntax error' },
-        setPreviewContent: mockSetPreviewContent,
-        updateFileContent: vi.fn(),
-      });
+      mockUseAppStore.mockReturnValue(
+        store({
+          theme: 'dark',
+          currentFile: { name: 'test.tsx', content: 'invalid jsx' },
+          previewContent: { error: 'Syntax error' },
+          setPreviewContent: mockSetPreviewContent,
+          updateFileContent: vi.fn(),
+        })
+      );
 
       render(
         <div>
@@ -207,13 +259,15 @@ describe('Editor and Preview Integration', () => {
 
     it('should recover from preview errors', () => {
       const mockSetPreviewContent = vi.fn();
-      vi.mocked(require('../store').useAppStore).mockReturnValue({
-        theme: 'dark',
-        currentFile: { name: 'test.tsx', content: 'export default App' },
-        previewContent: null,
-        setPreviewContent: mockSetPreviewContent,
-        updateFileContent: vi.fn(),
-      });
+      mockUseAppStore.mockReturnValue(
+        store({
+          theme: 'dark',
+          currentFile: { name: 'test.tsx', content: 'export default App' },
+          previewContent: null,
+          setPreviewContent: mockSetPreviewContent,
+          updateFileContent: vi.fn(),
+        })
+      );
 
       render(
         <div>
@@ -227,13 +281,15 @@ describe('Editor and Preview Integration', () => {
 
     it('should show error details from preview', () => {
       const mockSetPreviewContent = vi.fn();
-      vi.mocked(require('../store').useAppStore).mockReturnValue({
-        theme: 'dark',
-        currentFile: { name: 'test.tsx', content: 'export default App' },
-        previewContent: { error: 'Error details' },
-        setPreviewContent: mockSetPreviewContent,
-        updateFileContent: vi.fn(),
-      });
+      mockUseAppStore.mockReturnValue(
+        store({
+          theme: 'dark',
+          currentFile: { name: 'test.tsx', content: 'export default App' },
+          previewContent: { error: 'Error details' },
+          setPreviewContent: mockSetPreviewContent,
+          updateFileContent: vi.fn(),
+        })
+      );
 
       render(
         <div>

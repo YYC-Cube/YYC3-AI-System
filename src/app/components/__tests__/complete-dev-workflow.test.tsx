@@ -9,8 +9,8 @@
  * @tags integration,test,workflow,dev
  */
 
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import '@testing-library/jest-dom';
 import { ChatInterface } from '../ChatInterface';
@@ -29,13 +29,19 @@ vi.mock('@monaco-editor/react', () => ({
   ),
 }));
 
-// Mock services
-vi.mock('../../services/ai-provider', () => ({
-  aiProviderService: {
-    generateChat: vi.fn(),
-    generateCode: vi.fn(),
-  },
+// DnD 存根（FileTabs 依赖 useDrag/useDrop 的 DndProvider 上下文）
+vi.mock('react-dnd', () => ({
+  useDrag: () => [{ isDragging: false }, (node: unknown) => node, (node: unknown) => node],
+  useDrop: () => [{ isOver: false }, (node: unknown) => node],
+  DndProvider: ({ children }: { children?: unknown }) => children,
 }));
+
+// Mock services（vi.hoisted 提供 AI 服务 mock，避免 require 解析失败）
+const { mockAiProvider, mockUseAppStore } = vi.hoisted(() => ({
+  mockAiProvider: { generateChat: vi.fn(), generateCode: vi.fn() },
+  mockUseAppStore: vi.fn(),
+}));
+vi.mock('../../services/ai-provider', () => ({ aiProviderService: mockAiProvider }));
 
 vi.mock('../../services/storage-service', () => ({
   storageService: {
@@ -46,25 +52,66 @@ vi.mock('../../services/storage-service', () => ({
   },
 }));
 
-// Mock store
-vi.mock('../store', () => ({
-  useAppStore: vi.fn(() => ({
+// Mock store（vi.hoisted 避免 require/静态导入无法解析 store 模块）
+vi.mock('../../store', () => ({ useAppStore: mockUseAppStore }));
+
+// 组件实际消费的 store 字段全集,测试仅需渲染不崩溃
+function store(overrides: Record<string, unknown> = {}) {
+  return {
     theme: 'dark',
-    files: [],
-    messages: [],
+    setTheme: vi.fn(),
+    language: 'zh',
+    messages: [] as unknown[],
+    addMessage: vi.fn(),
+    updateMessage: vi.fn(),
+    aiModels: [] as unknown[],
+    activeModelId: null,
+    openModelSettings: vi.fn(),
+    quoteContent: null,
+    setQuoteContent: vi.fn(),
+    activeMsgId: null,
+    setActiveMsgId: vi.fn(),
+    chatSessions: [] as unknown[],
+    currentSessionId: null,
+    loadSession: vi.fn(),
+    createChatSession: vi.fn(),
+    deleteChatSession: vi.fn(),
+    syncMessagesToSession: vi.fn(),
+    searchQuery: '',
+    setSearchQuery: vi.fn(),
+    searchResults: [] as unknown[],
+    doGlobalSearch: vi.fn(),
+    selectedFile: null,
+    setSelectedFile: vi.fn(),
+    collaborators: [] as unknown[],
+    pendingCodeInjection: null,
+    clearCodeInjection: vi.fn(),
+    openTabs: [] as string[],
+    pinnedTabs: [] as string[],
+    addOpenTab: vi.fn(),
+    removeOpenTab: vi.fn(),
+    reorderTabs: vi.fn(),
+    closeOtherTabs: vi.fn(),
+    closeRightTabs: vi.fn(),
+    closeAllTabs: vi.fn(),
+    togglePinTab: vi.fn(),
+    modifiedFiles: [] as string[],
+    files: [] as unknown[],
     currentFile: null,
     previewContent: null,
     addFile: vi.fn(),
     setCurrentFile: vi.fn(),
     updateFileContent: vi.fn(),
-    addMessage: vi.fn(),
-    updateMessage: vi.fn(),
     setPreviewContent: vi.fn(),
-  })),
-}));
+    sandboxPreviewCode: '',
+    sandboxPreviewLang: 'html',
+    ...overrides,
+  };
+}
 
 describe('Complete Development Workflow Integration', () => {
   beforeEach(() => {
+    mockUseAppStore.mockReturnValue(store());
     vi.clearAllMocks();
   });
 
@@ -81,7 +128,8 @@ describe('Complete Development Workflow Integration', () => {
       const mockUpdateFileContent = vi.fn();
       const mockSetPreviewContent = vi.fn();
 
-      vi.mocked(require('../store').useAppStore).mockReturnValue({
+      mockUseAppStore.mockReturnValue({
+        ...store(),
         theme: 'dark',
         files: [],
         messages: [],
@@ -130,7 +178,8 @@ describe('Complete Development Workflow Integration', () => {
       const mockAddFile = vi.fn();
       const mockSetCurrentFile = vi.fn();
 
-      vi.mocked(require('../store').useAppStore).mockReturnValue({
+      mockUseAppStore.mockReturnValue({
+        ...store(),
         theme: 'dark',
         files: [],
         messages: [],
@@ -170,15 +219,14 @@ describe('Complete Development Workflow Integration', () => {
       const mockAddMessage = vi.fn();
       const mockUpdateFileContent = vi.fn();
 
-      const mockGenerateCode = vi.mocked(
-        require('../../services/ai-provider').aiProviderService.generateCode
-      );
+      const mockGenerateCode = vi.mocked(mockAiProvider.generateCode);
       mockGenerateCode.mockResolvedValue({
         code: 'const component = () => <div>Hello</div>;',
         explanation: 'React component created',
       });
 
-      vi.mocked(require('../store').useAppStore).mockReturnValue({
+      mockUseAppStore.mockReturnValue({
+        ...store(),
         theme: 'dark',
         files: [],
         messages: [],
@@ -225,12 +273,11 @@ describe('Complete Development Workflow Integration', () => {
     it('should handle AI service failures gracefully', async () => {
       const mockAddMessage = vi.fn();
 
-      const mockGenerateChat = vi.mocked(
-        require('../../services/ai-provider').aiProviderService.generateChat
-      );
+      const mockGenerateChat = vi.mocked(mockAiProvider.generateChat);
       mockGenerateChat.mockRejectedValue(new Error('AI service unavailable'));
 
-      vi.mocked(require('../store').useAppStore).mockReturnValue({
+      mockUseAppStore.mockReturnValue({
+        ...store(),
         theme: 'dark',
         files: [],
         messages: [],
@@ -273,7 +320,8 @@ describe('Complete Development Workflow Integration', () => {
         { name: 'styles.css', path: '/styles.css', content: '.container { padding: 10px; }' },
       ];
 
-      vi.mocked(require('../store').useAppStore).mockReturnValue({
+      mockUseAppStore.mockReturnValue({
+        ...store(),
         theme: 'dark',
         files: [],
         messages: [],
@@ -313,7 +361,8 @@ describe('Complete Development Workflow Integration', () => {
       const mockSetCurrentFile = vi.fn();
       const mockUpdateFileContent = vi.fn();
 
-      vi.mocked(require('../store').useAppStore).mockReturnValue({
+      mockUseAppStore.mockReturnValue({
+        ...store(),
         theme: 'dark',
         files: [],
         messages: [],
@@ -372,7 +421,8 @@ describe('Complete Development Workflow Integration', () => {
       const mockSetCurrentFile = vi.fn();
       const mockUpdateFileContent = vi.fn();
 
-      vi.mocked(require('../store').useAppStore).mockReturnValue({
+      mockUseAppStore.mockReturnValue({
+        ...store(),
         theme: 'dark',
         files: [],
         messages: [],
@@ -420,7 +470,8 @@ describe('Complete Development Workflow Integration', () => {
       const mockSetCurrentFile = vi.fn();
       const mockUpdateFileContent = vi.fn();
 
-      vi.mocked(require('../store').useAppStore).mockReturnValue({
+      mockUseAppStore.mockReturnValue({
+        ...store(),
         theme: 'dark',
         files: [],
         messages: [],

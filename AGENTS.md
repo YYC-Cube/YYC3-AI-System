@@ -216,13 +216,10 @@ LF endings.
   for messages containing `Warning:`/`Error:`/`MODULE_NOT_FOUND`.
 - Coverage thresholds are **80%** for lines/functions/branches/statements and will fail CI
   if `pnpm test:coverage` drops below.
-- **CI test strategy** (`.github/workflows/ci-cd.yml`, `test` job): `src/utils/`,
-  `src/services/`, `src/test/`, `src/contexts/`, `src/pages/` must pass. Tests under
-  `src/app/utils/` and `src/app/components/` run with `continue-on-error: true` and specific
-  excludes (`agent-framework*`, `data-layer*`, `function-layer*`, `complete-dev-workflow*`,
-  `services-coverage*`, `components-coverage*`, `CollabIndicator*`, `ai-provider*`,
-  `business-components*`, `ui-components*`) — these are known pre-existing failures. Don't be
-  surprised if a broad `pnpm test:run` shows failures; scope runs to a path when iterating.
+- **CI test strategy** (`.github/workflows/ci-cd.yml`, `test` job): all suites must pass —
+  `src/utils/`, `src/services/`, `src/test/`, `src/contexts/`, `src/pages/`,
+  `src/app/utils/`, `src/app/services/`, `src/app/components/`. There are no
+  `continue-on-error` escapes or path excludes; a broad `pnpm test:run` must stay green.
 - **Playwright** auto-starts the dev server (`webServer.command: 'npm run dev'`,
   `reuseExistingServer: !CI`). Base URL `http://localhost:3156`. Projects: chromium, firefox,
   webkit. `forbidOnly` in CI, 2 retries in CI.

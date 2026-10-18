@@ -12,11 +12,11 @@
  * @tags test,core,integration,components
  */
 
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-// Mock stores and services
-vi.mock('../store', () => ({
-  useAppStore: {
+// Mock stores and services（vi.hoisted 避免 require/静态导入无法解析 store 模块）
+const { mockUseAppStore } = vi.hoisted(() => ({
+  mockUseAppStore: {
     getState: vi.fn(() => ({
       theme: 'dark',
       language: 'zh',
@@ -30,6 +30,7 @@ vi.mock('../store', () => ({
     subscribe: vi.fn(),
   },
 }));
+vi.mock('../../store', () => ({ useAppStore: mockUseAppStore }));
 
 vi.mock('../settingsStore', () => ({
   useSettingsStore: {
@@ -325,7 +326,7 @@ describe('Error Handling', () => {
     const { ChatInterface } = await import('../ChatInterface');
 
     // Mock store to return undefined
-    vi.mocked(require('../../store').useAppStore.getState).mockReturnValue({} as unknown);
+    mockUseAppStore.getState.mockReturnValue({} as never);
 
     expect(() => {
       expect(ChatInterface).toBeDefined();

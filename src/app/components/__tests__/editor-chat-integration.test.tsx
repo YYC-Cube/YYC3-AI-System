@@ -10,16 +10,11 @@
  * @tags integration,test,editor,chat
  */
 
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
+import { render, screen } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import '@testing-library/jest-dom';
-import {
-  renderWithSidebar,
-  createMockStore,
-  waitForElement,
-  cleanupMocks,
-} from '../../../test/utils/test-helpers';
+import { cleanupMocks, renderWithSidebar, waitForElement } from '../../../test/utils/test-helpers';
 import { ChatInterface } from '../ChatInterface';
 import { CodeEditor } from '../CodeEditor';
 
@@ -35,8 +30,67 @@ vi.mock('@monaco-editor/react', () => ({
   ),
 }));
 
+// FileTabs 使用 react-dnd,渲染需要 DndProvider;这里对 hooks 做无侧写存根
+vi.mock('react-dnd', () => ({
+  useDrag: () => [{ isDragging: false }, (node: unknown) => node, (node: unknown) => node],
+  useDrop: () => [{ isOver: false }, (node: unknown) => node],
+  DndProvider: ({ children }: { children?: unknown }) => children,
+}));
+
+// Mock store（使用 vi.hoisted 避免 require/静态导入无法解析 store 模块）
+const { mockUseAppStore } = vi.hoisted(() => ({ mockUseAppStore: vi.fn() }));
+vi.mock('../../store', () => ({ useAppStore: mockUseAppStore }));
+
+// 组件实际消费的 store 字段全集,测试仅需渲染不崩溃
+function store(overrides: Record<string, unknown> = {}) {
+  return {
+    theme: 'dark',
+    setTheme: vi.fn(),
+    language: 'zh',
+    messages: [] as unknown[],
+    addMessage: vi.fn(),
+    updateMessage: vi.fn(),
+    aiModels: [] as unknown[],
+    activeModelId: null,
+    openModelSettings: vi.fn(),
+    quoteContent: null,
+    setQuoteContent: vi.fn(),
+    activeMsgId: null,
+    setActiveMsgId: vi.fn(),
+    chatSessions: [] as unknown[],
+    currentSessionId: null,
+    loadSession: vi.fn(),
+    createChatSession: vi.fn(),
+    deleteChatSession: vi.fn(),
+    syncMessagesToSession: vi.fn(),
+    searchQuery: '',
+    setSearchQuery: vi.fn(),
+    searchResults: [] as unknown[],
+    doGlobalSearch: vi.fn(),
+    selectedFile: null,
+    setSelectedFile: vi.fn(),
+    collaborators: [] as unknown[],
+    pendingCodeInjection: null,
+    clearCodeInjection: vi.fn(),
+    openTabs: [] as string[],
+    pinnedTabs: [] as string[],
+    addOpenTab: vi.fn(),
+    removeOpenTab: vi.fn(),
+    reorderTabs: vi.fn(),
+    closeOtherTabs: vi.fn(),
+    closeRightTabs: vi.fn(),
+    closeAllTabs: vi.fn(),
+    togglePinTab: vi.fn(),
+    modifiedFiles: [] as string[],
+    sandboxPreviewCode: '',
+    sandboxPreviewLang: 'html',
+    ...overrides,
+  };
+}
+
 describe('Editor and Chat Interface Integration', () => {
   beforeEach(() => {
+    mockUseAppStore.mockReturnValue(store());
     cleanupMocks();
   });
 
@@ -355,15 +409,17 @@ describe('Editor and Chat Interface Integration', () => {
   describe('2. Editor-Chat File Operations', () => {
     it('should handle file creation from AI suggestions', async () => {
       const mockSetCurrentFile = vi.fn();
-      vi.mocked(require('../store').useAppStore).mockReturnValue({
-        theme: 'dark',
-        messages: [],
-        addMessage: vi.fn(),
-        updateMessage: vi.fn(),
-        currentFile: { name: 'test.ts', content: '' },
-        setCurrentFile: mockSetCurrentFile,
-        updateFileContent: vi.fn(),
-      });
+      mockUseAppStore.mockReturnValue(
+        store({
+          theme: 'dark',
+          messages: [],
+          addMessage: vi.fn(),
+          updateMessage: vi.fn(),
+          currentFile: { name: 'test.ts', content: '' },
+          setCurrentFile: mockSetCurrentFile,
+          updateFileContent: vi.fn(),
+        })
+      );
 
       render(
         <div>
@@ -377,15 +433,17 @@ describe('Editor and Chat Interface Integration', () => {
 
     it('should update chat context when file is switched', () => {
       const mockSetCurrentFile = vi.fn();
-      vi.mocked(require('../store').useAppStore).mockReturnValue({
-        theme: 'dark',
-        messages: [],
-        addMessage: vi.fn(),
-        updateMessage: vi.fn(),
-        currentFile: { name: 'test.ts', content: '' },
-        setCurrentFile: mockSetCurrentFile,
-        updateFileContent: vi.fn(),
-      });
+      mockUseAppStore.mockReturnValue(
+        store({
+          theme: 'dark',
+          messages: [],
+          addMessage: vi.fn(),
+          updateMessage: vi.fn(),
+          currentFile: { name: 'test.ts', content: '' },
+          setCurrentFile: mockSetCurrentFile,
+          updateFileContent: vi.fn(),
+        })
+      );
 
       render(
         <div>
@@ -412,16 +470,18 @@ describe('Editor and Chat Interface Integration', () => {
 
   describe('3. Editor-Chat Theme Integration', () => {
     it('should synchronize theme changes between components', () => {
-      const mockStore = vi.mocked(require('../store').useAppStore);
-      mockStore.mockReturnValue({
-        theme: 'light',
-        messages: [],
-        addMessage: vi.fn(),
-        updateMessage: vi.fn(),
-        currentFile: { name: 'test.ts', content: '' },
-        setCurrentFile: vi.fn(),
-        updateFileContent: vi.fn(),
-      });
+      const mockStore = mockUseAppStore;
+      mockStore.mockReturnValue(
+        store({
+          theme: 'light',
+          messages: [],
+          addMessage: vi.fn(),
+          updateMessage: vi.fn(),
+          currentFile: { name: 'test.ts', content: '' },
+          setCurrentFile: vi.fn(),
+          updateFileContent: vi.fn(),
+        })
+      );
 
       render(
         <div>
@@ -449,15 +509,17 @@ describe('Editor and Chat Interface Integration', () => {
   describe('4. Editor-Chat Error Handling', () => {
     it('should display AI errors in chat interface', async () => {
       const mockAddMessage = vi.fn();
-      vi.mocked(require('../store').useAppStore).mockReturnValue({
-        theme: 'dark',
-        messages: [],
-        addMessage: mockAddMessage,
-        updateMessage: vi.fn(),
-        currentFile: { name: 'test.ts', content: '' },
-        setCurrentFile: vi.fn(),
-        updateFileContent: vi.fn(),
-      });
+      mockUseAppStore.mockReturnValue(
+        store({
+          theme: 'dark',
+          messages: [],
+          addMessage: mockAddMessage,
+          updateMessage: vi.fn(),
+          currentFile: { name: 'test.ts', content: '' },
+          setCurrentFile: vi.fn(),
+          updateFileContent: vi.fn(),
+        })
+      );
 
       render(
         <div>
@@ -497,15 +559,17 @@ describe('Editor and Chat Interface Integration', () => {
   describe('5. Editor-Chat Performance', () => {
     it('should optimize message rendering with large editor content', () => {
       const largeContent = 'const x = 1;'.repeat(1000);
-      vi.mocked(require('../store').useAppStore).mockReturnValue({
-        theme: 'dark',
-        messages: [],
-        addMessage: vi.fn(),
-        updateMessage: vi.fn(),
-        currentFile: { name: 'test.ts', content: largeContent },
-        setCurrentFile: vi.fn(),
-        updateFileContent: vi.fn(),
-      });
+      mockUseAppStore.mockReturnValue(
+        store({
+          theme: 'dark',
+          messages: [],
+          addMessage: vi.fn(),
+          updateMessage: vi.fn(),
+          currentFile: { name: 'test.ts', content: largeContent },
+          setCurrentFile: vi.fn(),
+          updateFileContent: vi.fn(),
+        })
+      );
 
       render(
         <div>
@@ -520,15 +584,17 @@ describe('Editor and Chat Interface Integration', () => {
 
     it('should handle rapid AI code injection', () => {
       const mockUpdateFileContent = vi.fn();
-      vi.mocked(require('../store').useAppStore).mockReturnValue({
-        theme: 'dark',
-        messages: [],
-        addMessage: vi.fn(),
-        updateMessage: vi.fn(),
-        currentFile: { name: 'test.ts', content: '' },
-        setCurrentFile: vi.fn(),
-        updateFileContent: mockUpdateFileContent,
-      });
+      mockUseAppStore.mockReturnValue(
+        store({
+          theme: 'dark',
+          messages: [],
+          addMessage: vi.fn(),
+          updateMessage: vi.fn(),
+          currentFile: { name: 'test.ts', content: '' },
+          setCurrentFile: vi.fn(),
+          updateFileContent: mockUpdateFileContent,
+        })
+      );
 
       render(
         <div>

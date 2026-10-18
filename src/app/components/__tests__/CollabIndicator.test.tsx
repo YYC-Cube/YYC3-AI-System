@@ -12,52 +12,64 @@
  * @tags test,collaboration,indicator,components
  */
 
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import React from 'react';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mockCollabService = {
-  getStatus: vi.fn(() => 'disconnected' as const),
+  getStatus: vi.fn<() => 'connected' | 'disconnected' | 'syncing' | 'error'>(() => 'disconnected'),
   getConnectedUsers: vi.fn(() => [] as any[]),
   onConnectionChange: vi.fn((callback) => {
     return () => {};
   }),
   connect: vi.fn(),
   disconnect: vi.fn(),
+  getRoomName: vi.fn(() => 'test-room'),
 };
 
-vi.mock('../services/collab-service', () => ({
+vi.mock('../../services/collab-service', () => ({
   collabService: mockCollabService,
 }));
 
-vi.mock('../store', () => ({
-  useAppStore: vi.fn((selector) => {
-    const state = {
-      theme: 'dark',
-      language: 'zh-CN',
-    };
-    return selector(state);
-  }),
-}));
-
-vi.mock('../utils/theme', () => ({
-  getThemeTokens: vi.fn(() => ({
-    isDark: true,
-    bg: { primary: 'bg-slate-900', secondary: 'bg-slate-800' },
-    text: { primary: 'text-white', secondary: 'text-slate-300', muted: 'text-slate-400' },
-    border: { primary: 'border-white/10', secondary: 'border-white/5' },
-  })),
-}));
-
-vi.mock('../utils/i18n', () => ({
-  getI18n: vi.fn(() => ({
+// 主题/语言状态需在测试间可变，使用 vi.hoisted 暴露给 vi.mock 工厂，
+// 避免在 it() 内部调用 vi.mock（Vitest 会将其提升到顶层并报错）。
+const { mockAppState, mockI18nText } = vi.hoisted(() => ({
+  mockAppState: {
+    theme: 'dark' as 'dark' | 'light',
+    language: 'zh-CN' as 'zh-CN' | 'en-US',
+  },
+  mockI18nText: {
     collabOnline: '在线',
     collabOffline: '离线',
     collabSyncing: '同步中',
     collabUsers: '用户',
     collabInvite: '邀请',
-  })),
+  } as Record<string, string>,
+}));
+
+vi.mock('../../store', () => ({
+  useAppStore: (selector: (state: typeof mockAppState) => unknown) => selector(mockAppState),
+}));
+
+vi.mock('../../utils/theme', () => ({
+  getThemeTokens: () =>
+    mockAppState.theme === 'dark'
+      ? {
+          isDark: true,
+          bg: { primary: 'bg-slate-900', secondary: 'bg-slate-800' },
+          text: { primary: 'text-white', secondary: 'text-slate-300', muted: 'text-slate-400' },
+          border: { primary: 'border-white/10', secondary: 'border-white/5' },
+        }
+      : {
+          isDark: false,
+          bg: { primary: 'bg-white', secondary: 'bg-slate-100' },
+          text: { primary: 'text-slate-900', secondary: 'text-slate-600', muted: 'text-slate-400' },
+          border: { primary: 'border-slate-200', secondary: 'border-slate-100' },
+        },
+}));
+
+vi.mock('../../utils/i18n', () => ({
+  getI18n: () => mockI18nText,
 }));
 
 vi.mock('sonner', () => ({
@@ -73,6 +85,18 @@ describe('CollabIndicator', () => {
     vi.clearAllMocks();
     mockCollabService.getStatus.mockReturnValue('disconnected');
     mockCollabService.getConnectedUsers.mockReturnValue([]);
+    mockAppState.theme = 'dark';
+    mockAppState.language = 'zh-CN';
+    Object.assign(navigator, {
+      clipboard: { writeText: vi.fn(() => Promise.resolve()) },
+    });
+    Object.assign(mockI18nText, {
+      collabOnline: '在线',
+      collabOffline: '离线',
+      collabSyncing: '同步中',
+      collabUsers: '用户',
+      collabInvite: '邀请',
+    });
   });
 
   afterEach(() => {
@@ -352,24 +376,7 @@ describe('CollabIndicator', () => {
     });
 
     it('should support light theme', async () => {
-      vi.mock('../store', () => ({
-        useAppStore: vi.fn((selector) => {
-          const state = {
-            theme: 'light',
-            language: 'zh-CN',
-          };
-          return selector(state);
-        }),
-      }));
-
-      vi.mock('../utils/theme', () => ({
-        getThemeTokens: vi.fn(() => ({
-          isDark: false,
-          bg: { primary: 'bg-white', secondary: 'bg-slate-100' },
-          text: { primary: 'text-slate-900', secondary: 'text-slate-600', muted: 'text-slate-400' },
-          border: { primary: 'border-slate-200', secondary: 'border-slate-100' },
-        })),
-      }));
+      mockAppState.theme = 'light';
 
       const { CollabIndicator } = await import('../CollabIndicator');
       const { container } = render(<CollabIndicator />);
@@ -388,25 +395,14 @@ describe('CollabIndicator', () => {
     });
 
     it('should display English text', async () => {
-      vi.mock('../store', () => ({
-        useAppStore: vi.fn((selector) => {
-          const state = {
-            theme: 'dark',
-            language: 'en-US',
-          };
-          return selector(state);
-        }),
-      }));
-
-      vi.mock('../utils/i18n', () => ({
-        getI18n: vi.fn(() => ({
-          collabOnline: 'Online',
-          collabOffline: 'Offline',
-          collabSyncing: 'Syncing',
-          collabUsers: 'Users',
-          collabInvite: 'Invite',
-        })),
-      }));
+      mockAppState.language = 'en-US';
+      Object.assign(mockI18nText, {
+        collabOnline: 'Online',
+        collabOffline: 'Offline',
+        collabSyncing: 'Syncing',
+        collabUsers: 'Users',
+        collabInvite: 'Invite',
+      });
 
       const { CollabIndicator } = await import('../CollabIndicator');
       render(<CollabIndicator />);

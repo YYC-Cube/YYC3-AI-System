@@ -10,7 +10,7 @@
  */
 
 import { render, screen, waitFor } from '@testing-library/react';
-import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import '@testing-library/jest-dom';
 import { syncManagerService } from '../../../services/sync-manager-service';
@@ -18,16 +18,23 @@ import { ConflictType } from '../../../types/sync';
 import { ConflictResolutionDialog } from '../ConflictResolutionDialog';
 import { SyncStatusPanel } from '../SyncStatusPanel';
 
-// Mock sync service
-vi.mock('../../../services/sync-manager-service', () => ({
-  syncManagerService: {
+// Mock sync service（同时提供 SyncManagerService 类,组件通过 getInstance() 使用）
+vi.mock('../../../services/sync-manager-service', () => {
+  const service = {
     syncNow: vi.fn(),
-    getSyncStatus: vi.fn(),
-  },
-}));
+    getSyncStatus: vi.fn(() => null),
+    getStatistics: vi.fn(() => null),
+    on: vi.fn(),
+    off: vi.fn(),
+  };
+  return {
+    syncManagerService: service,
+    SyncManagerService: { getInstance: () => service },
+  };
+});
 
 // Mock store
-vi.mock('../store', () => ({
+vi.mock('../../store', () => ({
   useAppStore: vi.fn(() => ({
     theme: 'dark',
   })),
