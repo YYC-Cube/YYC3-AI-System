@@ -78,14 +78,7 @@ const ModelSettings = lazy(() =>
 );
 
 type SettingsTab =
-  | 'account'
-  | 'general'
-  | 'agents'
-  | 'mcp'
-  | 'models'
-  | 'context'
-  | 'chatflow'
-  | 'rules';
+  'account' | 'general' | 'agents' | 'mcp' | 'models' | 'context' | 'chatflow' | 'rules';
 
 const TAB_ICONS: Record<SettingsTab, React.ReactNode> = {
   account: <User size={18} />,

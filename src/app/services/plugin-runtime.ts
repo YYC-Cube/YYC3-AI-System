@@ -112,14 +112,7 @@ export interface PluginInstance {
 }
 
 export type PluginPermission =
-  | 'storage'
-  | 'editor'
-  | 'ai'
-  | 'ui'
-  | 'network'
-  | 'system'
-  | 'notification'
-  | 'database';
+  'storage' | 'editor' | 'ai' | 'ui' | 'network' | 'system' | 'notification' | 'database';
 
 export interface PluginAPI {
   storage: {

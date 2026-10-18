@@ -40,16 +40,7 @@ import { getI18n } from '../utils/i18n';
 import { getThemeTokens } from '../utils/theme';
 
 type Tool =
-  | 'select'
-  | 'move'
-  | 'brush'
-  | 'eraser'
-  | 'rect'
-  | 'circle'
-  | 'line'
-  | 'arrow'
-  | 'text'
-  | 'sticky';
+  'select' | 'move' | 'brush' | 'eraser' | 'rect' | 'circle' | 'line' | 'arrow' | 'text' | 'sticky';
 
 interface DrawElement {
   id: string;

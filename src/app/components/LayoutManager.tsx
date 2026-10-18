@@ -45,13 +45,7 @@ import { getThemeTokens } from '../utils/theme';
 
 /* ── Panel type registry ── */
 export type PanelContentType =
-  | 'chat'
-  | 'files'
-  | 'code'
-  | 'preview'
-  | 'terminal'
-  | 'workspace'
-  | 'database';
+  'chat' | 'files' | 'code' | 'preview' | 'terminal' | 'workspace' | 'database';
 
 export const PANEL_TYPES: {
   id: PanelContentType;

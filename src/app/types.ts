@@ -325,14 +325,7 @@ export interface ChatSession {
 // ── AI Model Management ──
 
 export type AIModelProvider =
-  | 'openai'
-  | 'anthropic'
-  | 'zhipuai'
-  | 'baidu'
-  | 'aliyun'
-  | 'ollama'
-  | 'deepseek'
-  | 'custom';
+  'openai' | 'anthropic' | 'zhipuai' | 'baidu' | 'aliyun' | 'ollama' | 'deepseek' | 'custom';
 
 export type AIModelStatus = 'idle' | 'testing' | 'connected' | 'error';
 
@@ -486,21 +479,10 @@ export interface DBQueryResult {
 // ── Plugin System Types (P2-插件) ──
 
 export type PluginPermission =
-  | 'storage'
-  | 'network'
-  | 'clipboard'
-  | 'notification'
-  | 'editor'
-  | 'database'
-  | 'ai';
+  'storage' | 'network' | 'clipboard' | 'notification' | 'editor' | 'database' | 'ai';
 
 export type PluginStatus =
-  | 'loading'
-  | 'active'
-  | 'inactive'
-  | 'error'
-  | 'activating'
-  | 'deactivating';
+  'loading' | 'active' | 'inactive' | 'error' | 'activating' | 'deactivating';
 
 export interface PluginManifest {
   id: string;

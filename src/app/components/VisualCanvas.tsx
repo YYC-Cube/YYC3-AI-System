@@ -55,14 +55,7 @@ import { CanvasCodeSync, SyncCanvasElement } from './CanvasCodeSync';
 
 /* ── Canvas element types ── */
 type ElementType =
-  | 'button'
-  | 'input'
-  | 'text'
-  | 'image'
-  | 'container'
-  | 'card'
-  | 'list'
-  | 'divider';
+  'button' | 'input' | 'text' | 'image' | 'container' | 'card' | 'list' | 'divider';
 
 interface CanvasElement {
   id: string;

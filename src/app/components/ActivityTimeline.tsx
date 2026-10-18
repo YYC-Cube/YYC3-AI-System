@@ -38,14 +38,7 @@ import { getThemeTokens } from '../utils/theme';
 
 /* ── Types ── */
 type ActivityType =
-  | 'edit'
-  | 'comment'
-  | 'review'
-  | 'deploy'
-  | 'branch'
-  | 'merge'
-  | 'resolve'
-  | 'reaction';
+  'edit' | 'comment' | 'review' | 'deploy' | 'branch' | 'merge' | 'resolve' | 'reaction';
 type FilterType = 'all' | 'edit' | 'comment' | 'review' | 'deploy';
 
 interface TimelineEntry {

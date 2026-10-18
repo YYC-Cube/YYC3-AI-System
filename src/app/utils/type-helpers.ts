@@ -37,12 +37,7 @@ export type ErrorType = Error | { message: string; code?: string | number; stack
 
 /** JSON 可序列化类型 */
 export type JSONSerializable =
-  | string
-  | number
-  | boolean
-  | null
-  | JSONSerializable[]
-  | { [key: string]: JSONSerializable };
+  string | number | boolean | null | JSONSerializable[] | { [key: string]: JSONSerializable };
 
 /** 国际化翻译对象类型 - 支持嵌套对象 */
 export type I18nTranslations = Record<string, string | Record<string, unknown>>;

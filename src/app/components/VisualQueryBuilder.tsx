@@ -49,17 +49,7 @@ import { getThemeTokens } from '../utils/theme';
 type QueryTab = 'builder' | 'sql' | 'plan' | 'results';
 type JoinType = 'INNER' | 'LEFT' | 'RIGHT' | 'FULL' | 'CROSS';
 type FilterOp =
-  | '='
-  | '!='
-  | '>'
-  | '<'
-  | '>='
-  | '<='
-  | 'LIKE'
-  | 'IN'
-  | 'IS NULL'
-  | 'IS NOT NULL'
-  | 'BETWEEN';
+  '=' | '!=' | '>' | '<' | '>=' | '<=' | 'LIKE' | 'IN' | 'IS NULL' | 'IS NOT NULL' | 'BETWEEN';
 type SortDir = 'ASC' | 'DESC';
 
 interface TableDef {

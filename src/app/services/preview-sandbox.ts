@@ -40,14 +40,7 @@ export interface PreviewDevice {
 
 export type PreviewMode = 'realtime' | 'manual' | 'delayed' | 'smart';
 export type PreviewLanguage =
-  | 'html'
-  | 'css'
-  | 'javascript'
-  | 'react'
-  | 'markdown'
-  | 'svg'
-  | 'canvas'
-  | 'json';
+  'html' | 'css' | 'javascript' | 'react' | 'markdown' | 'svg' | 'canvas' | 'json';
 
 export interface SandboxConfig {
   /** Code to render */

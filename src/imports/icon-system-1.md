@@ -34,7 +34,7 @@ complexity: intermediate
 | 🏠   | Home    | 首页             | 顶部导航栏 |
 | <<   | Back    | 返回             | 视图切换栏 |
 | ◀️   | 全屏    | 向左视图全屏拓展 |
-| 👁   | Preview | 预览             | 视图切换栏 |
+| 👁    | Preview | 预览             | 视图切换栏 |
 | </>  | Code    | 代码             | 视图切换栏 |
 | 🔍   | Search  | 搜索             | 视图切换栏 |
 | ···  | More    | 更多             | 视图切换栏 |

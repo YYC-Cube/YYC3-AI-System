@@ -66,14 +66,7 @@ export interface MCPCapabilities {
     };
     logging?: {
       level?:
-        | 'debug'
-        | 'info'
-        | 'notice'
-        | 'warning'
-        | 'error'
-        | 'critical'
-        | 'alert'
-        | 'emergency';
+        'debug' | 'info' | 'notice' | 'warning' | 'error' | 'critical' | 'alert' | 'emergency';
     };
     experimental?: Record<string, unknown>;
   };

@@ -35,13 +35,7 @@ export type NodeType =
 export type NodeStatus = 'pending' | 'running' | 'completed' | 'failed' | 'skipped' | 'waiting';
 
 export type WorkflowStatus =
-  | 'draft'
-  | 'published'
-  | 'running'
-  | 'completed'
-  | 'failed'
-  | 'cancelled'
-  | 'paused';
+  'draft' | 'published' | 'running' | 'completed' | 'failed' | 'cancelled' | 'paused';
 
 export interface Position {
   x: number;

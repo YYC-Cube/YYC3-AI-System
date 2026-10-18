@@ -21,13 +21,7 @@
  */
 
 export type AgentState =
-  | 'idle'
-  | 'initializing'
-  | 'running'
-  | 'paused'
-  | 'completed'
-  | 'failed'
-  | 'terminated';
+  'idle' | 'initializing' | 'running' | 'paused' | 'completed' | 'failed' | 'terminated';
 
 export type AgentPriority = 'low' | 'normal' | 'high' | 'critical';
 
