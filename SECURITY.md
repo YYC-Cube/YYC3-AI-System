@@ -84,8 +84,8 @@ If you discover a security vulnerability, please report it responsibly:
 | Method | Use For | Response Time |
 |--------|---------|---------------|
 | [security@0379.email](mailto:security@0379.email) | Critical vulnerabilities | < 24 hours |
-| [GitHub Security Advisory](https://github.com/YYC-Cube/YYC3-Portable-Intelligent-AI-System/security/advisories) | All vulnerabilities | < 48 hours |
-| [GitHub Private Issue](https://github.com/YYC-Cube/YYC3-Portable-Intelligent-AI-System/issues/new?labels=security) | Non-critical issues | < 72 hours |
+| [GitHub Security Advisory](https://github.com/YYC-Cube/YYC3-AI-System/security/advisories) | All vulnerabilities | < 48 hours |
+| [GitHub Private Issue](https://github.com/YYC-Cube/YYC3-AI-System/issues/new?labels=security) | Non-critical issues | < 72 hours |
 
 ### 📝 What to Include
 
@@ -376,7 +376,7 @@ const corsOptions = {
 
 - **Security Email**: [security@0379.email](mailto:security@0379.email)
 - **General Contact**: [admin@0379.email](mailto:admin@0379.email)
-- **GitHub Security**: [Security Advisories](https://github.com/YYC-Cube/YYC3-Portable-Intelligent-AI-System/security/advisories)
+- **GitHub Security**: [Security Advisories](https://github.com/YYC-Cube/YYC3-AI-System/security/advisories)
 
 ### PGP Key
 

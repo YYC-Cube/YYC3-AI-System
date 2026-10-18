@@ -13,22 +13,32 @@
 *All things converge in cloud pivot; Deep stacks ignite a new era of intelligence*
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-18.3-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://reactjs.org/)
-[![Vite](https://img.shields.io/badge/Vite-6.3-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
-[![pnpm](https://img.shields.io/badge/pnpm-8.x-F692D0?style=for-the-badge&logo=pnpm&logoColor=white)](https://pnpm.io/)
+[![Vite](https://img.shields.io/badge/Vite-6.4-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Node](https://img.shields.io/badge/Node-%E2%89%A520-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
+[![pnpm](https://img.shields.io/badge/pnpm-10.x-F692D0?style=for-the-badge&logo=pnpm&logoColor=white)](https://pnpm.io/)
+[![PWA](https://img.shields.io/badge/PWA-Offline%20Ready-5A0FC8?style=for-the-badge&logo=pwa&logoColor=white)](https://web.dev/progressive-web-apps/)
 
-[![Build Status](https://img.shields.io/github/actions/workflow/status/YYC-Cube/YYC3-Portable-Intelligent-AI-System/ci-cd.yml?branch=main&style=flat-square&logo=github-actions&logoColor=white)](https://github.com/YYC-Cube/YYC3-Portable-Intelligent-AI-System/actions)
-[![Code Quality](https://img.shields.io/codecov/c/github/YYC-Cube/YYC3-Portable-Intelligent-AI-System?style=flat-square&logo=codecov&logoColor=white)](https://codecov.io/gh/YYC-Cube/YYC3-Portable-Intelligent-AI-System)
-[![Maintainability](https://img.shields.io/codeclimate/maintainability/YYC-Cube/YYC3-Portable-Intelligent-AI-System?style=flat-square&logo=code-climate&logoColor=white)](https://codeclimate.com/github/YYC-Cube/YYC3-Portable-Intelligent-AI-System)
-[![Technical Debt](https://img.shields.io/codeclimate/tech-debt/YYC-Cube/YYC3-Portable-Intelligent-AI-System?style=flat-square&logo=code-climate&logoColor=white)](https://codeclimate.com/github/YYC-Cube/YYC3-Portable-Intelligent-AI-System)
+[![React Router](https://img.shields.io/badge/React_Router-7.18-CA4245?style=flat-square&logo=react-router&logoColor=white)](https://reactrouter.com/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.1-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![shadcn/ui](https://img.shields.io/badge/shadcn%2Fui-Radix-000000?style=flat-square&logo=shadcnui&logoColor=white)](https://ui.shadcn.com/)
+[![zustand](https://img.shields.io/badge/zustand-5.0-433E38?style=flat-square)](https://zustand-demo.pmnd.rs/)
+[![Monaco Editor](https://img.shields.io/badge/Monaco_Editor-0.55-0078D4?style=flat-square&logo=visual-studio-code&logoColor=white)](https://microsoft.github.io/monaco-editor/)
+[![TipTap](https://img.shields.io/badge/TipTap-3.32-000000?style=flat-square)](https://tiptap.dev/)
+[![Yjs](https://img.shields.io/badge/Yjs-CRDT-1B1B1B?style=flat-square)](https://yjs.dev/)
 
-[![Version](https://img.shields.io/badge/version-1.0.0-green?style=flat-square)](https://github.com/YYC-Cube/YYC3-Portable-Intelligent-AI-System/releases)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/YYC-Cube/YYC3-AI-System/ci-cd.yml?branch=main&style=flat-square&logo=github-actions&logoColor=white)](https://github.com/YYC-Cube/YYC3-AI-System/actions)
+[![Code Quality](https://img.shields.io/codecov/c/github/YYC-Cube/YYC3-AI-System?style=flat-square&logo=codecov&logoColor=white)](https://codecov.io/gh/YYC-Cube/YYC3-AI-System)
+[![Maintainability](https://img.shields.io/codeclimate/maintainability/YYC-Cube/YYC3-AI-System?style=flat-square&logo=code-climate&logoColor=white)](https://codeclimate.com/github/YYC-Cube/YYC3-AI-System)
+[![Technical Debt](https://img.shields.io/codeclimate/tech-debt/YYC-Cube/YYC3-AI-System?style=flat-square&logo=code-climate&logoColor=white)](https://codeclimate.com/github/YYC-Cube/YYC3-AI-System)
+
+[![Version](https://img.shields.io/badge/version-1.0.0-green?style=flat-square)](https://github.com/YYC-Cube/YYC3-AI-System/releases)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square&logo=github)](CONTRIBUTING.md)
 [![Made with ❤️](https://img.shields.io/badge/Made%20with-❤️-red?style=flat-square)](https://github.com/YYC-Cube)
 [![Open Source](https://img.shields.io/badge/Open%20Source-Yes-success?style=flat-square&logo=opensourceinitiative&logoColor=white)](https://opensource.org/)
 
-[🌐 Website](https://yyc3.0379.email) · [📖 Documentation](docs/README.md) · [🐛 Report Bug](https://github.com/YYC-Cube/YYC3-Portable-Intelligent-AI-System/issues/new?template=bug_report.md) · [✨ Request Feature](https://github.com/YYC-Cube/YYC3-Portable-Intelligent-AI-System/issues/new?template=feature_request.md)
+[🌐 Website](https://yyc3.0379.email) · [📖 Documentation](docs/README.md) · [🐛 Report Bug](https://github.com/YYC-Cube/YYC3-AI-System/issues/new?template=bug_report.md) · [✨ Request Feature](https://github.com/YYC-Cube/YYC3-AI-System/issues/new?template=feature_request.md)
 
 </div>
 
@@ -41,11 +51,12 @@
 - [🏗️ 系统架构](#️-系统架构)
 - [🛠️ 技术栈](#️-技术栈)
 - [📦 项目结构](#-项目结构)
+- [📚 文档架构](#-文档架构)
 - [🚀 快速开始](#-快速开始)
 - [📖 核心功能模块](#-核心功能模块)
 - [🎨 主题系统](#-主题系统)
 - [🧪 测试](#-测试)
-- [� 性能优化](#-性能优化)
+- [⚡ 性能优化](#-性能优化)
 - [🔒 安全性](#-安全性)
 - [🤝 贡献指南](#-贡献指南)
 - [📄 许可证](#-许可证)
@@ -54,7 +65,7 @@
 
 ---
 
-## �📋 项目简介
+## 📋 项目简介
 
 YYC³ Al System便携式智能AI系统是一个基于 **React + TypeScript + Vite** 构建的现代化前端全栈应用。采用 **Front-End-Only Full-Stack (FEFS)** 架构模式，将业务逻辑、持久化和外部集成全部在前端运行时中实现，通过原生宿主桥接（Tauri）提供桌面应用体验。
 
@@ -123,7 +134,7 @@ YYC³ Al System便携式智能AI系统是一个基于 **React + TypeScript + Vit
 | **标准化** | 统一的代码规范和设计系统 | ESLint + Prettier + TypeScript |
 | **规范化** | 严格的开发流程和质量控制 | Git Hooks + CI/CD Pipeline |
 | **自动化** | 自动化构建、测试和部署 | GitHub Actions + Vitest |
-| **可视化** | 直观的界面和丰富的数据展示 | D3.js + ECharts + Monaco Editor |
+| **可视化** | 直观的界面和丰富的数据展示 | Recharts + Monaco Editor + 自定义可视化 |
 | **智能化** | AI驱动的代码生成和辅助开发 | Multi-AI Provider Integration |
 
 ### 🔄 五化转型 (Five Transformations)
@@ -184,7 +195,7 @@ graph TB
 | 技术 | 版本 | 说明 |
 |------|------|------|
 | [![Radix UI](https://img.shields.io/badge/Radix_UI-Latest-8B5CF6?style=flat)](https://www.radix-ui.com/) | Latest | 无障碍的原始UI组件 |
-| [![Material UI](https://img.shields.io/badge/Material_UI-7.3-007FFF?style=flat&logo=mui&logoColor=white)](https://mui.com/) | 7.3.5 | 企业级UI组件库 |
+| [![shadcn/ui](https://img.shields.io/badge/shadcn%2Fui-Radix%20+%20CVA-000000?style=flat&logo=shadcnui&logoColor=white)](https://ui.shadcn.com/) | Latest | 基于 Radix 的可组合组件规范 |
 | [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.1-38B2AC?style=flat&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/) | 4.1.12 | 原子化CSS框架 |
 | [![Lucide](https://img.shields.io/badge/Lucide-0.487-F56565?style=flat)](https://lucide.dev/) | 0.487.0 | 现代化图标库 |
 
@@ -230,31 +241,93 @@ YYC3-Portable-Intelligent-AI-System/
 │       ├── macOS/                  # macOS图标
 │       ├── watchOS/                # watchOS图标
 │       └── Web App/                # Web应用图标
+├── e2e/                            # Playwright E2E 测试 (*.spec.ts)
 ├── src/
 │   ├── app/
 │   │   ├── components/             # React组件
-│   │   │   ├── ui/                 # UI基础组件
+│   │   │   ├── ui/                 # UI基础组件 (shadcn/ui + Radix)
 │   │   │   ├── toolbars/           # 工具栏组件
-│   │   │   └── ...                 # 功能组件
-│   │   ├── services/               # 业务服务
+│   │   │   └── __tests__/          # 组件单元测试 (Vitest)
+│   │   ├── services/               # 业务服务 (单例导出)
 │   │   ├── utils/                  # 工具函数
+│   │   ├── store/                  # Zustand 状态切片
 │   │   ├── App.tsx                 # 应用根组件
-│   │   ├── routes.ts               # 路由配置
-│   │   └── store.ts                # 状态管理
-│   ├── docs/                       # 技术文档
+│   │   ├── routes.tsx              # 路由配置 (react-router v7, 懒加载)
+│   │   └── store.ts                # 全局状态管理
+│   ├── services/                   # 基础设施服务 (sync/cache/offline)
+│   ├── pages/                      # 认证相关页面 (Login/Register/...)
+│   ├── contexts/ providers/ hooks/ # 上下文 / Provider / Hooks
+│   ├── docs/                       # 技术设计文档 (中文)
 │   └── main.tsx                    # 应用入口
-├── .eslintrc.cjs                   # ESLint配置
-├── .prettierrc                     # Prettier配置
-├── index.html                      # HTML模板
+├── .eslintrc.cjs                   # ESLint 配置
+├── .prettierrc                     # Prettier 配置
+├── index.html                      # HTML 模板
 ├── package.json                    # 项目配置
-├── vite.config.ts                  # Vite配置
-├── tsconfig.json                   # TypeScript配置
+├── vite.config.ts                  # Vite 配置
+├── tsconfig.json                   # TypeScript 配置
 ├── CONTRIBUTING.md                 # 贡献指南
 ├── CHANGELOG.md                    # 变更日志
-├── LICENSE                         # 许可证
+├── LICENSE                         # 许可证 (MIT)
 ├── CODE_OF_CONDUCT.md              # 行为准则
 └── SECURITY.md                     # 安全政策
 ```
+
+---
+
+## 📚 文档架构
+
+> 以「上下文存档 · 规划衔接 · 总结同步 · 随时可启」为核心的文档体系，保证任何协作者都能快速接入并追溯决策。
+
+```mermaid
+graph TD
+    ROOT["📁 仓库根 · 开发者门户"]
+
+    ROOT --> A["📖 README.md<br/>项目总览 / 快速开始"]
+    ROOT --> C["🤝 CONTRIBUTING.md<br/>贡献指南 / 提交规范"]
+    ROOT --> CO["🧭 CODE_OF_CONDUCT.md<br/>行为准则"]
+    ROOT --> S["🔒 SECURITY.md<br/>安全政策 / 漏洞披露"]
+    ROOT --> CH["📝 CHANGELOG.md<br/>版本变更记录"]
+    ROOT --> L["⚖️ LICENSE<br/>MIT 许可证"]
+    ROOT --> AG["🤖 AGENTS.md<br/>AI 协同开发指南"]
+
+    ROOT --> D["📚 docs/ · 技术文档库"]
+    D --> D1["01·团队规范"]
+    D --> D4["04·功能设计"]
+    D --> D5["05·开发指南"]
+    D --> D6["06·测试报告"]
+    D --> D8["08·项目交接"]
+    D --> D9["09·工作总结"]
+
+    style ROOT fill:#667eea,color:#fff
+    style D fill:#764ba2,color:#fff
+    style A fill:#00d4ff,color:#000
+    style S fill:#ff6b6b,color:#fff
+```
+
+### 根级开发者文档
+
+| 文档 | 用途 | 受众 |
+|------|------|------|
+| [README.md](README.md) | 项目总览、架构、快速开始 | 所有人 |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | 贡献流程、编码/提交规范 | 贡献者 |
+| [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) | 社区行为准则 (Contributor Covenant 2.0) | 社区成员 |
+| [SECURITY.md](SECURITY.md) | 安全政策与负责任披露流程 | 安全研究者 |
+| [CHANGELOG.md](CHANGELOG.md) | 遵循 Keep a Changelog 的变更记录 | 使用者/维护者 |
+| [LICENSE](LICENSE) | MIT 许可证及品牌附加条款 | 法务/使用者 |
+| [AGENTS.md](AGENTS.md) | AI 协同开发规范与上下文衔接协议 | AI 导师/维护者 |
+
+### 技术文档库 (docs/)
+
+| 目录 | 内容 |
+|------|------|
+| `docs/01-YYC3-AI-团队规范/` | 团队协作规范、流程标准 |
+| `docs/04-YYC3-AI-功能设计/` | 功能模块设计与实现方案 |
+| `docs/05-YYC3-AI-开发指南/` | 开发环境、架构规范、最佳实践 |
+| `docs/06-YYC3-AI-测试报告/` | 单元/集成/E2E 测试报告 |
+| `docs/08-YYC3-AI-项目交接/` | 项目交接与上下文存档 |
+| `docs/09-YYC3-AI-工作总结/` | 阶段性工作总结与同步 |
+| `docs/cicd-configuration.md` | CI/CD 流水线配置说明 |
+| `docs/pnpm-guide.md` · `docs/package-manager-analysis.md` | 包管理指南与分析 |
 
 ---
 
@@ -264,15 +337,15 @@ YYC3-Portable-Intelligent-AI-System/
 
 | 工具 | 版本要求 | 说明 |
 |------|----------|------|
-| [Node.js](https://nodejs.org/) | >= 18.0.0 | JavaScript运行时 |
-| [pnpm](https://pnpm.io/) | >= 8.0.0 | 包管理器（推荐） |
+| [Node.js](https://nodejs.org/) | >= 20.0.0 | JavaScript运行时 |
+| [pnpm](https://pnpm.io/) | >= 10.0.0 | 包管理器（推荐） |
 | [Git](https://git-scm.com/) | >= 2.30.0 | 版本控制 |
 
 ### 安装步骤
 
 ```bash
 # 1. 克隆仓库
-git clone https://github.com/YYC-Cube/YYC3-Portable-Intelligent-AI-System.git
+git clone https://github.com/YYC-Cube/YYC3-AI-System.git
 
 # 2. 进入项目目录
 cd YYC3-Portable-Intelligent-AI-System
@@ -458,7 +531,7 @@ pnpm test:e2e:debug       # 调试模式
 
 ---
 
-## � 性能优化
+## ⚡ 性能优化
 
 ### 优化策略
 
@@ -524,8 +597,8 @@ git push origin feature/AmazingFeature
 
 感谢所有为YYC³项目做出贡献的开发者！
 
-<a href="https://github.com/YYC-Cube/YYC3-Portable-Intelligent-AI-System/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=YYC-Cube/YYC3-Portable-Intelligent-AI-System" alt="贡献者" />
+<a href="https://github.com/YYC-Cube/YYC3-AI-System/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=YYC-Cube/YYC3-AI-System" alt="贡献者" />
 </a>
 
 ---
@@ -560,15 +633,15 @@ copies or substantial portions of the Software.
 |----------|------|
 | 📧 Email | [admin@0379.email](mailto:admin@0379.email) |
 | 🌐 Website | [https://yyc3.0379.email](https://yyc3.0379.email) |
-| � GitHub | [YYC-Cube](https://github.com/YYC-Cube) |
+| 🐙 GitHub | [YYC-Cube](https://github.com/YYC-Cube) |
 | 🐦 Twitter | [@YYC3Family](https://twitter.com/YYC3Family) |
 | 💬 Discord | [YYC³ Community](https://discord.gg/yyc3) |
 
 ### 问题反馈
 
-- 🐛 [提交Bug](https://github.com/YYC-Cube/YYC3-Portable-Intelligent-AI-System/issues/new?template=bug_report.md)
-- ✨ [功能建议](https://github.com/YYC-Cube/YYC3-Portable-Intelligent-AI-System/issues/new?template=feature_request.md)
-- 📖 [文档问题](https://github.com/YYC-Cube/YYC3-Portable-Intelligent-AI-System/issues/new?template=documentation.md)
+- 🐛 [提交Bug](https://github.com/YYC-Cube/YYC3-AI-System/issues/new?template=bug_report.md)
+- ✨ [功能建议](https://github.com/YYC-Cube/YYC3-AI-System/issues/new?template=feature_request.md)
+- 📖 [文档问题](https://github.com/YYC-Cube/YYC3-AI-System/issues/new?template=documentation.md)
 
 ---
 

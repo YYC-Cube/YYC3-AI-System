@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 🔒 报告安全漏洞 / Report a Security Vulnerability
+    url: https://github.com/YYC-Cube/YYC3-AI-System/security/advisories/new
+    about: 请勿公开披露安全问题，通过 GitHub Security Advisory 或 security@0379.email 私下报告。
+  - name: 💬 社区讨论 / Community Discussion
+    url: https://github.com/YYC-Cube/YYC3-AI-System/discussions
+    about: 就想法、问题和使用经验进行开放式讨论。

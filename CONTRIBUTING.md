@@ -58,8 +58,8 @@ graph LR
 
 | 工具 | 版本 | 说明 |
 |------|------|------|
-| Node.js | >= 18.0.0 | JavaScript 运行时 |
-| pnpm | >= 8.0.0 | 包管理器（推荐） |
+| Node.js | >= 20.0.0 | JavaScript 运行时 |
+| pnpm | >= 10.0.0 | 包管理器（推荐） |
 | Git | >= 2.30.0 | 版本控制 |
 | VS Code | Latest | 推荐编辑器 |
 
@@ -103,18 +103,21 @@ pnpm test
 ## 项目结构
 
 ```
-YYC3-Portable-Intelligent-AI-System/
-├── .github/              # GitHub 配置
-├── docs/                 # 文档
-├── public/               # 静态资源
+YYC3-AI-System/
+├── .github/              # GitHub 配置 (workflows / ISSUE_TEMPLATE / PR 模板)
+├── docs/                 # 技术文档库
+├── e2e/                  # Playwright E2E 测试 (*.spec.ts)
+├── public/               # 静态资源 (品牌图 / 全端图标)
 ├── src/
 │   ├── app/
-│   │   ├── components/   # React 组件
-│   │   ├── services/     # 业务服务
+│   │   ├── components/   # React 组件 (ui/ 为基础组件, __tests__/ 为单测)
+│   │   ├── services/     # 业务服务 (单例导出)
 │   │   ├── utils/        # 工具函数
-│   │   └── App.tsx       # 根组件
+│   │   ├── store/        # Zustand 状态切片
+│   │   ├── App.tsx       # 根组件
+│   │   └── routes.tsx    # 路由配置
+│   ├── pages/            # 认证页面
 │   └── main.tsx          # 入口文件
-├── tests/                # 测试文件
 └── package.json          # 项目配置
 ```
 
@@ -284,7 +287,7 @@ git commit -m "perf(components): implement virtual scrolling for list"
 pnpm lint && pnpm typecheck && pnpm test:run
 ```
 
-2. **创建 Pull Request**
+1. **创建 Pull Request**
 
 - 使用清晰的标题和描述
 - 关联相关 Issue
@@ -372,7 +375,9 @@ Closes #issue_number
 
 ## 日志
 ```
+
 [粘贴相关日志]
+
 ```
 ```
 
@@ -486,7 +491,7 @@ pnpm typecheck
 
 - 📧 Email: [admin@0379.email](mailto:admin@0379.email)
 - 💬 Discord: [YYC³ Community](https://discord.gg/yyc3)
-- 🐛 Issues: [GitHub Issues](https://github.com/YYC-Cube/YYC3-Portable-Intelligent-AI-System/issues)
+- 🐛 Issues: [GitHub Issues](https://github.com/YYC-Cube/YYC3-AI-System/issues)
 
 ---
 

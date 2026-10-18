@@ -7,16 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Security
+
+- 🔒 **依赖漏洞闭环修复**：`pnpm audit` 由 `1 critical / 59 high / 58 moderate / 14 low` 归零为 `No known vulnerabilities found`
+  - 升级直接依赖：`react-router`/`react-router-dom` → `^7.18.4`、`uuid` → `^13.0.1`、`@tiptap/*` → `^3.32.0`、`vite` → `6.4.4`、`vitest` → `^4.1.11`
+  - 新增 `pnpm-workspace.yaml` 版本选择器 `overrides`，精确提升间接依赖（dompurify/lodash/postcss/tar/undici/js-yaml/markdown-it/serialize-javascript 等）
+  - 验证：`pnpm typecheck` 与 `pnpm build` 通过
+
 ### Added
 - Comprehensive badge system in README
 - Professional documentation architecture
 - Full-platform logo adaptation
 - Developer documentation suite (CONTRIBUTING, CHANGELOG, LICENSE, CODE_OF_CONDUCT, SECURITY)
+- 社区健康文件：`.github/ISSUE_TEMPLATE/`（Bug / Feature / Documentation + `config.yml`）与 `.github/PULL_REQUEST_TEMPLATE.md`
+- README「文档架构」可视化章节（Mermaid + 根级/技术文档索引表）
+- `package.json` 新增 `keywords` 与 `description`，提升仓库可检索性
 
 ### Changed
 - Updated README with top banner image
 - Improved documentation structure
 - Enhanced project presentation
+- 修正文档仓库 URL 为 `YYC-Cube/YYC3-AI-System`（原为 `YYC3-Portable-Intelligent-AI-System`）
+- 修正 README/CONTRIBUTING 技术栈与版本描述（shadcn/ui + Radix 替代 Material UI；Recharts 替代 D3.js/ECharts；Node ≥ 20、pnpm ≥ 10）
+- 修复 README 中乱码表情字符
 
 ## [1.0.0] - 2026-03-24
 
