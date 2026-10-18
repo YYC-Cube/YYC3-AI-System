@@ -6,8 +6,6 @@ settings:
 
 overrides:
   vite: ^6.4.4
-  vitest@>=2.1.0 <4.1.11: ^4.1.11
-  '@vitest/mocker@>=2.1.0 <4.1.11': ^4.1.11
   postcss@<=8.5.22: ^8.5.30
   browserslist@<=4.28.6: ^4.29.3
   baseline-browser-mapping@>=2.0.0 <2.11.0: ^2.11.0
@@ -31,7 +29,6 @@ overrides:
   dompurify@<=3.4.15: ^3.4.17
   source-map-js@>=1.0.0 <1.2.2: ^1.2.2
   prosemirror-view@<1.42.3: ^1.42.6
-  uuid@>=13.0.0 <13.0.1: ^13.0.1
   react-router@>=6.0.0 <7.18.4: ^7.18.4
   '@tiptap/core@<3.30.5': ^3.32.0
 
@@ -4787,10 +4784,6 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
-  uuid@13.0.2:
-    resolution: {integrity: sha512-vzi9uRZ926x4XV73S/4qQaTwPXM2JBj6/6lI/byHH1jOpCzb0zDbfytgA9LcN/hzb2l7WQSQnxITOVx5un/wGw==}
-    hasBin: true
-
   uuid@14.0.3:
     resolution: {integrity: sha512-Sc5u1VVln93y1Xnz4R+CunOZc7R9LUcTmhj7Rc7Eg3HVcf7rVn2FOoa812fe0W8p3jD7xeoGSYbfqCGGH2B6xw==}
     hasBin: true
@@ -7237,7 +7230,7 @@ snapshots:
 
   '@types/uuid@11.0.0':
     dependencies:
-      uuid: 13.0.2
+      uuid: 14.0.3
 
   '@typescript-eslint/eslint-plugin@8.71.2(@typescript-eslint/parser@8.71.2(eslint@9.39.5(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.7.2))(eslint@9.39.5(jiti@2.7.0)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.7.2)':
     dependencies:
@@ -10068,8 +10061,6 @@ snapshots:
   use-sync-external-store@1.7.0(react@18.3.1):
     dependencies:
       react: 18.3.1
-
-  uuid@13.0.2: {}
 
   uuid@14.0.3: {}
 
