@@ -20,7 +20,7 @@ const mockCollabService = {
   getStatus: vi.fn<() => 'connected' | 'disconnected' | 'syncing' | 'error'>(() => 'disconnected'),
   getConnectedUsers: vi.fn(() => [] as any[]),
   onConnectionChange: vi.fn((callback) => {
-    return () => {};
+    return () => { };
   }),
   connect: vi.fn(),
   disconnect: vi.fn(),
@@ -55,17 +55,17 @@ vi.mock('../../utils/theme', () => ({
   getThemeTokens: () =>
     mockAppState.theme === 'dark'
       ? {
-          isDark: true,
-          bg: { primary: 'bg-slate-900', secondary: 'bg-slate-800' },
-          text: { primary: 'text-white', secondary: 'text-slate-300', muted: 'text-slate-400' },
-          border: { primary: 'border-white/10', secondary: 'border-white/5' },
-        }
+        isDark: true,
+        bg: { primary: 'bg-slate-900', secondary: 'bg-slate-800' },
+        text: { primary: 'text-white', secondary: 'text-slate-300', muted: 'text-slate-400' },
+        border: { primary: 'border-white/10', secondary: 'border-white/5' },
+      }
       : {
-          isDark: false,
-          bg: { primary: 'bg-white', secondary: 'bg-slate-100' },
-          text: { primary: 'text-slate-900', secondary: 'text-slate-600', muted: 'text-slate-400' },
-          border: { primary: 'border-slate-200', secondary: 'border-slate-100' },
-        },
+        isDark: false,
+        bg: { primary: 'bg-white', secondary: 'bg-slate-100' },
+        text: { primary: 'text-slate-900', secondary: 'text-slate-600', muted: 'text-slate-400' },
+        border: { primary: 'border-slate-200', secondary: 'border-slate-100' },
+      },
 }));
 
 vi.mock('../../utils/i18n', () => ({
